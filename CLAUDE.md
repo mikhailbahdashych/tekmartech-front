@@ -112,9 +112,10 @@ field (the message type) and a `query_id` field (which query it relates
 to). The WebSocket service should dispatch messages to the correct
 component or service based on `query_id`.
 
-**Nine event types** are defined (see `public-api.yaml` for full field
+**Ten event types** are defined (see `public-api.yaml` for full field
 details):
 - `query_interpreting` — query submitted, interpretation started
+- `query_interpretation_text_delta` — a chunk of the AI's analysis text
 - `query_plan_ready` — plan generated, ready for user approval
 - `query_interpretation_failed` — interpretation failed
 - `query_execution_started` — execution began after approval
@@ -205,15 +206,31 @@ tokens are issued and the user is redirected to the queries view.
 This is the core experience of the product. It has four phases, each
 driven by WebSocket events.
 
-**Phase 1 — Submission.** The user types a natural language question
-into a text input and optionally selects which integrations to query
-against. Submitting calls `POST /queries` which returns immediately
-with the query in `interpreting` status. The UI transitions to a
-waiting state. The WebSocket delivers `query_interpreting` to confirm.
+**Phase 1 — Submission and Interpretation.** The user types a natural
+language question into a text input and optionally selects which
+integrations to query against. Submitting calls `POST /queries` which
+returns immediately with the query in `interpreting` status. The
+WebSocket delivers `query_interpreting` to confirm, and the UI
+transitions to the interpretation view.
 
-**Phase 2 — Plan Review.** When `query_plan_ready` arrives via
-WebSocket, the UI displays the generated plan for the user to review.
-The plan contains an ordered list of steps, each showing the tool
+Then `query_interpretation_text_delta` events begin arriving rapidly.
+Each carries a small chunk of text — the AI's analysis of the question,
+its reasoning about which tools and integrations to use, and its
+explanation of the approach it will take. The UI appends each delta to
+a growing text display, creating the effect of watching the AI think
+in real time, like a chat message being typed. This is a core part of
+the product experience: the user sees the AI working, not a spinner.
+
+When interpretation completes, `query_plan_ready` arrives with the
+full plan. If interpretation fails, `query_interpretation_failed`
+arrives with an error message, and the UI displays the error alongside
+whatever interpretation text was already shown.
+
+**Phase 2 — Plan Review.** When `query_plan_ready` arrives, the UI
+transitions from the streaming interpretation text to the plan approval
+view. The AI's interpretation text remains visible (scrolled up or
+collapsed) so the user can reference the AI's reasoning. The plan
+itself is displayed as an ordered list of steps, each showing the tool
 display name, the integration it will query, a description of what
 the step will do, and the estimated number of tool calls. The user
 can approve (`POST /queries/:id/approve`) or reject
