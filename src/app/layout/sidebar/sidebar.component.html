@@ -1,0 +1,55 @@
+<aside class="sidebar">
+  <!-- Brand -->
+  <div class="px-6 py-5">
+    <span class="font-heading text-lg font-semibold text-white">Tekmar</span>
+  </div>
+
+  <!-- New Query button -->
+  <div class="mt-4 px-4">
+    <a routerLink="/queries"
+       class="flex items-center justify-center gap-2 w-full rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-indigo-600">
+      <lucide-icon [img]="icons.Plus" [size]="18" [strokeWidth]="2"></lucide-icon>
+      New Query
+    </a>
+  </div>
+
+  <!-- Navigation links -->
+  <nav class="mt-6 px-3 space-y-1">
+    @for (item of visibleNavItems(); track item.route) {
+      <a [routerLink]="item.route"
+         routerLinkActive="active-link"
+         class="nav-link">
+        <lucide-icon [img]="item.icon" [size]="18" [strokeWidth]="1.5"></lucide-icon>
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+  <!-- Spacer -->
+  <div class="flex-1"></div>
+
+  <!-- User section -->
+  @if (user(); as u) {
+    <div class="border-t border-slate-700/50 px-4 py-4">
+      <div class="flex items-center gap-3">
+        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-500 text-xs font-medium text-white">
+          {{ userInitials() }}
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="truncate text-sm font-medium text-white">{{ u.display_name }}</div>
+          <span class="role-badge" [ngClass]="{
+            'bg-indigo-400/20 text-indigo-300': u.role === 'admin',
+            'bg-slate-600 text-slate-300': u.role === 'member'
+          }">
+            {{ u.role === 'admin' ? 'Admin' : 'Member' }}
+          </span>
+        </div>
+        <button (click)="onLogout()"
+                class="rounded p-1 text-slate-500 transition-colors duration-150 hover:text-white"
+                title="Logout">
+          <lucide-icon [img]="icons.LogOut" [size]="18" [strokeWidth]="1.5"></lucide-icon>
+        </button>
+      </div>
+    </div>
+  }
+</aside>

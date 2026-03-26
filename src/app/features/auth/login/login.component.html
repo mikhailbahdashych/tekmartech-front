@@ -1,0 +1,66 @@
+<div class="auth-page">
+  <div class="auth-container">
+    <!-- Brand -->
+    <div class="mb-8 text-center">
+      <h1 class="font-heading text-2xl font-bold text-slate-900">Tekmar</h1>
+    </div>
+
+    <!-- Card -->
+    <div class="auth-card">
+      <h2 class="font-heading text-xl font-semibold text-slate-900 mb-6">Sign in to your account</h2>
+
+      <!-- Error message -->
+      @if (errorMessage(); as error) {
+        <div class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+          {{ error }}
+        </div>
+      }
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <!-- Email -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" autocomplete="email">
+          @if (loginForm.controls.email.hasError('required') && loginForm.controls.email.touched) {
+            <mat-error>Email is required</mat-error>
+          }
+          @if (loginForm.controls.email.hasError('email') && loginForm.controls.email.touched) {
+            <mat-error>Please enter a valid email</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Password -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Password</mat-label>
+          <input matInput formControlName="password"
+                 [type]="hidePassword() ? 'password' : 'text'"
+                 autocomplete="current-password">
+          <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()">
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (loginForm.controls.password.hasError('required') && loginForm.controls.password.touched) {
+            <mat-error>Password is required</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Submit -->
+        <button mat-flat-button
+                type="submit"
+                class="auth-submit-btn"
+                [disabled]="isLoading()">
+          @if (isLoading()) {
+            <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
+          } @else {
+            Sign in
+          }
+        </button>
+      </form>
+    </div>
+
+    <!-- Link to register -->
+    <p class="mt-6 text-center text-sm text-slate-500">
+      Don't have an account?
+      <a routerLink="/register" class="font-medium text-indigo-600 hover:text-indigo-700">Sign up</a>
+    </p>
+  </div>
+</div>

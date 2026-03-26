@@ -22,10 +22,10 @@ feature — they are the authoritative source of truth for what to build.
 
 | Contract | Path | What it defines for this project |
 |----------|------|----------------------------------|
-| Architecture Contract | `../tekmar-infrastructure/contracts/architecture.md` | System overview, tenancy model, user roles, component responsibilities, architectural invariants. Read sections 1–4 and 14 for foundational context. |
-| Public API | `../tekmar-infrastructure/contracts/public-api.yaml` | **Primary contract.** Every HTTP endpoint, WebSocket message, request/response shape, authentication flow, error format, and pagination pattern. This is the complete definition of how this application communicates with the backend. |
-| MCP Tool Interface | `../tekmar-infrastructure/contracts/mcp-tool-interface.yaml` | The `query_plan` schema (section 2) and `transparency_log` schema (section 4). This application renders both: the query plan during the approval step, and the transparency log in the query detail view. |
-| Internal API | `../tekmar-infrastructure/contracts/internal-api.yaml` | The `result_data`, `result_table`, and `result_column` schemas. This application renders query results using these structures. Also defines the WebSocket event-to-stream mapping for understanding the real-time execution flow. |
+| Architecture Contract | `../tekmartech-infrastructure/contracts/architecture.md` | System overview, tenancy model, user roles, component responsibilities, architectural invariants. Read sections 1–4 and 14 for foundational context. |
+| Public API | `../tekmartech-infrastructure/contracts/public-api.yaml` | **Primary contract.** Every HTTP endpoint, WebSocket message, request/response shape, authentication flow, error format, and pagination pattern. This is the complete definition of how this application communicates with the backend. |
+| MCP Tool Interface | `../tekmartech-infrastructure/contracts/mcp-tool-interface.yaml` | The `query_plan` schema (section 2) and `transparency_log` schema (section 4). This application renders both: the query plan during the approval step, and the transparency log in the query detail view. |
+| Internal API | `../tekmartech-infrastructure/contracts/internal-api.yaml` | The `result_data`, `result_table`, and `result_column` schemas. This application renders query results using these structures. Also defines the WebSocket event-to-stream mapping for understanding the real-time execution flow. |
 
 When implementing a feature, always check the relevant contract first.
 If the contract does not define something, ask — do not assume.
@@ -38,7 +38,9 @@ If the contract does not define something, ask — do not assume.
 |---------|--------|
 | Framework | Angular (latest stable) |
 | Language | TypeScript (strict mode) |
-| Styling | SCSS with component-scoped styles |
+| Styling | Tailwind CSS for utility-based styling + SCSS for component-specific overrides |
+| Component library | Angular Material (for form controls, tables, dialogs, snackbars, menus) |
+| Icons | Lucide Angular (lucide-angular) |
 | State management | Angular signals and services. No external state library (NgRx, Akita) for the MVP. Services hold application state; components consume it via signals or observables. |
 | HTTP | Angular HttpClient with interceptors for auth token injection and error handling |
 | WebSocket | Native WebSocket API wrapped in an Angular service with reconnection logic |
@@ -384,6 +386,308 @@ a relative time pipe (for example, "3 minutes ago").
 
 **UUIDs** — all IDs are UUID v4 strings. Route parameters use the UUID
 directly (for example, `/queries/550e8400-e29b-41d4-a716-446655440000`).
+
+---
+
+## Design Direction
+
+Tekmar is a professional B2B SaaS tool for security and compliance
+teams. The visual language communicates trust, precision, and technical
+competence. The design references Vanta and Datadog: clean, minimal,
+data-focused, and free of decorative elements. Every pixel serves a
+functional purpose. The interface should feel like a tool built by
+engineers for engineers — dense with information, fast to scan, and
+quiet when nothing needs attention.
+
+### Design Principles
+
+1. **Content first.** The UI exists to display data, not to look
+   impressive. Reduce chrome (borders, shadows, gradients) to the
+   minimum needed to establish visual hierarchy. When in doubt, remove.
+
+2. **Progressive disclosure.** Show summary information by default;
+   reveal detail on interaction. Query results show a summary table;
+   the transparency log is one click deeper. Integration cards show
+   status; credential details are behind an expand action.
+
+3. **Status at a glance.** Every entity (query, integration, user,
+   invitation) has a visible status indicator. The user should be able
+   to scan a list and understand the state of everything without
+   reading text.
+
+4. **Quiet until relevant.** Success states are muted (subtle green
+   check marks). Only errors and warnings demand visual attention
+   (vivid color, icons). The default state of the interface is calm.
+
+### Layout
+
+Persistent sidebar navigation on the left, main content area on the
+right. The sidebar is narrow (w-60, 240px) and dark.
+
+**Sidebar structure (top to bottom):**
+- Brand mark: the word "Tekmar" in Montserrat SemiBold, white, text-lg.
+  No logo icon in the MVP — the wordmark is sufficient.
+- Spacing (mt-8).
+- Navigation section — primary:
+  - "New Query" button: full-width, indigo-500 background, white text,
+    rounded-lg, font-medium. This is the most prominent interactive
+    element in the sidebar. It stands apart from the navigation links.
+  - Spacing (mt-6).
+- Navigation section — links (each is a row with an icon and label):
+  - Queries (icon: command-line or terminal icon) — `/queries`
+  - Integrations (icon: plug or link icon) — `/integrations` (admin)
+  - Team (icon: users icon) — `/users` (admin)
+  - Activity Log (icon: list/clock icon) — `/activity-logs` (admin)
+  - Settings (icon: cog/gear icon) — `/settings` (admin)
+- Links use: text-sm, text-slate-400 default, text-white on hover,
+  bg-slate-700/50 on hover, bg-slate-700 + text-white for active route.
+  Icons are 18px, same color as text.
+- Spacer (flex-1, pushes user info to bottom).
+- User section at bottom: small avatar circle (initials-based, bg-indigo-500),
+  display name (text-sm, text-white), role badge (tiny text-xs pill:
+  "Admin" in indigo-400/20 bg with indigo-300 text, "Member" in
+  slate-600 bg with slate-300 text). Logout as a small icon button
+  (door/arrow icon, text-slate-500, hover text-white).
+
+**Main content area:**
+- Background: bg-slate-50.
+- Inner padding: px-8 py-6.
+- Maximum content width: max-w-6xl (1152px) for content-heavy pages
+  (tables, forms). The query experience page uses full width.
+- Page header pattern: page title (text-xl, font-semibold, text-slate-900)
+  on the left, primary action button on the right (e.g., "Connect
+  Integration", "Invite User"). Below the header, an optional
+  description line (text-sm, text-slate-500). Divider line (border-b,
+  border-slate-200) below.
+
+### Color System
+
+All colors use the Tailwind CSS palette. Define custom CSS variables
+for semantic usage so colors are consistent and changeable in one place.
+
+**Surface colors:**
+- Sidebar background: `slate-900`
+- Sidebar hover: `slate-800` or `slate-700/50`
+- Sidebar active: `slate-700`
+- Main background: `slate-50`
+- Card background: `white`
+- Card border: `slate-200`
+- Card shadow: `shadow-sm` (Tailwind's smallest shadow)
+
+**Text colors:**
+- Primary text: `slate-900`
+- Secondary text: `slate-500`
+- Tertiary text / captions: `slate-400`
+- Sidebar text: `slate-400` (default), `white` (active/hover)
+- Link text: `indigo-600`
+
+**Brand and accent:**
+- Primary action (buttons, links, active indicators): `indigo-600`
+  (hover: `indigo-700`, active: `indigo-800`)
+- Primary action text: `white`
+- Focus ring: `ring-2 ring-indigo-500 ring-offset-2`
+
+**Semantic colors (used for status indicators, badges, alerts):**
+- Success: `emerald-600` text on `emerald-50` background, `emerald-500`
+  for icons and borders
+- Warning: `amber-600` text on `amber-50` background, `amber-500` for
+  icons and borders
+- Error / destructive: `red-600` text on `red-50` background, `red-500`
+  for icons and borders
+- Info / neutral: `blue-600` text on `blue-50` background
+
+**Query status colors (specific to the query lifecycle):**
+- interpreting: `blue-500` (in progress)
+- awaiting_approval: `amber-500` (needs attention)
+- approved: `indigo-500` (acknowledged)
+- executing: `blue-500` (in progress, same as interpreting)
+- completed: `emerald-500` (success)
+- failed: `red-500` (error)
+- rejected: `slate-400` (dismissed)
+
+**Integration status colors:**
+- active: `emerald-500`
+- inactive: `slate-400`
+- error: `red-500`
+- Health: healthy = `emerald-500`, unhealthy = `red-500`, unknown = `slate-400`
+
+### Typography
+
+**Font family:** Montserrat for headings and UI elements, loaded from
+Google Fonts. System font stack (`-apple-system, BlinkMacSystemFont,
+"Segoe UI", Roboto, sans-serif`) as fallback and for body text / data
+display. Monospace: `"JetBrains Mono", "Fira Code", ui-monospace,
+monospace` for technical values (query IDs, tool names, JSON, code).
+
+Configure in Tailwind:
+```
+fontFamily: {
+  heading: ['Montserrat', 'sans-serif'],
+  sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+  mono: ['"JetBrains Mono"', '"Fira Code"', 'ui-monospace', 'monospace'],
+}
+```
+
+**Type scale:**
+- Page title: `font-heading text-xl font-semibold text-slate-900`
+- Section header: `font-heading text-base font-semibold text-slate-800`
+- Table column header: `text-xs font-medium text-slate-500 uppercase tracking-wider`
+- Body text: `text-sm text-slate-700` (14px)
+- Secondary text: `text-sm text-slate-500`
+- Caption / label: `text-xs text-slate-500`
+- Data in tables: `text-sm text-slate-900`
+- Monospace values: `font-mono text-xs text-slate-600`
+- Button text: `text-sm font-medium`
+
+**Line height:** Use Tailwind defaults (leading-5 for text-sm,
+leading-6 for text-base). Tables use tighter line height (leading-5).
+
+### Components
+
+**Buttons:**
+- Primary: `bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg px-4 py-2 text-sm font-medium shadow-sm`
+- Secondary: `bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 rounded-lg px-4 py-2 text-sm font-medium`
+- Destructive: `bg-red-600 text-white hover:bg-red-700 rounded-lg px-4 py-2 text-sm font-medium`
+- Ghost (for icon buttons in tables): `text-slate-400 hover:text-slate-600 p-1 rounded`
+- Disabled state: `opacity-50 cursor-not-allowed`
+- Loading state: replace text with a small spinner, maintain button width.
+
+**Status badges:** Small inline pills used in tables and detail views.
+Pattern: `inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium`
+with color combinations from the semantic or status color sets. Example:
+completed = `bg-emerald-50 text-emerald-700`, failed = `bg-red-50 text-red-700`,
+awaiting_approval = `bg-amber-50 text-amber-700`.
+
+**Cards:** Used for contained content blocks (query results, plan steps,
+integration details). Pattern: `bg-white rounded-lg border border-slate-200
+shadow-sm`. Inner padding: `p-5`. Cards do not use heavy shadows — the
+border and minimal shadow are sufficient. Cards stack vertically with
+`space-y-4` between them.
+
+**Tables:** The primary data display pattern. Use Angular Material
+mat-table for structure, styled with Tailwind:
+- Table container: `bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden`
+- Header row: `bg-slate-50 border-b border-slate-200`
+- Header cells: `text-xs font-medium text-slate-500 uppercase tracking-wider px-4 py-3`
+- Body cells: `text-sm text-slate-900 px-4 py-3`
+- Row dividers: `border-b border-slate-100`
+- Row hover: `hover:bg-slate-50`
+- Status column: use status badges (not colored text).
+- Action column (last): icon buttons for edit, delete, test, etc.
+- Pagination below the table: `mat-paginator` styled to match.
+
+**Forms:** Use Angular Material form fields (mat-form-field) with the
+`outline` appearance. Style to match the Tailwind aesthetic:
+- Labels: `text-sm font-medium text-slate-700` above the field.
+- Input text: `text-sm`
+- Error messages: `text-xs text-red-600` below the field.
+- Field spacing: `space-y-4` between form fields.
+
+**Dialogs:** Angular Material mat-dialog for confirmations and inline
+forms (invite user, connect integration). Max width 480px for simple
+dialogs, 640px for complex forms. Title in font-heading font-semibold.
+Actions row with cancel (secondary button) and confirm (primary or
+destructive button).
+
+**Snackbar / Toasts:** Angular Material mat-snackbar for transient
+notifications. Success: green-tinted background. Error: red-tinted
+background. Appear at the bottom-center of the viewport. Auto-dismiss
+after 4 seconds (errors: 6 seconds).
+
+**Empty states:** When a list view has no data, display a centered
+container with: a subtle gray icon (48px), a heading (text-base
+font-medium text-slate-700) explaining what would appear, a description
+(text-sm text-slate-500) explaining how to populate it, and a primary
+action button. Example: icon of a plug, "No integrations connected",
+"Connect your infrastructure to start querying.", [Connect Integration]
+button.
+
+### Page-Specific Design
+
+**Auth pages (login, register):** Full-page layout, no sidebar.
+Background: `bg-slate-50` or a very subtle gradient (`from-slate-50
+to-white`). Centered card: `max-w-md w-full bg-white rounded-xl
+shadow-lg p-8`. "Tekmar" wordmark above the card in `font-heading
+text-2xl font-bold text-slate-900`. Form inputs stacked vertically
+with full-width submit button at the bottom. Link to the other auth
+page below the card (e.g., "Don't have an account? Sign up" in
+text-sm text-slate-500 with a text-indigo-600 link).
+
+**Query page (the core product experience):** This page has a unique
+layout distinct from management pages. At the top, a large query input
+area styled like a conversational input — a tall textarea (min 3 rows)
+in a card, with a prominent submit button. This is the hero interaction.
+Below the input, the query lifecycle plays out in a vertical flow:
+- Interpretation phase: a card showing the AI's analysis text streaming
+  in real time. The text appears progressively with a subtle cursor or
+  fade-in effect. Use a slightly off-white background (`bg-slate-50`)
+  to distinguish AI-generated content from user content.
+- Plan approval phase: the plan displayed as a vertical stepper or
+  numbered list. Each step is a row showing: step number (circle with
+  number), tool display name (font-medium), integration name (text-xs
+  text-slate-500), and description. Approve and Reject buttons below.
+- Execution phase: a live log that updates in real time. Each step
+  shows: a status indicator (spinning for in-progress, green check for
+  complete, red X for failed), the tool name, duration, and a brief
+  summary. This should feel like watching a CI/CD pipeline log.
+- Results phase: one or more data tables rendered with the standard
+  table component. Above the tables: a summary card showing total
+  records, execution time, and a "Download CSV" button.
+
+**Query history page:** Standard table layout. Columns: query text
+(truncated, clickable to detail), status badge, who submitted it,
+when (relative time), result summary (if completed). Click a row to
+navigate to the full query detail page.
+
+**Integration management page:** A grid or list of connected
+integrations, each as a card showing: integration type icon (or a
+colored dot for the type), display name, status badge, last health
+check time, and action buttons (test, disconnect). A prominent
+"Connect Integration" button in the page header. The connect form is
+a dialog with fields that change based on the selected integration
+type (AWS shows access key fields, GitHub shows PAT field, Google
+shows service account JSON upload).
+
+**User management page:** Standard table. Columns: display name,
+email, role badge, status, last login (relative time), actions
+(change role, remove). "Invite User" button in the page header. The
+invite form is a simple dialog: email + role select.
+
+**Activity log page:** Standard table. Columns: timestamp, user (name
++ email), action (formatted as a human-readable sentence, e.g.,
+"Connected integration 'Production AWS'"), and a metadata column for
+additional context. Filters above the table: action type dropdown,
+user dropdown.
+
+### Responsive Behavior
+
+The MVP targets desktop browsers at 1280px and wider. The sidebar is
+always visible (no collapse toggle in MVP). On screens narrower than
+1280px, the layout should not break — content scrolls horizontally
+if needed. Do not invest in mobile-responsive design for the MVP.
+
+### Animation and Transitions
+
+Keep animations minimal and purposeful.
+- Page transitions: none (instant route changes).
+- Sidebar link hover/active: `transition-colors duration-150`.
+- Button hover: `transition-colors duration-150`.
+- Streaming text (interpretation): each text chunk appears immediately
+  when received, no artificial typing delay. A blinking cursor at the
+  end of the text indicates more content is coming.
+- Execution log: step entries slide in from the left with a quick
+  `transition-all duration-200` when added. Status changes (spinning
+  to checkmark) are instant.
+- Dialogs: Angular Material's default fade-in animation is sufficient.
+- Snackbars: default slide-in from bottom.
+
+### Iconography
+
+Use Lucide icons (the open-source icon set, successor to Feather
+icons). Install `lucide-angular` or use SVG icons directly. Consistent
+size: 18px for navigation and inline icons, 20px for buttons,
+48px for empty state illustrations. Consistent stroke width: 1.5px.
+Color inherits from the parent text color.
 
 ---
 

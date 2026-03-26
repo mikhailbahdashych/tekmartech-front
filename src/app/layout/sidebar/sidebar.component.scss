@@ -1,0 +1,41 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 15rem; // w-60 = 240px
+  min-width: 15rem;
+  height: 100vh;
+  background-color: #0f172a; // slate-900
+  overflow-y: auto;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: #94a3b8; // slate-400
+  text-decoration: none;
+  transition: all 150ms;
+
+  &:hover {
+    background-color: rgba(51, 65, 85, 0.5); // slate-700/50
+    color: #ffffff;
+  }
+
+  &.active-link {
+    background-color: #334155; // slate-700
+    color: #ffffff;
+  }
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
