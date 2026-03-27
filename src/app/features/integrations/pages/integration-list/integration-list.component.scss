@@ -1,0 +1,65 @@
+.connect-btn {
+  background-color: #4f46e5 !important;
+  color: white !important;
+  border-radius: 0.5rem !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+
+  &:hover {
+    background-color: #4338ca !important;
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.integration-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.integration-card {
+  background: white;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  padding: 1.25rem;
+}
+
+.test-btn {
+  font-size: 0.75rem !important;
+  color: #475569 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0.25rem 0.5rem !important;
+  min-width: auto !important;
+
+  &:hover {
+    background-color: #f1f5f9 !important;
+  }
+}
+
+.disconnect-text-btn {
+  font-size: 0.75rem !important;
+  color: #dc2626 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0.25rem 0.5rem !important;
+  min-width: auto !important;
+
+  &:hover {
+    background-color: #fef2f2 !important;
+  }
+}

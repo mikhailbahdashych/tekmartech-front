@@ -1,7 +1,7 @@
 import { Component, computed } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { NgClass } from '@angular/common';
-import { LucideAngularModule, Terminal, Plug, Users, Clock, Settings, LogOut, Plus } from 'lucide-angular';
+import { LucideAngularModule, Terminal, Plug, Users, Clock, Settings, LogOut, Plus, History } from 'lucide-angular';
 import { AuthService } from '../../core/services/auth.service';
 
 interface NavItem {
@@ -19,10 +19,11 @@ interface NavItem {
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
-  readonly icons = { Terminal, Plug, Users, Clock, Settings, LogOut, Plus };
+  readonly icons = { Terminal, Plug, Users, Clock, Settings, LogOut, Plus, History };
 
   readonly navItems: NavItem[] = [
     { label: 'Queries', route: '/queries', icon: Terminal, adminOnly: false },
+    { label: 'History', route: '/queries/history', icon: History, adminOnly: false },
     { label: 'Integrations', route: '/integrations', icon: Plug, adminOnly: true },
     { label: 'Team', route: '/users', icon: Users, adminOnly: true },
     { label: 'Activity Log', route: '/activity-logs', icon: Clock, adminOnly: true },

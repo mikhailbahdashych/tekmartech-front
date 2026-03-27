@@ -1,0 +1,29 @@
+.interpretation-card {
+  background-color: #f8fafc; // slate-50
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  padding: 1.25rem;
+}
+
+.interpretation-text {
+  font-size: 0.875rem;
+  line-height: 1.625;
+  color: #334155; // slate-700
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.cursor-blink {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background-color: #64748b; // slate-500
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}

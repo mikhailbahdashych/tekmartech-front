@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import { WebSocketService } from '../core/services/websocket.service';
 
 @Component({
   selector: 'app-layout',
@@ -15,4 +16,14 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     </div>
   `,
 })
-export class LayoutComponent {}
+export class LayoutComponent implements OnInit, OnDestroy {
+  private wsService = inject(WebSocketService);
+
+  ngOnInit(): void {
+    this.wsService.connect();
+  }
+
+  ngOnDestroy(): void {
+    this.wsService.disconnect();
+  }
+}

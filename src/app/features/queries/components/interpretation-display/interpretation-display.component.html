@@ -1,0 +1,14 @@
+<div class="interpretation-card">
+  <div class="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400">AI Analysis</div>
+  <div class="interpretation-text">
+    {{ text() }}<!--
+    -->@if (isStreaming()) {<span class="cursor-blink"></span>}
+  </div>
+</div>
+
+@if (errorMessage(); as error) {
+  <div class="mt-3 rounded-lg bg-red-50 border border-red-200 p-4">
+    <div class="text-sm font-medium text-red-800">Interpretation Failed</div>
+    <div class="mt-1 text-sm text-red-700">{{ error }}</div>
+  </div>
+}

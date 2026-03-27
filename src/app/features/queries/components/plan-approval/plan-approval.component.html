@@ -1,0 +1,59 @@
+<div class="plan-card">
+  <div class="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400">Query Plan</div>
+
+  @if (planSummary(); as summary) {
+    <p class="text-sm text-slate-700 mb-4">{{ summary }}</p>
+  }
+
+  <!-- Steps -->
+  <div class="space-y-0">
+    @for (step of plan().steps; track step.step_id; let i = $index) {
+      <div class="step-row">
+        <div class="step-number">{{ i + 1 }}</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-medium text-slate-900">{{ step.description }}</div>
+          <div class="mt-0.5 text-xs text-slate-500">
+            <span class="font-mono">{{ step.tool_name }}</span>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Metadata -->
+  <div class="mt-4 flex items-center gap-4 text-xs text-slate-500">
+    <span>{{ plan().steps.length }} {{ plan().steps.length === 1 ? 'step' : 'steps' }}</span>
+    <span>~{{ plan().estimated_tool_calls }} tool calls</span>
+    @if (estimatedDuration(); as dur) {
+      <span>~{{ dur }}s estimated</span>
+    }
+  </div>
+
+  <!-- Actions -->
+  @if (showActions()) {
+    <div class="mt-5 flex items-center gap-3">
+      <button mat-flat-button
+              class="approve-btn"
+              [disabled]="isApproving() || isRejecting()"
+              (click)="approve.emit()">
+        @if (isApproving()) {
+          <mat-spinner diameter="16" class="inline-spinner"></mat-spinner>
+        } @else {
+          <lucide-icon [img]="icons.Check" [size]="16" [strokeWidth]="2" class="mr-1"></lucide-icon>
+          Approve & Execute
+        }
+      </button>
+      <button mat-button
+              class="reject-btn"
+              [disabled]="isApproving() || isRejecting()"
+              (click)="reject.emit()">
+        @if (isRejecting()) {
+          <mat-spinner diameter="16"></mat-spinner>
+        } @else {
+          <lucide-icon [img]="icons.X" [size]="16" [strokeWidth]="2" class="mr-1"></lucide-icon>
+          Reject
+        }
+      </button>
+    </div>
+  }
+</div>

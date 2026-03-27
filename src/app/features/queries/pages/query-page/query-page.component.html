@@ -1,0 +1,78 @@
+<div class="max-w-4xl mx-auto space-y-6">
+  <!-- Query Input -->
+  <app-query-input
+    [isSubmitting]="store.isSubmitting()"
+    [disabled]="store.phase() !== 'idle'"
+    (submitQuery)="onSubmit($event)" />
+
+  <!-- Interpretation phase -->
+  @if (store.interpretationText()) {
+    <app-interpretation-display
+      [text]="store.interpretationText()"
+      [isStreaming]="store.isInterpretationStreaming()"
+      [errorMessage]="store.phase() === 'failed' && !store.plan() ? store.errorMessage() : null" />
+  }
+
+  <!-- Plan approval phase -->
+  @if (store.phase() === 'awaiting_approval' && store.plan(); as plan) {
+    <app-plan-approval
+      [plan]="plan"
+      [planSummary]="store.planSummary()"
+      [estimatedDuration]="store.estimatedDuration()"
+      [isApproving]="store.isApproving()"
+      [isRejecting]="store.isRejecting()"
+      (approve)="onApprove()"
+      (reject)="onReject()" />
+  }
+
+  <!-- Execution phase -->
+  @if ((store.phase() === 'executing' || store.phase() === 'completed' || store.phase() === 'failed') && store.executionSteps().length > 0) {
+    <app-execution-log
+      [steps]="store.executionSteps()"
+      [totalSteps]="store.totalSteps()" />
+  }
+
+  <!-- Results phase -->
+  @if (store.phase() === 'completed' && store.resultData(); as data) {
+    <app-results-display
+      [resultSummary]="store.resultSummary()"
+      [resultData]="data"
+      [executionStatus]="store.executionStatus()"
+      (exportCsv)="onExportCsv()" />
+  }
+
+  <!-- Transparency log -->
+  @if (store.phase() === 'completed' && store.transparencyLog(); as log) {
+    <app-transparency-log [log]="log" />
+  }
+
+  <!-- Failed state (execution-level failure) -->
+  @if (store.phase() === 'failed' && store.plan()) {
+    <div class="rounded-lg bg-red-50 border border-red-200 p-5">
+      <div class="flex items-center gap-2 mb-2">
+        <lucide-icon [img]="icons.AlertCircle" [size]="18" [strokeWidth]="2" class="text-red-500"></lucide-icon>
+        <span class="text-sm font-medium text-red-800">Query Failed</span>
+      </div>
+      <p class="text-sm text-red-700">{{ store.errorMessage() }}</p>
+      <button mat-flat-button class="new-query-btn mt-4" (click)="onNewQuery()">
+        <lucide-icon [img]="icons.RotateCcw" [size]="16" [strokeWidth]="2" class="mr-1.5"></lucide-icon>
+        New Query
+      </button>
+    </div>
+  }
+
+  <!-- Rejected state -->
+  @if (store.phase() === 'rejected') {
+    <div class="rounded-lg bg-slate-50 border border-slate-200 p-5">
+      <div class="flex items-center gap-2 mb-2">
+        <lucide-icon [img]="icons.Ban" [size]="18" [strokeWidth]="2" class="text-slate-400"></lucide-icon>
+        <span class="text-sm font-medium text-slate-700">Query Rejected</span>
+      </div>
+      <p class="text-sm text-slate-500">The query plan was rejected and will not be executed.</p>
+      <button mat-flat-button class="new-query-btn mt-4" (click)="onNewQuery()">
+        <lucide-icon [img]="icons.RotateCcw" [size]="16" [strokeWidth]="2" class="mr-1.5"></lucide-icon>
+        New Query
+      </button>
+    </div>
+  }
+</div>

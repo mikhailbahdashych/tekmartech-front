@@ -1,0 +1,96 @@
+<div class="max-w-6xl mx-auto">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="font-heading text-xl font-semibold text-slate-900">Query History</h1>
+      <p class="mt-1 text-sm text-slate-500">View past queries and their results</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="mb-4 flex items-center gap-3">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Status</mat-label>
+      <mat-select [value]="statusFilter()" (selectionChange)="onStatusFilterChange($event.value)">
+        <mat-option value="">All statuses</mat-option>
+        @for (opt of statusOptions; track opt.value) {
+          <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Table -->
+  <div class="table-container">
+    <table class="w-full">
+      <thead>
+        <tr class="bg-slate-50 border-b border-slate-200">
+          <th class="table-header">Query</th>
+          <th class="table-header">Status</th>
+          <th class="table-header">Submitted by</th>
+          <th class="table-header">When</th>
+          <th class="table-header">Summary</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (query of queries(); track query.id) {
+          <tr class="table-row cursor-pointer" (click)="navigateToQuery(query)">
+            <td class="table-cell max-w-xs">
+              <span class="text-slate-900" [title]="query.query_text">
+                {{ truncateText(query.query_text) }}
+              </span>
+              @if (query.integration_ids.length > 0) {
+                <div class="mt-0.5 text-[11px] text-slate-400">
+                  @for (id of query.integration_ids; track id; let last = $last) {
+                    {{ getIntegrationLabel(id) }}{{ last ? '' : ', ' }}
+                  }
+                </div>
+              }
+            </td>
+            <td class="table-cell">
+              <app-status-badge [status]="query.status" [configMap]="statusConfig" />
+            </td>
+            <td class="table-cell text-slate-500">
+              {{ query.initiated_by.display_name }}
+            </td>
+            <td class="table-cell text-slate-500">
+              {{ query.submitted_at | relativeTime }}
+            </td>
+            <td class="table-cell text-slate-500 max-w-xs">
+              @if (query.result_summary) {
+                {{ truncateText(query.result_summary, 60) }}
+              } @else if (query.error_message) {
+                <span class="text-red-600">{{ truncateText(query.error_message, 60) }}</span>
+              } @else {
+                —
+              }
+            </td>
+          </tr>
+        } @empty {
+          @if (!isLoading()) {
+            <tr>
+              <td colspan="5" class="px-4 py-12 text-center">
+                <div class="text-slate-400 text-sm">No queries found</div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+
+    @if (isLoading()) {
+      <div class="flex items-center justify-center py-8">
+        <mat-spinner diameter="24"></mat-spinner>
+      </div>
+    }
+  </div>
+
+  <!-- Pagination -->
+  @if (pagination(); as p) {
+    <app-pagination
+      [hasMore]="p.has_more"
+      [totalCount]="p.total_count"
+      [currentCount]="queries().length"
+      (loadMore)="loadMore()" />
+  }
+</div>

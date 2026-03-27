@@ -1,0 +1,96 @@
+<div class="max-w-6xl mx-auto">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="font-heading text-xl font-semibold text-slate-900">Integrations</h1>
+      <p class="mt-1 text-sm text-slate-500">Connect your infrastructure to start querying</p>
+    </div>
+    <button mat-flat-button class="connect-btn" (click)="openConnectDialog()">
+      <lucide-icon [img]="icons.Plus" [size]="18" [strokeWidth]="2" class="mr-1.5"></lucide-icon>
+      Connect Integration
+    </button>
+  </div>
+
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="flex items-center justify-center py-16">
+      <mat-spinner diameter="28"></mat-spinner>
+    </div>
+  }
+
+  <!-- Empty state -->
+  @if (!isLoading() && integrations().length === 0) {
+    <div class="empty-state">
+      <lucide-icon [img]="icons.Plug" [size]="48" [strokeWidth]="1" class="text-slate-300"></lucide-icon>
+      <h3 class="mt-4 text-base font-medium text-slate-700">No integrations connected</h3>
+      <p class="mt-1 text-sm text-slate-500">Connect your infrastructure to start querying your systems.</p>
+      <button mat-flat-button class="connect-btn mt-4" (click)="openConnectDialog()">
+        <lucide-icon [img]="icons.Plus" [size]="18" [strokeWidth]="2" class="mr-1.5"></lucide-icon>
+        Connect Integration
+      </button>
+    </div>
+  }
+
+  <!-- Integration cards grid -->
+  @if (!isLoading() && integrations().length > 0) {
+    <div class="integration-grid">
+      @for (integration of integrations(); track integration.id) {
+        <div class="integration-card">
+          <!-- Type badge + status -->
+          <div class="flex items-center justify-between mb-3">
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold"
+                  [class]="typeConfig[integration.type].accentClass + ' ' + typeConfig[integration.type].accentBgClass">
+              {{ typeConfig[integration.type].label }}
+            </span>
+            <app-status-badge [status]="integration.status" [configMap]="statusConfig" />
+          </div>
+
+          <!-- Display name -->
+          <h3 class="font-heading text-base font-semibold text-slate-900">{{ integration.display_name }}</h3>
+
+          <!-- Health status -->
+          <div class="mt-3 text-sm">
+            @if (integration.last_health_check_status; as health) {
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-medium">Health:</span>
+                <app-status-badge [status]="health" [configMap]="healthConfig" />
+              </div>
+              @if (integration.last_health_check_at) {
+                <div class="text-xs text-slate-400 mt-0.5">
+                  Last checked: {{ integration.last_health_check_at | relativeTime }}
+                </div>
+              }
+            } @else {
+              <div class="text-xs text-slate-400">Not checked yet</div>
+            }
+          </div>
+
+          <!-- Connected info -->
+          <div class="mt-3 text-xs text-slate-500 space-y-0.5">
+            <div>Connected by {{ integration.connected_by.display_name }}</div>
+            <div>{{ integration.created_at | relativeTime }}</div>
+          </div>
+
+          <!-- Actions -->
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2">
+            <button mat-button class="test-btn"
+                    [disabled]="isTesting(integration.id)"
+                    (click)="testConnection(integration)">
+              @if (isTesting(integration.id)) {
+                <mat-spinner diameter="14" class="mr-1.5"></mat-spinner>
+              } @else {
+                <lucide-icon [img]="icons.RefreshCw" [size]="14" [strokeWidth]="2" class="mr-1"></lucide-icon>
+              }
+              Test
+            </button>
+            <button mat-button class="disconnect-text-btn"
+                    (click)="openDisconnectDialog(integration)">
+              <lucide-icon [img]="icons.Unplug" [size]="14" [strokeWidth]="2" class="mr-1"></lucide-icon>
+              Disconnect
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

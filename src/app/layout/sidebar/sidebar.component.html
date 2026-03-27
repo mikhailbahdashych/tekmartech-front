@@ -18,6 +18,7 @@
     @for (item of visibleNavItems(); track item.route) {
       <a [routerLink]="item.route"
          routerLinkActive="active-link"
+         [routerLinkActiveOptions]="{ exact: item.route === '/queries' }"
          class="nav-link">
         <lucide-icon [img]="item.icon" [size]="18" [strokeWidth]="1.5"></lucide-icon>
         <span>{{ item.label }}</span>
