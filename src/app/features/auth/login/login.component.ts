@@ -33,6 +33,7 @@ export class LoginComponent {
 
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
+  infoMessage = signal<string | null>(null);
   hidePassword = signal(true);
 
   constructor(
@@ -54,6 +55,7 @@ export class LoginComponent {
 
     this.isLoading.set(true);
     this.errorMessage.set(null);
+    this.infoMessage.set(null);
 
     const request = this.loginForm.getRawValue() as LoginRequest;
 
@@ -66,7 +68,12 @@ export class LoginComponent {
       },
       error: (err) => {
         const apiError = err.error as ApiError['error'] | undefined;
-        this.errorMessage.set(apiError?.message || 'An unexpected error occurred. Please try again.');
+        const code = (err.error as any)?.error?.code;
+        if (code === 'auth.invitation_pending') {
+          this.infoMessage.set('You have a pending invitation. Please check your email to accept it before logging in.');
+        } else {
+          this.errorMessage.set(apiError?.message || 'An unexpected error occurred. Please try again.');
+        }
       },
     });
   }

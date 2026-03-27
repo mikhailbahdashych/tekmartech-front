@@ -10,6 +10,7 @@ import {
   RegisterRequest,
   AuthResponse,
   RefreshResponse,
+  AcceptInvitationRequest,
 } from '../models';
 
 const USER_CACHE_KEY = 'tekmar_user_cache';
@@ -54,6 +55,14 @@ export class AuthService {
 
   login(request: LoginRequest): Observable<AuthResponse> {
     return this.api.post<AuthResponse>(API_PATHS.AUTH.LOGIN, request, {
+      withCredentials: true,
+    }).pipe(
+      tap(response => this.handleAuthResponse(response)),
+    );
+  }
+
+  acceptInvitation(request: AcceptInvitationRequest): Observable<AuthResponse> {
+    return this.api.post<AuthResponse>(`${API_PATHS.INVITATIONS}/accept`, request, {
       withCredentials: true,
     }).pipe(
       tap(response => this.handleAuthResponse(response)),

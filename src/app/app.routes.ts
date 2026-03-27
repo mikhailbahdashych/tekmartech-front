@@ -14,6 +14,11 @@ export const routes: Routes = [
       .then(m => m.RegisterComponent),
   },
   {
+    path: 'invitations/accept',
+    loadComponent: () => import('./features/auth/invitation-accept/invitation-accept.component')
+      .then(m => m.InvitationAcceptComponent),
+  },
+  {
     path: '',
     loadComponent: () => import('./layout/layout.component')
       .then(m => m.LayoutComponent),

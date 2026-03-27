@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 export const ACTIVITY_LOGS_ROUTES: Routes = [
   {
     path: '',
-    loadComponent: () => import('./activity-logs-list/activity-logs-list.component')
-      .then(m => m.ActivityLogsListComponent),
+    loadComponent: () => import('./pages/activity-log-list/activity-log-list.component')
+      .then(m => m.ActivityLogListComponent),
   },
 ];

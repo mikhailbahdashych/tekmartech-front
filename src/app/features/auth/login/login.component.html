@@ -9,6 +9,13 @@
     <div class="auth-card">
       <h2 class="font-heading text-xl font-semibold text-slate-900 mb-6">Sign in to your account</h2>
 
+      <!-- Info message (invitation pending) -->
+      @if (infoMessage(); as info) {
+        <div class="mb-4 rounded-lg bg-blue-50 border border-blue-200 p-3 text-sm text-blue-700">
+          {{ info }}
+        </div>
+      }
+
       <!-- Error message -->
       @if (errorMessage(); as error) {
         <div class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">

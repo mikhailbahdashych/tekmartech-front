@@ -1,0 +1,130 @@
+<div class="max-w-6xl mx-auto">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="font-heading text-xl font-semibold text-slate-900">Team</h1>
+      <p class="mt-1 text-sm text-slate-500">Manage team members and invitations</p>
+    </div>
+    <button mat-flat-button class="invite-btn" (click)="openInviteDialog()">
+      <lucide-icon [img]="icons.Plus" [size]="18" [strokeWidth]="2" class="mr-1.5"></lucide-icon>
+      Invite User
+    </button>
+  </div>
+
+  <!-- Team Members -->
+  <section class="mb-8">
+    <h2 class="font-heading text-base font-semibold text-slate-800 mb-3">Team Members</h2>
+    <div class="table-container">
+      <table class="w-full">
+        <thead>
+          <tr class="bg-slate-50 border-b border-slate-200">
+            <th class="table-header">Name</th>
+            <th class="table-header">Email</th>
+            <th class="table-header">Role</th>
+            <th class="table-header">Status</th>
+            <th class="table-header">Last Login</th>
+            <th class="table-header w-12"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users(); track user.id) {
+            <tr class="table-row">
+              <td class="table-cell font-medium text-slate-900">{{ user.display_name }}</td>
+              <td class="table-cell text-slate-500">{{ user.email }}</td>
+              <td class="table-cell">
+                <app-status-badge [status]="user.role" [configMap]="roleConfig" />
+              </td>
+              <td class="table-cell">
+                <app-status-badge [status]="user.status" [configMap]="statusConfig" />
+              </td>
+              <td class="table-cell text-slate-500">
+                @if (user.last_login_at) {
+                  {{ user.last_login_at | relativeTime }}
+                } @else {
+                  <span class="text-slate-400">Never</span>
+                }
+              </td>
+              <td class="table-cell">
+                <button mat-icon-button [matMenuTriggerFor]="userMenu" class="text-slate-400 hover:text-slate-600">
+                  <lucide-icon [img]="icons.MoreVertical" [size]="16" [strokeWidth]="2"></lucide-icon>
+                </button>
+                <mat-menu #userMenu="matMenu">
+                  <button mat-menu-item (click)="changeRole(user)">
+                    {{ user.role === 'admin' ? 'Change to Member' : 'Change to Admin' }}
+                  </button>
+                  @if (user.id === currentUserId) {
+                    <button mat-menu-item disabled matTooltip="You cannot remove yourself">
+                      <span class="text-slate-400">Remove from organization</span>
+                    </button>
+                  } @else {
+                    <button mat-menu-item class="text-red-600" (click)="removeUser(user)">
+                      Remove from organization
+                    </button>
+                  }
+                </mat-menu>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      @if (isLoadingUsers()) {
+        <div class="flex justify-center py-6"><mat-spinner diameter="24"></mat-spinner></div>
+      }
+    </div>
+  </section>
+
+  <!-- Pending Invitations -->
+  <section>
+    <h2 class="font-heading text-base font-semibold text-slate-800 mb-3">Pending Invitations</h2>
+    <div class="table-container">
+      <table class="w-full">
+        <thead>
+          <tr class="bg-slate-50 border-b border-slate-200">
+            <th class="table-header">Email</th>
+            <th class="table-header">Role</th>
+            <th class="table-header">Status</th>
+            <th class="table-header">Invited By</th>
+            <th class="table-header">Sent</th>
+            <th class="table-header">Expires</th>
+            <th class="table-header w-12"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (inv of invitations(); track inv.id) {
+            <tr class="table-row">
+              <td class="table-cell text-slate-900">{{ inv.email }}</td>
+              <td class="table-cell">
+                <app-status-badge [status]="inv.role" [configMap]="roleConfig" />
+              </td>
+              <td class="table-cell">
+                <app-status-badge [status]="inv.status" [configMap]="invitationStatusConfig" />
+              </td>
+              <td class="table-cell text-slate-500">{{ inv.invited_by.display_name }}</td>
+              <td class="table-cell text-slate-500">{{ inv.created_at | relativeTime }}</td>
+              <td class="table-cell text-slate-500">{{ inv.expires_at | relativeTime }}</td>
+              <td class="table-cell">
+                @if (inv.status === 'pending') {
+                  <button mat-icon-button [matMenuTriggerFor]="invMenu" class="text-slate-400 hover:text-slate-600">
+                    <lucide-icon [img]="icons.MoreVertical" [size]="16" [strokeWidth]="2"></lucide-icon>
+                  </button>
+                  <mat-menu #invMenu="matMenu">
+                    <button mat-menu-item class="text-red-600" (click)="revokeInvitation(inv)">Revoke</button>
+                  </mat-menu>
+                }
+              </td>
+            </tr>
+          } @empty {
+            @if (!isLoadingInvitations()) {
+              <tr>
+                <td colspan="7" class="px-4 py-8 text-center text-sm text-slate-400">No pending invitations</td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+      @if (isLoadingInvitations()) {
+        <div class="flex justify-center py-6"><mat-spinner diameter="24"></mat-spinner></div>
+      }
+    </div>
+  </section>
+</div>

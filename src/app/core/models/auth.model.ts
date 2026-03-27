@@ -22,3 +22,9 @@ export interface AuthResponse {
 export interface RefreshResponse {
   access_token: string;
 }
+
+export interface AcceptInvitationRequest {
+  token: string;
+  password: string;
+  display_name: string;
+}
