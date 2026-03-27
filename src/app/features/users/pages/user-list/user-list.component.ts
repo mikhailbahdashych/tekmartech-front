@@ -88,6 +88,7 @@ export class UserListComponent implements OnInit {
       message: `Change ${user.display_name}'s role from ${user.role} to ${newRole}?`,
       confirmLabel: `Make ${newRole}`,
       confirmColor: 'primary',
+      testIdPrefix: 'user-role-change',
     };
     this.dialog.open(ConfirmDialogComponent, { width: '420px', data }).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
@@ -109,6 +110,7 @@ export class UserListComponent implements OnInit {
       message: `Remove ${user.display_name} from the organization? This will revoke their access immediately.`,
       confirmLabel: 'Remove',
       confirmColor: 'warn',
+      testIdPrefix: 'user-remove',
     };
     this.dialog.open(ConfirmDialogComponent, { width: '420px', data }).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;

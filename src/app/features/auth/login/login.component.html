@@ -11,14 +11,14 @@
 
       <!-- Info message (invitation pending) -->
       @if (infoMessage(); as info) {
-        <div class="mb-4 rounded-lg bg-blue-50 border border-blue-200 p-3 text-sm text-blue-700">
+        <div data-testid="login-invitation-pending-text" class="mb-4 rounded-lg bg-blue-50 border border-blue-200 p-3 text-sm text-blue-700">
           {{ info }}
         </div>
       }
 
       <!-- Error message -->
       @if (errorMessage(); as error) {
-        <div class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+        <div data-testid="login-error-text" class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
           {{ error }}
         </div>
       }
@@ -27,7 +27,7 @@
         <!-- Email -->
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Email</mat-label>
-          <input matInput formControlName="email" type="email" autocomplete="email">
+          <input matInput formControlName="email" type="email" autocomplete="email" data-testid="login-email-input">
           @if (loginForm.controls.email.hasError('required') && loginForm.controls.email.touched) {
             <mat-error>Email is required</mat-error>
           }
@@ -41,7 +41,8 @@
           <mat-label>Password</mat-label>
           <input matInput formControlName="password"
                  [type]="hidePassword() ? 'password' : 'text'"
-                 autocomplete="current-password">
+                 autocomplete="current-password"
+                 data-testid="login-password-input">
           <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()">
             <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
@@ -54,9 +55,10 @@
         <button mat-flat-button
                 type="submit"
                 class="auth-submit-btn"
-                [disabled]="isLoading()">
+                [disabled]="isLoading()"
+                data-testid="login-submit-button">
           @if (isLoading()) {
-            <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
+            <mat-spinner diameter="20" class="inline-spinner" data-testid="login-loading-spinner"></mat-spinner>
           } @else {
             Sign in
           }
@@ -67,7 +69,7 @@
     <!-- Link to register -->
     <p class="mt-6 text-center text-sm text-slate-500">
       Don't have an account?
-      <a routerLink="/register" class="font-medium text-indigo-600 hover:text-indigo-700">Sign up</a>
+      <a routerLink="/register" class="font-medium text-indigo-600 hover:text-indigo-700" data-testid="login-register-link">Sign up</a>
     </p>
   </div>
 </div>

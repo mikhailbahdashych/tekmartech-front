@@ -726,3 +726,11 @@ or ViewChild. Never use `document.querySelector` or similar.
 **Comments** — comment the why, not the what. Do not add comments that
 restate what the code does. Do add comments that explain non-obvious
 decisions or contract references.
+
+**Test IDs** — every interactive or assertable element must have a
+`data-testid` attribute following the naming convention in
+`testid-manifest.json`. Use kebab-case with a page/feature prefix and
+element-type suffix (e.g., `login-email-input`, `integration-card-{id}`).
+When adding new components or modifying existing ones, update the
+manifest. The manifest is the contract between the frontend and the
+E2E test suite.

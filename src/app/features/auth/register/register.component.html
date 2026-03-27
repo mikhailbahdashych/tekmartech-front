@@ -11,7 +11,7 @@
 
       <!-- Error message -->
       @if (errorMessage(); as error) {
-        <div class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+        <div data-testid="register-error-text" class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
           {{ error }}
         </div>
       }
@@ -20,7 +20,7 @@
         <!-- Organization Name -->
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Organization Name</mat-label>
-          <input matInput formControlName="organization_name" autocomplete="organization">
+          <input matInput formControlName="organization_name" autocomplete="organization" data-testid="register-org-name-input">
           @if (registerForm.controls.organization_name.hasError('required') && registerForm.controls.organization_name.touched) {
             <mat-error>Organization name is required</mat-error>
           }
@@ -32,7 +32,7 @@
         <!-- Display Name -->
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Your Name</mat-label>
-          <input matInput formControlName="display_name" autocomplete="name">
+          <input matInput formControlName="display_name" autocomplete="name" data-testid="register-display-name-input">
           @if (registerForm.controls.display_name.hasError('required') && registerForm.controls.display_name.touched) {
             <mat-error>Name is required</mat-error>
           }
@@ -41,7 +41,7 @@
         <!-- Email -->
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Email</mat-label>
-          <input matInput formControlName="email" type="email" autocomplete="email">
+          <input matInput formControlName="email" type="email" autocomplete="email" data-testid="register-email-input">
           @if (registerForm.controls.email.hasError('required') && registerForm.controls.email.touched) {
             <mat-error>Email is required</mat-error>
           }
@@ -55,7 +55,8 @@
           <mat-label>Password</mat-label>
           <input matInput formControlName="password"
                  [type]="hidePassword() ? 'password' : 'text'"
-                 autocomplete="new-password">
+                 autocomplete="new-password"
+                 data-testid="register-password-input">
           <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()">
             <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
@@ -72,7 +73,8 @@
           <mat-label>Confirm Password</mat-label>
           <input matInput formControlName="confirm_password"
                  [type]="hideConfirmPassword() ? 'password' : 'text'"
-                 autocomplete="new-password">
+                 autocomplete="new-password"
+                 data-testid="register-confirm-password-input">
           <button mat-icon-button matSuffix type="button" (click)="toggleConfirmPasswordVisibility()">
             <mat-icon>{{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
@@ -88,9 +90,10 @@
         <button mat-flat-button
                 type="submit"
                 class="auth-submit-btn"
-                [disabled]="isLoading()">
+                [disabled]="isLoading()"
+                data-testid="register-submit-button">
           @if (isLoading()) {
-            <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
+            <mat-spinner diameter="20" class="inline-spinner" data-testid="register-loading-spinner"></mat-spinner>
           } @else {
             Create account
           }
@@ -101,7 +104,7 @@
     <!-- Link to login -->
     <p class="mt-6 text-center text-sm text-slate-500">
       Already have an account?
-      <a routerLink="/login" class="font-medium text-indigo-600 hover:text-indigo-700">Sign in</a>
+      <a routerLink="/login" class="font-medium text-indigo-600 hover:text-indigo-700" data-testid="register-login-link">Sign in</a>
     </p>
   </div>
 </div>

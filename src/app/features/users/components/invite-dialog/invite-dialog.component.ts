@@ -22,41 +22,43 @@ import { InvitationResponse } from '../../models/user-management.model';
     MatProgressSpinnerModule,
   ],
   template: `
-    <h2 mat-dialog-title class="font-heading text-lg font-semibold text-slate-900">Invite User</h2>
-    <mat-dialog-content>
-      @if (errorMessage(); as error) {
-        <div class="mb-4 rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700">{{ error }}</div>
-      }
-      <form [formGroup]="form" class="space-y-4">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="email" type="email">
-          @if (form.controls.email.hasError('required') && form.controls.email.touched) {
-            <mat-error>Email is required</mat-error>
-          }
-          @if (form.controls.email.hasError('email') && form.controls.email.touched) {
-            <mat-error>Please enter a valid email</mat-error>
-          }
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Role</mat-label>
-          <mat-select formControlName="role">
-            <mat-option value="member">Member</mat-option>
-            <mat-option value="admin">Admin</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </form>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button [disabled]="isSubmitting()" (click)="dialogRef.close(null)">Cancel</button>
-      <button mat-flat-button class="invite-btn" [disabled]="isSubmitting()" (click)="onSubmit()">
-        @if (isSubmitting()) {
-          <mat-spinner diameter="16" class="inline-spinner"></mat-spinner>
-        } @else {
-          Send Invitation
+    <div data-testid="user-invite-dialog">
+      <h2 mat-dialog-title class="font-heading text-lg font-semibold text-slate-900">Invite User</h2>
+      <mat-dialog-content>
+        @if (errorMessage(); as error) {
+          <div data-testid="user-invite-error-text" class="mb-4 rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700">{{ error }}</div>
         }
-      </button>
-    </mat-dialog-actions>
+        <form [formGroup]="form" class="space-y-4">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" type="email" data-testid="user-invite-email-input">
+            @if (form.controls.email.hasError('required') && form.controls.email.touched) {
+              <mat-error>Email is required</mat-error>
+            }
+            @if (form.controls.email.hasError('email') && form.controls.email.touched) {
+              <mat-error>Please enter a valid email</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Role</mat-label>
+            <mat-select formControlName="role" data-testid="user-invite-role-select">
+              <mat-option value="member">Member</mat-option>
+              <mat-option value="admin">Admin</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </form>
+      </mat-dialog-content>
+      <mat-dialog-actions align="end">
+        <button mat-button [disabled]="isSubmitting()" (click)="dialogRef.close(null)">Cancel</button>
+        <button mat-flat-button class="invite-btn" [disabled]="isSubmitting()" (click)="onSubmit()" data-testid="user-invite-submit-button">
+          @if (isSubmitting()) {
+            <mat-spinner diameter="16" class="inline-spinner"></mat-spinner>
+          } @else {
+            Send Invitation
+          }
+        </button>
+      </mat-dialog-actions>
+    </div>
   `,
   styles: [`
     .invite-btn {

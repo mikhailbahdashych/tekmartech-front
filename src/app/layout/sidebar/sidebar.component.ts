@@ -9,6 +9,7 @@ interface NavItem {
   route: string;
   icon: any;
   adminOnly: boolean;
+  testId: string;
 }
 
 @Component({
@@ -22,12 +23,12 @@ export class SidebarComponent {
   readonly icons = { Terminal, Plug, Users, Clock, Settings, LogOut, Plus, History };
 
   readonly navItems: NavItem[] = [
-    { label: 'Queries', route: '/queries', icon: Terminal, adminOnly: false },
-    { label: 'History', route: '/queries/history', icon: History, adminOnly: false },
-    { label: 'Integrations', route: '/integrations', icon: Plug, adminOnly: true },
-    { label: 'Team', route: '/users', icon: Users, adminOnly: true },
-    { label: 'Activity Log', route: '/activity-logs', icon: Clock, adminOnly: true },
-    { label: 'Settings', route: '/settings', icon: Settings, adminOnly: true },
+    { label: 'Queries', route: '/queries', icon: Terminal, adminOnly: false, testId: 'sidebar-nav-queries' },
+    { label: 'History', route: '/queries/history', icon: History, adminOnly: false, testId: 'sidebar-nav-history' },
+    { label: 'Integrations', route: '/integrations', icon: Plug, adminOnly: true, testId: 'sidebar-nav-integrations' },
+    { label: 'Team', route: '/users', icon: Users, adminOnly: true, testId: 'sidebar-nav-team' },
+    { label: 'Activity Log', route: '/activity-logs', icon: Clock, adminOnly: true, testId: 'sidebar-nav-activity-log' },
+    { label: 'Settings', route: '/settings', icon: Settings, adminOnly: true, testId: 'sidebar-nav-settings' },
   ];
 
   readonly isAdmin = computed(() => this.authService.currentUser()?.role === 'admin');

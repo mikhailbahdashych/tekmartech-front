@@ -53,8 +53,8 @@
         <lucide-icon [img]="icons.AlertCircle" [size]="18" [strokeWidth]="2" class="text-red-500"></lucide-icon>
         <span class="text-sm font-medium text-red-800">Query Failed</span>
       </div>
-      <p class="text-sm text-red-700">{{ store.errorMessage() }}</p>
-      <button mat-flat-button class="new-query-btn mt-4" (click)="onNewQuery()">
+      <p class="text-sm text-red-700" data-testid="query-failed-error-text">{{ store.errorMessage() }}</p>
+      <button mat-flat-button class="new-query-btn mt-4" (click)="onNewQuery()" data-testid="query-failed-new-query-button">
         <lucide-icon [img]="icons.RotateCcw" [size]="16" [strokeWidth]="2" class="mr-1.5"></lucide-icon>
         New Query
       </button>
@@ -66,7 +66,7 @@
     <div class="rounded-lg bg-slate-50 border border-slate-200 p-5">
       <div class="flex items-center gap-2 mb-2">
         <lucide-icon [img]="icons.Ban" [size]="18" [strokeWidth]="2" class="text-slate-400"></lucide-icon>
-        <span class="text-sm font-medium text-slate-700">Query Rejected</span>
+        <span class="text-sm font-medium text-slate-700" data-testid="query-rejected-text">Query Rejected</span>
       </div>
       <p class="text-sm text-slate-500">The query plan was rejected and will not be executed.</p>
       <button mat-flat-button class="new-query-btn mt-4" (click)="onNewQuery()">

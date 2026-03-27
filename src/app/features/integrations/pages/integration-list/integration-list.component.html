@@ -1,11 +1,11 @@
-<div class="max-w-6xl mx-auto">
+<div class="max-w-6xl mx-auto" data-testid="integration-list-container">
   <!-- Header -->
   <div class="flex items-center justify-between mb-6">
     <div>
       <h1 class="font-heading text-xl font-semibold text-slate-900">Integrations</h1>
       <p class="mt-1 text-sm text-slate-500">Connect your infrastructure to start querying</p>
     </div>
-    <button mat-flat-button class="connect-btn" (click)="openConnectDialog()">
+    <button mat-flat-button class="connect-btn" (click)="openConnectDialog()" data-testid="integration-connect-button">
       <lucide-icon [img]="icons.Plus" [size]="18" [strokeWidth]="2" class="mr-1.5"></lucide-icon>
       Connect Integration
     </button>
@@ -20,11 +20,11 @@
 
   <!-- Empty state -->
   @if (!isLoading() && integrations().length === 0) {
-    <div class="empty-state">
+    <div class="empty-state" data-testid="integration-empty-state">
       <lucide-icon [img]="icons.Plug" [size]="48" [strokeWidth]="1" class="text-slate-300"></lucide-icon>
       <h3 class="mt-4 text-base font-medium text-slate-700">No integrations connected</h3>
       <p class="mt-1 text-sm text-slate-500">Connect your infrastructure to start querying your systems.</p>
-      <button mat-flat-button class="connect-btn mt-4" (click)="openConnectDialog()">
+      <button mat-flat-button class="connect-btn mt-4" (click)="openConnectDialog()" data-testid="integration-empty-state-connect-button">
         <lucide-icon [img]="icons.Plus" [size]="18" [strokeWidth]="2" class="mr-1.5"></lucide-icon>
         Connect Integration
       </button>
@@ -35,25 +35,26 @@
   @if (!isLoading() && integrations().length > 0) {
     <div class="integration-grid">
       @for (integration of integrations(); track integration.id) {
-        <div class="integration-card">
+        <div class="integration-card" [attr.data-testid]="'integration-card-' + integration.id">
           <!-- Type badge + status -->
           <div class="flex items-center justify-between mb-3">
             <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold"
-                  [class]="typeConfig[integration.type].accentClass + ' ' + typeConfig[integration.type].accentBgClass">
+                  [class]="typeConfig[integration.type].accentClass + ' ' + typeConfig[integration.type].accentBgClass"
+                  [attr.data-testid]="'integration-card-type-' + integration.id">
               {{ typeConfig[integration.type].label }}
             </span>
-            <app-status-badge [status]="integration.status" [configMap]="statusConfig" />
+            <app-status-badge [status]="integration.status" [configMap]="statusConfig" [attr.data-testid]="'integration-card-status-badge-' + integration.id" />
           </div>
 
           <!-- Display name -->
-          <h3 class="font-heading text-base font-semibold text-slate-900">{{ integration.display_name }}</h3>
+          <h3 class="font-heading text-base font-semibold text-slate-900" [attr.data-testid]="'integration-card-name-' + integration.id">{{ integration.display_name }}</h3>
 
           <!-- Health status -->
           <div class="mt-3 text-sm">
             @if (integration.last_health_check_status; as health) {
               <div class="flex items-center gap-2">
                 <span class="text-xs font-medium">Health:</span>
-                <app-status-badge [status]="health" [configMap]="healthConfig" />
+                <app-status-badge [status]="health" [configMap]="healthConfig" [attr.data-testid]="'integration-card-health-badge-' + integration.id" />
               </div>
               @if (integration.last_health_check_at) {
                 <div class="text-xs text-slate-400 mt-0.5">
@@ -75,7 +76,8 @@
           <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2">
             <button mat-button class="test-btn"
                     [disabled]="isTesting(integration.id)"
-                    (click)="testConnection(integration)">
+                    (click)="testConnection(integration)"
+                    [attr.data-testid]="'integration-card-test-button-' + integration.id">
               @if (isTesting(integration.id)) {
                 <mat-spinner diameter="14" class="mr-1.5"></mat-spinner>
               } @else {
@@ -84,7 +86,8 @@
               Test
             </button>
             <button mat-button class="disconnect-text-btn"
-                    (click)="openDisconnectDialog(integration)">
+                    (click)="openDisconnectDialog(integration)"
+                    [attr.data-testid]="'integration-card-disconnect-button-' + integration.id">
               <lucide-icon [img]="icons.Unplug" [size]="14" [strokeWidth]="2" class="mr-1"></lucide-icon>
               Disconnect
             </button>

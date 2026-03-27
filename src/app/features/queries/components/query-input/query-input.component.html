@@ -5,7 +5,8 @@
               [formControl]="queryControl"
               rows="3"
               (keydown)="onKeydown($event)"
-              [readonly]="disabled()">
+              [readonly]="disabled()"
+              data-testid="query-input-textarea">
     </textarea>
     @if (queryControl.hasError('minlength') && queryControl.touched) {
       <mat-error>Query must be at least 3 characters</mat-error>
@@ -17,9 +18,10 @@
     <button mat-flat-button
             class="submit-btn"
             [disabled]="queryControl.invalid || isSubmitting() || disabled()"
-            (click)="onSubmit()">
+            (click)="onSubmit()"
+            data-testid="query-submit-button">
       @if (isSubmitting()) {
-        <mat-spinner diameter="18" class="inline-spinner"></mat-spinner>
+        <mat-spinner diameter="18" class="inline-spinner" data-testid="query-submit-loading-spinner"></mat-spinner>
       } @else {
         <lucide-icon [img]="icons.Send" [size]="16" [strokeWidth]="2" class="mr-1.5"></lucide-icon>
         Run Query
