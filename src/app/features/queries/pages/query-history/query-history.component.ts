@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { TkBadgeComponent, TkBadgeVariant } from '@shared/components/tk-badge/tk-badge.component';
 import { TkPaginationComponent } from '@shared/components/tk-pagination/tk-pagination.component';
 import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
+import { TkSelectComponent, TkSelectOption } from '@shared/components/tk-select/tk-select.component';
 import { RelativeTimePipe } from '@shared/pipes/relative-time.pipe';
 import { QueryService } from '../../services/query.service';
 import { QueryResponse, QueryStatus, PaginationResponse } from '../../models';
@@ -36,6 +37,7 @@ const STATUS_LABEL_MAP: Record<QueryStatus, string> = {
     TkBadgeComponent,
     TkPaginationComponent,
     TkSpinnerComponent,
+    TkSelectComponent,
     RelativeTimePipe,
   ],
   templateUrl: './query-history.component.html',
@@ -53,6 +55,7 @@ export class QueryHistoryComponent implements OnInit {
   readonly integrationNames = signal<Map<string, string>>(new Map());
 
   readonly statusOptions = QUERY_STATUS_OPTIONS;
+  readonly statusSelectOptions: TkSelectOption[] = QUERY_STATUS_OPTIONS.map(o => ({ value: o.value, label: o.label }));
 
   ngOnInit(): void {
     this.loadQueries();

@@ -9,19 +9,12 @@
 
   <!-- Filters -->
   <div class="query-history__filters">
-    <div class="filter">
-      <label class="filter__label">Status</label>
-      <select
-        class="filter__select"
-        [value]="statusFilter()"
-        (change)="onStatusFilterChange($any($event.target).value)"
-        data-testid="query-history-status-filter">
-        <option value="">All statuses</option>
-        @for (opt of statusOptions; track opt.value) {
-          <option [value]="opt.value">{{ opt.label }}</option>
-        }
-      </select>
-    </div>
+    <tk-select
+      label="Status"
+      placeholder="All statuses"
+      [options]="statusSelectOptions"
+      (valueChange)="onStatusFilterChange($event)"
+      [testId]="'query-history-status-filter'" />
   </div>
 
   <!-- Table -->

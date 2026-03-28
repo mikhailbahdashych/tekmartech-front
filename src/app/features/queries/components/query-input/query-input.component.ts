@@ -27,7 +27,7 @@ export class QueryInputComponent {
       } else {
         this.queryControl.enable({ emitEvent: false });
       }
-    });
+    }, { allowSignalWrites: true });
   }
 
   onSubmit(): void {

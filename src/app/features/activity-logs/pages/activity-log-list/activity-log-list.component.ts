@@ -1,8 +1,9 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
 import { TkPaginationComponent } from '@shared/components/tk-pagination/tk-pagination.component';
+import { TkSelectComponent, TkSelectOption } from '@shared/components/tk-select/tk-select.component';
 import { ActivityLogService } from '../../services/activity-log.service';
 import { UserService } from '@features/users/services/user.service';
 import { ActivityLogResponse, ActivityAction } from '../../models/activity-log.model';
@@ -48,6 +49,7 @@ const ACTION_LABELS: Record<ActivityAction, (meta: Record<string, unknown> | nul
     DatePipe,
     TkSpinnerComponent,
     TkPaginationComponent,
+    TkSelectComponent,
   ],
   templateUrl: './activity-log-list.component.html',
   styleUrl: './activity-log-list.component.scss',
@@ -57,7 +59,10 @@ export class ActivityLogListComponent implements OnInit {
   private userService = inject(UserService);
   private router = inject(Router);
 
-  readonly actionOptions = ACTION_OPTIONS;
+  readonly actionSelectOptions: TkSelectOption[] = ACTION_OPTIONS.map(o => ({ value: o.value, label: o.label }));
+  readonly userSelectOptions = computed<TkSelectOption[]>(() =>
+    this.users().map(u => ({ value: u.id, label: u.display_name }))
+  );
 
   readonly logs = signal<ActivityLogResponse[]>([]);
   readonly pagination = signal<PaginationResponse | null>(null);

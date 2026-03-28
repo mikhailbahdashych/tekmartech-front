@@ -25,3 +25,10 @@ $tekmar-theme: mat.define-light-theme((
 @include mat.dialog-theme($tekmar-theme);
 @include mat.menu-theme($tekmar-theme);
 @include mat.snack-bar-theme($tekmar-theme);
+
+// Global overrides for Angular Material dialog actions
+.mat-mdc-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}

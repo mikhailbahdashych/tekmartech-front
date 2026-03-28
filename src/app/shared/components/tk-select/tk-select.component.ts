@@ -1,4 +1,4 @@
-import { Component, input, signal, forwardRef } from '@angular/core';
+import { Component, input, output, signal, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 export interface TkSelectOption {
@@ -24,6 +24,7 @@ export class TkSelectComponent implements ControlValueAccessor {
   readonly error = input<string | null>(null);
   readonly disabled = input(false);
   readonly testId = input<string | null>(null);
+  readonly valueChange = output<string>();
 
   readonly value = signal('');
   readonly isDisabled = signal(false);
@@ -35,6 +36,7 @@ export class TkSelectComponent implements ControlValueAccessor {
     const val = (event.target as HTMLSelectElement).value;
     this.value.set(val);
     this.onChange(val);
+    this.valueChange.emit(val);
   }
 
   onBlur(): void { this.onTouched(); }

@@ -6,33 +6,18 @@
 
   <!-- Filters -->
   <div class="filters">
-    <div class="filter">
-      <label class="filter__label">Action</label>
-      <select
-        class="filter__select"
-        [value]="actionFilter()"
-        (change)="onActionFilterChange($any($event.target).value)"
-        data-testid="activity-log-action-filter">
-        <option value="">All actions</option>
-        @for (opt of actionOptions; track opt.value) {
-          <option [value]="opt.value">{{ opt.label }}</option>
-        }
-      </select>
-    </div>
-
-    <div class="filter">
-      <label class="filter__label">User</label>
-      <select
-        class="filter__select"
-        [value]="userFilter()"
-        (change)="onUserFilterChange($any($event.target).value)"
-        data-testid="activity-log-user-filter">
-        <option value="">All users</option>
-        @for (user of users(); track user.id) {
-          <option [value]="user.id">{{ user.display_name }}</option>
-        }
-      </select>
-    </div>
+    <tk-select
+      label="Action"
+      placeholder="All actions"
+      [options]="actionSelectOptions"
+      (valueChange)="onActionFilterChange($event)"
+      [testId]="'activity-log-action-filter'" />
+    <tk-select
+      label="User"
+      placeholder="All users"
+      [options]="userSelectOptions()"
+      (valueChange)="onUserFilterChange($event)"
+      [testId]="'activity-log-user-filter'" />
   </div>
 
   <!-- Table -->
