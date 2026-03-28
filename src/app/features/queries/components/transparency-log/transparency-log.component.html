@@ -1,0 +1,59 @@
+@if (log(); as l) {
+  <div class="log-card">
+    <!-- Collapsible header -->
+    <button class="log-header" (click)="toggle()" data-testid="query-results-transparency-log-toggle">
+      <lucide-icon [img]="expanded() ? icons.ChevronDown : icons.ChevronRight"
+                   [size]="16" [strokeWidth]="2" class="text-slate-400">
+      </lucide-icon>
+      <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Transparency Log</span>
+      <span class="text-xs text-slate-400 ml-auto">
+        {{ l.total_tool_invocations }} invocations &middot; {{ formatDuration(l.total_duration_ms) }}
+      </span>
+    </button>
+
+    @if (expanded()) {
+      <div data-testid="query-results-transparency-log-container">
+        <!-- Summary -->
+        <div class="px-4 py-2 border-t border-slate-100 flex items-center gap-4 text-xs text-slate-500">
+          <span>{{ l.total_external_api_calls }} API calls</span>
+          <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium"
+                [class]="statusClass(l.execution_status)">
+            {{ l.execution_status }}
+          </span>
+        </div>
+
+        <!-- Entries -->
+        <div class="border-t border-slate-100">
+          @for (entry of l.entries; track entry.entry_id; let i = $index) {
+            <div class="entry-row" [attr.data-testid]="'query-results-transparency-log-entry-' + i">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="font-mono text-xs text-slate-600 truncate">{{ entry.tool_name }}</span>
+                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium"
+                      [class]="statusClass(entry.status)">
+                  {{ entry.status }}
+                </span>
+                @if (entry.is_retry) {
+                  <span class="text-[10px] text-amber-600">retry</span>
+                }
+              </div>
+              <div class="flex items-center gap-3 text-xs text-slate-400 shrink-0">
+                <span>{{ formatDuration(entry.duration_ms) }}</span>
+                <span>{{ entry.external_api_calls }} calls</span>
+                @if (entry.data_hash) {
+                  <span class="font-mono text-[10px] text-slate-300" title="Data hash">
+                    {{ entry.data_hash.substring(0, 8) }}...
+                  </span>
+                }
+              </div>
+            </div>
+            @if (entry.status === 'error' && entry.error_message) {
+              <div class="px-4 py-1 text-xs text-red-600 bg-red-50/50">
+                {{ entry.error_message }}
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+  </div>
+}

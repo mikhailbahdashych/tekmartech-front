@@ -1,0 +1,110 @@
+<div class="auth-page">
+  <div class="auth-container">
+    <!-- Brand -->
+    <div class="mb-8 text-center">
+      <h1 class="font-heading text-2xl font-bold text-slate-900">Tekmar</h1>
+    </div>
+
+    <!-- Card -->
+    <div class="auth-card">
+      <h2 class="font-heading text-xl font-semibold text-slate-900 mb-6">Create your account</h2>
+
+      <!-- Error message -->
+      @if (errorMessage(); as error) {
+        <div data-testid="register-error-text" class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+          {{ error }}
+        </div>
+      }
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <!-- Organization Name -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Organization Name</mat-label>
+          <input matInput formControlName="organization_name" autocomplete="organization" data-testid="register-org-name-input">
+          @if (registerForm.controls.organization_name.hasError('required') && registerForm.controls.organization_name.touched) {
+            <mat-error>Organization name is required</mat-error>
+          }
+          @if (registerForm.controls.organization_name.hasError('minlength') && registerForm.controls.organization_name.touched) {
+            <mat-error>Must be at least 2 characters</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Display Name -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Your Name</mat-label>
+          <input matInput formControlName="display_name" autocomplete="name" data-testid="register-display-name-input">
+          @if (registerForm.controls.display_name.hasError('required') && registerForm.controls.display_name.touched) {
+            <mat-error>Name is required</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Email -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" autocomplete="email" data-testid="register-email-input">
+          @if (registerForm.controls.email.hasError('required') && registerForm.controls.email.touched) {
+            <mat-error>Email is required</mat-error>
+          }
+          @if (registerForm.controls.email.hasError('email') && registerForm.controls.email.touched) {
+            <mat-error>Please enter a valid email</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Password -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Password</mat-label>
+          <input matInput formControlName="password"
+                 [type]="hidePassword() ? 'password' : 'text'"
+                 autocomplete="new-password"
+                 data-testid="register-password-input">
+          <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()">
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (registerForm.controls.password.hasError('required') && registerForm.controls.password.touched) {
+            <mat-error>Password is required</mat-error>
+          }
+          @if (registerForm.controls.password.hasError('minlength') && registerForm.controls.password.touched) {
+            <mat-error>Must be at least 8 characters</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Confirm Password -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Confirm Password</mat-label>
+          <input matInput formControlName="confirm_password"
+                 [type]="hideConfirmPassword() ? 'password' : 'text'"
+                 autocomplete="new-password"
+                 data-testid="register-confirm-password-input">
+          <button mat-icon-button matSuffix type="button" (click)="toggleConfirmPasswordVisibility()">
+            <mat-icon>{{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (registerForm.controls.confirm_password.hasError('required') && registerForm.controls.confirm_password.touched) {
+            <mat-error>Please confirm your password</mat-error>
+          }
+          @if (registerForm.hasError('passwordMismatch') && registerForm.controls.confirm_password.touched) {
+            <mat-error>Passwords do not match</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Submit -->
+        <button mat-flat-button
+                type="submit"
+                class="auth-submit-btn"
+                [disabled]="isLoading()"
+                data-testid="register-submit-button">
+          @if (isLoading()) {
+            <mat-spinner diameter="20" class="inline-spinner" data-testid="register-loading-spinner"></mat-spinner>
+          } @else {
+            Create account
+          }
+        </button>
+      </form>
+    </div>
+
+    <!-- Link to login -->
+    <p class="mt-6 text-center text-sm text-slate-500">
+      Already have an account?
+      <a routerLink="/login" class="font-medium text-indigo-600 hover:text-indigo-700" data-testid="register-login-link">Sign in</a>
+    </p>
+  </div>
+</div>

@@ -1,0 +1,55 @@
+.dialog-container {
+  min-width: 480px;
+  max-width: 560px;
+}
+
+.type-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+  background: white;
+  cursor: pointer;
+  transition: all 150ms;
+
+  &:hover {
+    border-color: #c7d2fe; // indigo-200
+    background-color: #f8fafc;
+  }
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    color: #334155;
+  }
+}
+
+.connect-btn {
+  background-color: #4f46e5 !important;
+  color: white !important;
+  border-radius: 0.5rem !important;
+
+  &[disabled] {
+    opacity: 0.5;
+  }
+}
+
+.inline-spinner {
+  display: inline-block;
+
+  ::ng-deep circle {
+    stroke: white;
+  }
+}

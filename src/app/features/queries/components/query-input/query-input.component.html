@@ -1,0 +1,31 @@
+<div class="query-input-card">
+  <mat-form-field appearance="outline" class="w-full query-textarea-field">
+    <mat-label>Ask a question about your infrastructure...</mat-label>
+    <textarea matInput
+              [formControl]="queryControl"
+              rows="3"
+              (keydown)="onKeydown($event)"
+              [readonly]="disabled()"
+              data-testid="query-input-textarea">
+    </textarea>
+    @if (queryControl.hasError('minlength') && queryControl.touched) {
+      <mat-error>Query must be at least 3 characters</mat-error>
+    }
+  </mat-form-field>
+
+  <div class="flex items-center justify-between mt-3">
+    <span class="text-xs text-slate-400">Press Ctrl+Enter to submit</span>
+    <button mat-flat-button
+            class="submit-btn"
+            [disabled]="queryControl.invalid || isSubmitting() || disabled()"
+            (click)="onSubmit()"
+            data-testid="query-submit-button">
+      @if (isSubmitting()) {
+        <mat-spinner diameter="18" class="inline-spinner" data-testid="query-submit-loading-spinner"></mat-spinner>
+      } @else {
+        <lucide-icon [img]="icons.Send" [size]="16" [strokeWidth]="2" class="mr-1.5"></lucide-icon>
+        Run Query
+      }
+    </button>
+  </div>
+</div>

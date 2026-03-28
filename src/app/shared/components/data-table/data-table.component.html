@@ -1,0 +1,52 @@
+@if (table(); as t) {
+  <div class="data-table-container">
+    @if (t.title) {
+      <div class="px-5 py-3 border-b border-slate-200">
+        <h3 class="text-sm font-semibold text-slate-800">{{ t.title }}</h3>
+        @if (t.description) {
+          <p class="mt-0.5 text-xs text-slate-500">{{ t.description }}</p>
+        }
+      </div>
+    }
+
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="bg-slate-50 border-b border-slate-200">
+            @for (col of t.columns; track col.key) {
+              <th class="table-header"
+                  [class.cursor-pointer]="col.sortable !== false"
+                  (click)="toggleSort(col)">
+                <span>{{ col.label }}</span>
+                @if (sortColumnKey() === col.key) {
+                  <span class="ml-1 text-slate-400">{{ sortDirection() === 'asc' ? '↑' : '↓' }}</span>
+                }
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of sortedRows(); track $index) {
+            <tr class="table-row">
+              @for (col of t.columns; track col.key; let colIdx = $index) {
+                <td class="table-cell" [class.font-mono]="col.data_type === 'datetime'" [class.text-right]="col.data_type === 'number'">
+                  {{ formatCell(row[colIdx], col) }}
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr>
+              <td [attr.colspan]="t.columns.length" class="px-4 py-8 text-center text-sm text-slate-500">
+                No data available
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="px-5 py-2 border-t border-slate-100 text-xs text-slate-500">
+      {{ t.row_count }} {{ t.row_count === 1 ? 'row' : 'rows' }}
+    </div>
+  </div>
+}

@@ -1,0 +1,94 @@
+<div class="max-w-6xl mx-auto" data-testid="activity-log-container">
+  <div class="mb-6">
+    <h1 class="font-heading text-xl font-semibold text-slate-900">Activity Log</h1>
+    <p class="mt-1 text-sm text-slate-500">Audit trail of all platform activity</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="mb-4 flex items-center gap-3">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Action</mat-label>
+      <mat-select [value]="actionFilter()" (selectionChange)="onActionFilterChange($event.value)" data-testid="activity-log-action-filter">
+        <mat-option value="">All actions</mat-option>
+        @for (opt of actionOptions; track opt.value) {
+          <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>User</mat-label>
+      <mat-select [value]="userFilter()" (selectionChange)="onUserFilterChange($event.value)" data-testid="activity-log-user-filter">
+        <mat-option value="">All users</mat-option>
+        @for (user of users(); track user.id) {
+          <mat-option [value]="user.id">{{ user.display_name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Table -->
+  <div class="table-container">
+    <table class="w-full" data-testid="activity-log-table">
+      <thead>
+        <tr class="bg-slate-50 border-b border-slate-200">
+          <th class="table-header">Timestamp</th>
+          <th class="table-header">User</th>
+          <th class="table-header">Action</th>
+          <th class="table-header">Target</th>
+          <th class="table-header">IP Address</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (log of logs(); track log.id; let i = $index) {
+          <tr class="table-row" [attr.data-testid]="'activity-log-row-' + i">
+            <td class="table-cell text-slate-500 whitespace-nowrap text-xs" [attr.data-testid]="'activity-log-row-timestamp-' + i">
+              {{ log.created_at | date:'MMM d, y, HH:mm:ss' }}
+            </td>
+            <td class="table-cell" [attr.data-testid]="'activity-log-row-user-' + i">
+              <div class="text-sm font-medium text-slate-900">{{ log.user.display_name }}</div>
+              <div class="text-xs text-slate-500">{{ log.user.email }}</div>
+            </td>
+            <td class="table-cell text-sm text-slate-700" [attr.data-testid]="'activity-log-row-action-' + i">
+              {{ formatAction(log) }}
+            </td>
+            <td class="table-cell text-sm">
+              @if (targetLabel(log); as label) {
+                @if (log.target_type === 'query' || log.target_type === 'integration') {
+                  <button class="text-indigo-600 hover:text-indigo-700 text-xs font-medium" (click)="navigateToTarget(log)">
+                    {{ label }}
+                  </button>
+                } @else {
+                  <span class="text-xs text-slate-500">{{ label }}</span>
+                }
+              } @else {
+                <span class="text-slate-400">—</span>
+              }
+            </td>
+            <td class="table-cell">
+              @if (log.ip_address) {
+                <span class="font-mono text-xs text-slate-500">{{ log.ip_address }}</span>
+              } @else {
+                <span class="text-slate-400">—</span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    @if (isLoading()) {
+      <div class="flex justify-center py-6"><mat-spinner diameter="24"></mat-spinner></div>
+    }
+  </div>
+
+  @if (pagination(); as p) {
+    <div data-testid="activity-log-pagination">
+      <app-pagination
+        [hasMore]="p.has_more"
+        [totalCount]="p.total_count"
+        [currentCount]="logs().length"
+        (loadMore)="loadMore()" />
+    </div>
+  }
+</div>

@@ -1,0 +1,19 @@
+.back-btn {
+  color: #64748b !important;
+  font-size: 0.875rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0.25rem 0.5rem !important;
+
+  &:hover {
+    color: #334155 !important;
+  }
+}
+
+.query-header-card {
+  background: white;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  padding: 1.25rem;
+}

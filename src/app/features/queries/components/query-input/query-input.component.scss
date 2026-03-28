@@ -1,0 +1,46 @@
+.query-input-card {
+  background: white;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  padding: 1.25rem;
+}
+
+.query-textarea-field {
+  ::ng-deep .mat-mdc-form-field-flex {
+    min-height: 80px;
+  }
+
+  ::ng-deep textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+}
+
+.submit-btn {
+  background-color: #4f46e5 !important;
+  color: white !important;
+  border-radius: 0.5rem !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.25rem !important;
+  padding: 0 1.25rem !important;
+
+  &:hover:not([disabled]) {
+    background-color: #4338ca !important;
+  }
+
+  &[disabled] {
+    opacity: 0.5;
+  }
+}
+
+.inline-spinner {
+  display: inline-block;
+
+  ::ng-deep circle {
+    stroke: white;
+  }
+}

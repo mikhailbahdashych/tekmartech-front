@@ -1,0 +1,14 @@
+.new-query-btn {
+  background-color: white !important;
+  color: #334155 !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 0.5rem !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+
+  &:hover {
+    background-color: #f8fafc !important;
+  }
+}

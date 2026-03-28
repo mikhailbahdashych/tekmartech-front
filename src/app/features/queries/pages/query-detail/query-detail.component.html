@@ -1,0 +1,85 @@
+<div class="max-w-4xl mx-auto space-y-6" data-testid="query-detail-container">
+  <!-- Back button + header -->
+  <div>
+    <button mat-button class="back-btn mb-3" (click)="goBack()">
+      <lucide-icon [img]="icons.ArrowLeft" [size]="16" [strokeWidth]="2" class="mr-1"></lucide-icon>
+      Back to History
+    </button>
+
+    @if (store.queryText()) {
+      <div class="query-header-card">
+        <div class="flex items-start justify-between gap-4">
+          <p class="text-sm text-slate-900 flex-1">{{ store.queryText() }}</p>
+          <app-status-badge [status]="store.phase()" [configMap]="statusConfig" data-testid="query-detail-status-badge" />
+        </div>
+      </div>
+    } @else {
+      <div class="flex items-center justify-center py-12">
+        <mat-spinner diameter="24"></mat-spinner>
+      </div>
+    }
+  </div>
+
+  <!-- Interpretation text -->
+  @if (store.interpretationText()) {
+    <app-interpretation-display
+      [text]="store.interpretationText()"
+      [isStreaming]="store.isInterpretationStreaming()"
+      [errorMessage]="store.phase() === 'failed' && !store.plan() ? store.errorMessage() : null" />
+  }
+
+  <!-- Plan -->
+  @if (store.plan(); as plan) {
+    <app-plan-approval
+      [plan]="plan"
+      [planSummary]="store.planSummary()"
+      [estimatedDuration]="store.estimatedDuration()"
+      [isApproving]="store.isApproving()"
+      [isRejecting]="store.isRejecting()"
+      [showActions]="store.phase() === 'awaiting_approval'"
+      (approve)="onApprove()"
+      (reject)="onReject()" />
+  }
+
+  <!-- Execution log -->
+  @if (store.executionSteps().length > 0) {
+    <app-execution-log
+      [steps]="store.executionSteps()"
+      [totalSteps]="store.totalSteps()" />
+  }
+
+  <!-- Results -->
+  @if (store.phase() === 'completed' && store.resultData(); as data) {
+    <app-results-display
+      [resultSummary]="store.resultSummary()"
+      [resultData]="data"
+      [executionStatus]="store.executionStatus()"
+      (exportCsv)="onExportCsv()" />
+  }
+
+  <!-- Transparency log -->
+  @if (store.transparencyLog(); as log) {
+    <app-transparency-log [log]="log" />
+  }
+
+  <!-- Error state -->
+  @if (store.phase() === 'failed' && store.errorMessage() && store.plan()) {
+    <div class="rounded-lg bg-red-50 border border-red-200 p-5">
+      <div class="flex items-center gap-2 mb-2">
+        <lucide-icon [img]="icons.AlertCircle" [size]="18" [strokeWidth]="2" class="text-red-500"></lucide-icon>
+        <span class="text-sm font-medium text-red-800">Query Failed</span>
+      </div>
+      <p class="text-sm text-red-700" data-testid="query-failed-error-text">{{ store.errorMessage() }}</p>
+    </div>
+  }
+
+  <!-- Rejected state -->
+  @if (store.phase() === 'rejected') {
+    <div class="rounded-lg bg-slate-50 border border-slate-200 p-5">
+      <div class="flex items-center gap-2">
+        <lucide-icon [img]="icons.Ban" [size]="18" [strokeWidth]="2" class="text-slate-400"></lucide-icon>
+        <span class="text-sm font-medium text-slate-700" data-testid="query-rejected-text">Query was rejected</span>
+      </div>
+    </div>
+  }
+</div>
