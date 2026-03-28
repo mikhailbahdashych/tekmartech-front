@@ -7,13 +7,13 @@ import { TkCardComponent } from '@shared/components/tk-card/tk-card.component';
 import { TkBadgeComponent, TkBadgeVariant } from '@shared/components/tk-badge/tk-badge.component';
 import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
 import { RelativeTimePipe } from '@shared/pipes/relative-time.pipe';
-import { QueryPageStore } from '../../services/query-page.store';
-import { InterpretationDisplayComponent } from '../../components/interpretation-display/interpretation-display.component';
-import { PlanApprovalComponent } from '../../components/plan-approval/plan-approval.component';
-import { ExecutionLogComponent } from '../../components/execution-log/execution-log.component';
-import { ResultsDisplayComponent } from '../../components/results-display/results-display.component';
-import { TransparencyLogComponent } from '../../components/transparency-log/transparency-log.component';
-import { QueryStatus } from '../../models';
+import { QueryPageStore } from '@features/queries/services/query-page.store';
+import { InterpretationDisplayComponent } from '@features/queries/components/interpretation-display/interpretation-display.component';
+import { PlanApprovalComponent } from '@features/queries/components/plan-approval/plan-approval.component';
+import { ExecutionLogComponent } from '@features/queries/components/execution-log/execution-log.component';
+import { ResultsDisplayComponent } from '@features/queries/components/results-display/results-display.component';
+import { TransparencyLogComponent } from '@features/queries/components/transparency-log/transparency-log.component';
+import { QueryStatus } from '@features/queries/models';
 
 const STATUS_VARIANT_MAP: Record<QueryStatus, TkBadgeVariant> = {
   interpreting: 'info',

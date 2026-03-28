@@ -1,7 +1,7 @@
 import { Component, computed, input } from '@angular/core';
 import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
 import { Loader2, CheckCircle2, XCircle } from 'lucide-angular';
-import { ExecutionStepState } from '../../services/query-page.store';
+import { ExecutionStepState } from '@features/queries/services/query-page.store';
 
 @Component({
   selector: 'app-execution-log',

@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import { TkButtonComponent } from '../tk-button/tk-button.component';
+import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
 
 @Component({
   selector: 'tk-pagination',

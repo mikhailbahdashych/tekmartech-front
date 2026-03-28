@@ -3,7 +3,7 @@ import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiService } from '@core/services/api.service';
 import { API_PATHS } from '@core/constants/api-paths';
-import { ActivityLogListResponse } from '../models/activity-log.model';
+import { ActivityLogListResponse } from '@features/activity-logs/models/activity-log.model';
 
 @Injectable({ providedIn: 'root' })
 export class ActivityLogService {

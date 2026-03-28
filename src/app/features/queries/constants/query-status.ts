@@ -1,4 +1,4 @@
-import { QueryStatus } from '../models';
+import { QueryStatus } from '@features/queries/models';
 
 export const QUERY_STATUS = {
   INTERPRETING: 'interpreting',

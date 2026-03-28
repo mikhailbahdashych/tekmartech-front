@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -7,13 +7,15 @@ import { TkButtonComponent } from '@shared/components/tk-button/tk-button.compon
 import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
 import { TkBadgeComponent, TkBadgeVariant } from '@shared/components/tk-badge/tk-badge.component';
 import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
+import { TkPaginationComponent } from '@shared/components/tk-pagination/tk-pagination.component';
 import { RelativeTimePipe } from '@shared/pipes/relative-time.pipe';
-import { UserService } from '../../services/user.service';
-import { InvitationResponse, InvitationStatus } from '../../models/user-management.model';
+import { UserService } from '@features/users/services/user.service';
+import { InvitationResponse, InvitationStatus } from '@features/users/models/user-management.model';
 import { User } from '@core/models';
 import { AuthService } from '@core/services/auth.service';
-import { InviteDialogComponent } from '../../components/invite-dialog/invite-dialog.component';
-import { ConfirmDialogComponent, ConfirmDialogData } from '../../components/confirm-dialog/confirm-dialog.component';
+import { InviteDialogComponent } from '@features/users/components/invite-dialog/invite-dialog.component';
+import { ConfirmDialogComponent, ConfirmDialogData } from '@features/users/components/confirm-dialog/confirm-dialog.component';
+import { PaginationResponse } from '@features/queries/models';
 
 @Component({
   selector: 'app-user-list',
@@ -24,6 +26,7 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../../components/conf
     TkSpinnerComponent,
     TkBadgeComponent,
     TkIconComponent,
+    TkPaginationComponent,
     RelativeTimePipe,
   ],
   templateUrl: './user-list.component.html',
@@ -41,50 +44,94 @@ export class UserListComponent implements OnInit {
   readonly invitations = signal<InvitationResponse[]>([]);
   readonly isLoadingUsers = signal(true);
   readonly isLoadingInvitations = signal(true);
+  readonly usersPagination = signal<PaginationResponse | null>(null);
+  readonly invitationsPagination = signal<PaginationResponse | null>(null);
+
+  // Client-side display pagination — users
+  readonly usersPage = signal(0);
+  readonly usersPageSize = signal(25);
+  readonly usersPageSizeOptions = [10, 25, 50, 100];
+  readonly usersSizeDropdownOpen = signal(false);
+
+  readonly paginatedUsers = computed(() => {
+    const start = this.usersPage() * this.usersPageSize();
+    return this.users().slice(start, start + this.usersPageSize());
+  });
+  readonly totalUsers = computed(() => this.users().length);
+  readonly showUsersPagination = computed(() => this.totalUsers() > this.usersPageSize());
+  readonly usersRangeStart = computed(() => this.totalUsers() === 0 ? 0 : this.usersPage() * this.usersPageSize() + 1);
+  readonly usersRangeEnd = computed(() => Math.min((this.usersPage() + 1) * this.usersPageSize(), this.totalUsers()));
+  readonly canUsersPrev = computed(() => this.usersPage() > 0);
+  readonly canUsersNext = computed(() => this.usersPage() < Math.ceil(this.totalUsers() / this.usersPageSize()) - 1);
+
+  // Client-side display pagination — invitations
+  readonly invPage = signal(0);
+  readonly invPageSize = signal(25);
+  readonly invPageSizeOptions = [10, 25, 50];
+  readonly invSizeDropdownOpen = signal(false);
+
+  readonly paginatedInvitations = computed(() => {
+    const start = this.invPage() * this.invPageSize();
+    return this.invitations().slice(start, start + this.invPageSize());
+  });
+  readonly totalInvitations = computed(() => this.invitations().length);
+  readonly showInvPagination = computed(() => this.totalInvitations() > this.invPageSize());
+  readonly invRangeStart = computed(() => this.totalInvitations() === 0 ? 0 : this.invPage() * this.invPageSize() + 1);
+  readonly invRangeEnd = computed(() => Math.min((this.invPage() + 1) * this.invPageSize(), this.totalInvitations()));
+  readonly canInvPrev = computed(() => this.invPage() > 0);
+  readonly canInvNext = computed(() => this.invPage() < Math.ceil(this.totalInvitations() / this.invPageSize()) - 1);
 
   get currentUserId(): string | null {
     return this.authService.currentUser()?.id ?? null;
   }
 
-  getRoleVariant(role: string): TkBadgeVariant {
-    return role === 'admin' ? 'accent' : 'neutral';
-  }
-
-  getRoleLabel(role: string): string {
-    return role === 'admin' ? 'Admin' : 'Member';
-  }
-
-  getStatusVariant(status: string): TkBadgeVariant {
-    return status === 'active' ? 'success' : 'neutral';
-  }
-
-  getStatusLabel(status: string): string {
-    return status === 'active' ? 'Active' : 'Disabled';
-  }
+  getRoleVariant(role: string): TkBadgeVariant { return role === 'admin' ? 'accent' : 'neutral'; }
+  getRoleLabel(role: string): string { return role === 'admin' ? 'Admin' : 'Member'; }
+  getStatusVariant(status: string): TkBadgeVariant { return status === 'active' ? 'success' : 'neutral'; }
+  getStatusLabel(status: string): string { return status === 'active' ? 'Active' : 'Disabled'; }
 
   getInvitationStatusVariant(status: InvitationStatus): TkBadgeVariant {
-    const map: Record<InvitationStatus, TkBadgeVariant> = {
-      pending: 'warning',
-      accepted: 'success',
-      expired: 'neutral',
-      revoked: 'neutral',
-    };
+    const map: Record<InvitationStatus, TkBadgeVariant> = { pending: 'warning', accepted: 'success', expired: 'neutral', revoked: 'neutral' };
     return map[status] ?? 'neutral';
   }
 
   getInvitationStatusLabel(status: InvitationStatus): string {
-    const map: Record<InvitationStatus, string> = {
-      pending: 'Pending',
-      accepted: 'Accepted',
-      expired: 'Expired',
-      revoked: 'Revoked',
-    };
+    const map: Record<InvitationStatus, string> = { pending: 'Pending', accepted: 'Accepted', expired: 'Expired', revoked: 'Revoked' };
     return map[status] ?? status;
   }
 
   ngOnInit(): void {
     this.loadUsers();
     this.loadInvitations();
+  }
+
+  // Users pagination controls
+  usersPrevPage(): void { if (this.canUsersPrev()) this.usersPage.update(p => p - 1); }
+  usersNextPage(): void { if (this.canUsersNext()) this.usersPage.update(p => p + 1); }
+  selectUsersPageSize(size: number): void { this.usersPageSize.set(size); this.usersPage.set(0); this.usersSizeDropdownOpen.set(false); }
+  toggleUsersSizeDropdown(): void { this.usersSizeDropdownOpen.update(v => !v); }
+
+  // Invitations pagination controls
+  invPrevPage(): void { if (this.canInvPrev()) this.invPage.update(p => p - 1); }
+  invNextPage(): void { if (this.canInvNext()) this.invPage.update(p => p + 1); }
+  selectInvPageSize(size: number): void { this.invPageSize.set(size); this.invPage.set(0); this.invSizeDropdownOpen.set(false); }
+  toggleInvSizeDropdown(): void { this.invSizeDropdownOpen.update(v => !v); }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (this.usersSizeDropdownOpen() && !target.closest('.users-size-dropdown')) this.usersSizeDropdownOpen.set(false);
+    if (this.invSizeDropdownOpen() && !target.closest('.inv-size-dropdown')) this.invSizeDropdownOpen.set(false);
+  }
+
+  loadMoreUsers(): void {
+    const cursor = this.usersPagination()?.next_cursor;
+    if (cursor) this.loadUsers(cursor);
+  }
+
+  loadMoreInvitations(): void {
+    const cursor = this.invitationsPagination()?.next_cursor;
+    if (cursor) this.loadInvitations(cursor);
   }
 
   openInviteDialog(): void {
@@ -163,18 +210,34 @@ export class UserListComponent implements OnInit {
     });
   }
 
-  private loadUsers(): void {
+  private loadUsers(cursor?: string): void {
     this.isLoadingUsers.set(true);
-    this.userService.listUsers({ limit: 100 }).subscribe({
-      next: (response) => { this.users.set(response.users); this.isLoadingUsers.set(false); },
+    this.userService.listUsers({ limit: 50, cursor }).subscribe({
+      next: (response) => {
+        if (cursor) {
+          this.users.update(existing => [...existing, ...response.users]);
+        } else {
+          this.users.set(response.users);
+        }
+        this.usersPagination.set(response.pagination);
+        this.isLoadingUsers.set(false);
+      },
       error: () => { this.isLoadingUsers.set(false); },
     });
   }
 
-  private loadInvitations(): void {
+  private loadInvitations(cursor?: string): void {
     this.isLoadingInvitations.set(true);
-    this.userService.listInvitations({ status: 'pending', limit: 100 }).subscribe({
-      next: (response) => { this.invitations.set(response.invitations); this.isLoadingInvitations.set(false); },
+    this.userService.listInvitations({ status: 'pending', limit: 50, cursor }).subscribe({
+      next: (response) => {
+        if (cursor) {
+          this.invitations.update(existing => [...existing, ...response.invitations]);
+        } else {
+          this.invitations.set(response.invitations);
+        }
+        this.invitationsPagination.set(response.pagination);
+        this.isLoadingInvitations.set(false);
+      },
       error: () => { this.isLoadingInvitations.set(false); },
     });
   }

@@ -2,7 +2,7 @@ import { Component, input, signal } from '@angular/core';
 import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
 import { TkBadgeComponent, TkBadgeVariant } from '@shared/components/tk-badge/tk-badge.component';
 import { ChevronDown, ChevronRight } from 'lucide-angular';
-import { TransparencyLog } from '../../models';
+import { TransparencyLog } from '@features/queries/models';
 
 @Component({
   selector: 'app-transparency-log',

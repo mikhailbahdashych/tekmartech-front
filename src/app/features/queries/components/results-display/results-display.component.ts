@@ -3,7 +3,7 @@ import { TkButtonComponent } from '@shared/components/tk-button/tk-button.compon
 import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
 import { TkTableComponent, TkTableColumn } from '@shared/components/tk-table/tk-table.component';
 import { Download, AlertTriangle } from 'lucide-angular';
-import { ResultData, ResultTable } from '../../models';
+import { ResultData, ResultTable } from '@features/queries/models';
 
 @Component({
   selector: 'app-results-display',

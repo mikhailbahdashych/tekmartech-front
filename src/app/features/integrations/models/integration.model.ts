@@ -1,4 +1,4 @@
-import { PaginationResponse } from '../../queries/models';
+import { PaginationResponse } from '@features/queries/models';
 
 export type IntegrationType = 'aws' | 'google_workspace' | 'github';
 export type IntegrationStatus = 'active' | 'inactive' | 'error';

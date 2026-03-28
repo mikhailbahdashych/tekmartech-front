@@ -8,9 +8,9 @@ import { TkSelectComponent, TkSelectOption } from '@shared/components/tk-select/
 import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
 import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
 import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
-import { IntegrationService } from '../../services/integration.service';
-import { IntegrationType, IntegrationResponse, ConnectIntegrationPayload } from '../../models';
-import { INTEGRATION_TYPE_CONFIG, AWS_REGIONS } from '../../constants/integration-config';
+import { IntegrationService } from '@features/integrations/services/integration.service';
+import { IntegrationType, IntegrationResponse, ConnectIntegrationPayload } from '@features/integrations/models';
+import { INTEGRATION_TYPE_CONFIG, AWS_REGIONS } from '@features/integrations/constants/integration-config';
 
 type DialogStep = 'type-selection' | 'credentials';
 

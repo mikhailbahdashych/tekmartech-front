@@ -9,7 +9,7 @@ import {
   QueryDetailResponse,
   QueryListResponse,
   QuerySubmitRequest,
-} from '../models';
+} from '@features/queries/models';
 
 interface QueryListParams {
   status?: string;

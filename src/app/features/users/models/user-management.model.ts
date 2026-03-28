@@ -1,4 +1,4 @@
-import { PaginationResponse } from '../../queries/models';
+import { PaginationResponse } from '@features/queries/models';
 
 export type InvitationStatus = 'pending' | 'accepted' | 'expired' | 'revoked';
 
@@ -22,6 +22,6 @@ export interface InvitationListResponse {
 }
 
 export interface UserListResponse {
-  users: import('../../../core/models').User[];
+  users: import('@core/models').User[];
   pagination: PaginationResponse;
 }

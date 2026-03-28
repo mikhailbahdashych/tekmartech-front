@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from './sidebar/sidebar.component';
-import { WebSocketService } from '../core/services/websocket.service';
+import { WebSocketService } from '@core/services/websocket.service';
 
 @Component({
   selector: 'app-layout',

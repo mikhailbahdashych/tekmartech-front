@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { TkSpinnerComponent } from '../tk-spinner/tk-spinner.component';
+import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
 
 @Component({
   selector: 'tk-button',

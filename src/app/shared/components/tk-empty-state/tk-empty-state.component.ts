@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
-import { TkIconComponent } from '../tk-icon/tk-icon.component';
-import { TkButtonComponent } from '../tk-button/tk-button.component';
+import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
+import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
 
 @Component({
   selector: 'tk-empty-state',

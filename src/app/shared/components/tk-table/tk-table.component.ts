@@ -1,6 +1,6 @@
-import { Component, input, signal, computed } from '@angular/core';
+import { Component, HostListener, input, signal, computed, effect } from '@angular/core';
 import { formatDate, formatNumber } from '@angular/common';
-import { TkSpinnerComponent } from '../tk-spinner/tk-spinner.component';
+import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
 
 export interface TkTableColumn {
   key: string;
@@ -21,9 +21,14 @@ export class TkTableComponent {
   readonly rows = input<unknown[][]>([]);
   readonly loading = input(false);
   readonly emptyMessage = input('No data available');
+  readonly pageSize = input(25);
+  readonly pageSizeOptions = input([10, 25, 50, 100]);
 
   readonly sortKey = signal<string | null>(null);
   readonly sortDir = signal<'asc' | 'desc'>('asc');
+  readonly currentPage = signal(0);
+  readonly activePageSize = signal(25);
+  readonly sizeDropdownOpen = signal(false);
 
   readonly sortedRows = computed(() => {
     const key = this.sortKey();
@@ -44,6 +49,69 @@ export class TkTableComponent {
       return String(av).localeCompare(String(bv)) * dir;
     });
   });
+
+  readonly totalRows = computed(() => this.sortedRows().length);
+  readonly totalPages = computed(() => {
+    const size = this.activePageSize();
+    if (size <= 0) return 1;
+    return Math.max(1, Math.ceil(this.totalRows() / size));
+  });
+  readonly isPaginated = computed(() => this.activePageSize() > 0 && this.totalRows() > this.activePageSize());
+
+  readonly paginatedRows = computed(() => {
+    const size = this.activePageSize();
+    if (size <= 0) return this.sortedRows();
+    const start = this.currentPage() * size;
+    return this.sortedRows().slice(start, start + size);
+  });
+
+  readonly rangeStart = computed(() => this.totalRows() === 0 ? 0 : this.currentPage() * this.activePageSize() + 1);
+  readonly rangeEnd = computed(() => Math.min((this.currentPage() + 1) * this.activePageSize(), this.totalRows()));
+  readonly canPrev = computed(() => this.currentPage() > 0);
+  readonly canNext = computed(() => this.currentPage() < this.totalPages() - 1);
+
+  constructor() {
+    // Sync activePageSize from input
+    effect(() => {
+      this.activePageSize.set(this.pageSize());
+    }, { allowSignalWrites: true });
+
+    // Reset to page 0 when data, sort, or page size changes
+    effect(() => {
+      this.rows();
+      this.sortKey();
+      this.sortDir();
+      this.activePageSize();
+      this.currentPage.set(0);
+    }, { allowSignalWrites: true });
+  }
+
+  toggleSizeDropdown(): void {
+    this.sizeDropdownOpen.update(v => !v);
+  }
+
+  selectPageSize(size: number): void {
+    this.activePageSize.set(size);
+    this.sizeDropdownOpen.set(false);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (this.sizeDropdownOpen()) {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.tk-table__size-dropdown')) {
+        this.sizeDropdownOpen.set(false);
+      }
+    }
+  }
+
+  prevPage(): void {
+    if (this.canPrev()) this.currentPage.update(p => p - 1);
+  }
+
+  nextPage(): void {
+    if (this.canNext()) this.currentPage.update(p => p + 1);
+  }
 
   toggleSort(col: TkTableColumn): void {
     if (col.sortable === false) return;

@@ -3,13 +3,13 @@ import { RotateCcw, AlertCircle, Ban } from 'lucide-angular';
 import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
 import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
 import { TkCardComponent } from '@shared/components/tk-card/tk-card.component';
-import { QueryPageStore } from '../../services/query-page.store';
-import { QueryInputComponent } from '../../components/query-input/query-input.component';
-import { InterpretationDisplayComponent } from '../../components/interpretation-display/interpretation-display.component';
-import { PlanApprovalComponent } from '../../components/plan-approval/plan-approval.component';
-import { ExecutionLogComponent } from '../../components/execution-log/execution-log.component';
-import { ResultsDisplayComponent } from '../../components/results-display/results-display.component';
-import { TransparencyLogComponent } from '../../components/transparency-log/transparency-log.component';
+import { QueryPageStore } from '@features/queries/services/query-page.store';
+import { QueryInputComponent } from '@features/queries/components/query-input/query-input.component';
+import { InterpretationDisplayComponent } from '@features/queries/components/interpretation-display/interpretation-display.component';
+import { PlanApprovalComponent } from '@features/queries/components/plan-approval/plan-approval.component';
+import { ExecutionLogComponent } from '@features/queries/components/execution-log/execution-log.component';
+import { ResultsDisplayComponent } from '@features/queries/components/results-display/results-display.component';
+import { TransparencyLogComponent } from '@features/queries/components/transparency-log/transparency-log.component';
 
 @Component({
   selector: 'app-query-page',

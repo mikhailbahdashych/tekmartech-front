@@ -7,7 +7,7 @@ import {
   IntegrationResponse,
   IntegrationListResponse,
   ConnectIntegrationPayload,
-} from '../models';
+} from '@features/integrations/models';
 
 interface ListParams {
   type?: string;

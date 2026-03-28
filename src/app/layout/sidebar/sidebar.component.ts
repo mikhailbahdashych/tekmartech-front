@@ -1,7 +1,7 @@
 import { Component, computed } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { LucideAngularModule, Terminal, Plug, Users, Clock, Settings, LogOut, Plus, History } from 'lucide-angular';
-import { AuthService } from '../../core/services/auth.service';
+import { AuthService } from '@core/services/auth.service';
 
 interface NavItem {
   label: string;

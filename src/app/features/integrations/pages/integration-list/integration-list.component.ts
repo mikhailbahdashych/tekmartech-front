@@ -9,11 +9,11 @@ import { TkCardComponent } from '@shared/components/tk-card/tk-card.component';
 import { TkEmptyStateComponent } from '@shared/components/tk-empty-state/tk-empty-state.component';
 import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
 import { RelativeTimePipe } from '@shared/pipes/relative-time.pipe';
-import { IntegrationService } from '../../services/integration.service';
-import { IntegrationResponse, IntegrationStatus, HealthStatus } from '../../models';
-import { INTEGRATION_TYPE_CONFIG } from '../../constants/integration-config';
-import { ConnectDialogComponent } from '../../components/connect-dialog/connect-dialog.component';
-import { DisconnectDialogComponent, DisconnectDialogData } from '../../components/disconnect-dialog/disconnect-dialog.component';
+import { IntegrationService } from '@features/integrations/services/integration.service';
+import { IntegrationResponse, IntegrationStatus, HealthStatus } from '@features/integrations/models';
+import { INTEGRATION_TYPE_CONFIG } from '@features/integrations/constants/integration-config';
+import { ConnectDialogComponent } from '@features/integrations/components/connect-dialog/connect-dialog.component';
+import { DisconnectDialogComponent, DisconnectDialogData } from '@features/integrations/components/disconnect-dialog/disconnect-dialog.component';
 
 @Component({
   selector: 'app-integration-list',

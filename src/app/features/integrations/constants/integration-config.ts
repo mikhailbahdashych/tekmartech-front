@@ -1,4 +1,4 @@
-import { IntegrationType } from '../models';
+import { IntegrationType } from '@features/integrations/models';
 
 export interface IntegrationTypeConfig {
   label: string;

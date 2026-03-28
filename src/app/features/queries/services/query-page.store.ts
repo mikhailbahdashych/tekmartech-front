@@ -8,7 +8,7 @@ import {
   TransparencyLog,
   QueryWsEvent,
   QueryDetailResponse,
-} from '../models';
+} from '@features/queries/models';
 
 export type QueryPhase =
   | 'idle'

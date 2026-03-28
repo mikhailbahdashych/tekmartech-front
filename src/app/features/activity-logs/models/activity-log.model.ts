@@ -1,4 +1,4 @@
-import { PaginationResponse } from '../../queries/models';
+import { PaginationResponse } from '@features/queries/models';
 
 export type ActivityAction =
   | 'user_registered'

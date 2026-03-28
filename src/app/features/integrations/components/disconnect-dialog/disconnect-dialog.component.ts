@@ -4,7 +4,7 @@ import { AlertTriangle } from 'lucide-angular';
 import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
 import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
 import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
-import { IntegrationService } from '../../services/integration.service';
+import { IntegrationService } from '@features/integrations/services/integration.service';
 
 export interface DisconnectDialogData {
   integrationId: string;

@@ -33,7 +33,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (log of logs(); track log.id; let i = $index) {
+        @for (log of paginatedLogs(); track log.id; let i = $index) {
           <tr class="table__row" [attr.data-testid]="'activity-log-row-' + i">
             <td class="table__cell table__cell--timestamp" [attr.data-testid]="'activity-log-row-timestamp-' + i">
               {{ log.created_at | date:'MMM d, y, HH:mm:ss' }}
@@ -48,9 +48,7 @@
             <td class="table__cell">
               @if (targetLabel(log); as label) {
                 @if (log.target_type === 'query' || log.target_type === 'integration') {
-                  <button class="target-link" (click)="navigateToTarget(log)">
-                    {{ label }}
-                  </button>
+                  <button class="target-link" (click)="navigateToTarget(log)">{{ label }}</button>
                 } @else {
                   <span class="target-text">{{ label }}</span>
                 }
@@ -71,19 +69,47 @@
     </table>
 
     @if (isLoading()) {
-      <div class="loading-container">
-        <tk-spinner size="md" />
+      <div class="loading-container"><tk-spinner size="md" /></div>
+    }
+
+    @if (showDisplayPagination()) {
+      <div class="table-pagination">
+        <div class="table-pagination__size">
+          <span class="table-pagination__label">Rows per page:</span>
+          <div class="size-dropdown">
+            <button class="size-dropdown__trigger" (click)="toggleSizeDropdown()">
+              {{ displayPageSize() }}
+              <span class="size-dropdown__chevron" [class.size-dropdown__chevron--open]="sizeDropdownOpen()"></span>
+            </button>
+            @if (sizeDropdownOpen()) {
+              <div class="size-dropdown__menu">
+                @for (opt of pageSizeOptions; track opt) {
+                  <button class="size-dropdown__option"
+                          [class.size-dropdown__option--active]="opt === displayPageSize()"
+                          (click)="selectDisplayPageSize(opt)">{{ opt }}</button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+        <span class="table-pagination__info">{{ displayRangeStart() }}&ndash;{{ displayRangeEnd() }} of {{ totalDisplayRows() }}</span>
+        <div class="table-pagination__controls">
+          <button class="table-pagination__btn" [disabled]="!canDisplayPrev()" (click)="displayPrevPage()">&lsaquo;</button>
+          <button class="table-pagination__btn" [disabled]="!canDisplayNext()" (click)="displayNextPage()">&rsaquo;</button>
+        </div>
       </div>
     }
   </div>
 
   @if (pagination(); as p) {
-    <div data-testid="activity-log-pagination">
-      <tk-pagination
-        [hasMore]="p.has_more"
-        [totalCount]="p.total_count"
-        [currentCount]="logs().length"
-        (loadMore)="loadMore()" />
-    </div>
+    @if (p.has_more) {
+      <div data-testid="activity-log-pagination">
+        <tk-pagination
+          [hasMore]="p.has_more"
+          [totalCount]="p.total_count"
+          [currentCount]="logs().length"
+          (loadMore)="loadMore()" />
+      </div>
+    }
   }
 </div>

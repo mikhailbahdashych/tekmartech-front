@@ -27,21 +27,15 @@
           </tr>
         </thead>
         <tbody>
-          @for (user of users(); track user.id) {
+          @for (user of paginatedUsers(); track user.id) {
             <tr class="table__row" [attr.data-testid]="'user-row-' + user.id">
               <td class="table__cell table__cell--name" [attr.data-testid]="'user-row-name-' + user.id">{{ user.display_name }}</td>
               <td class="table__cell table__cell--secondary" [attr.data-testid]="'user-row-email-' + user.id">{{ user.email }}</td>
               <td class="table__cell">
-                <tk-badge
-                  [variant]="getRoleVariant(user.role)"
-                  [label]="getRoleLabel(user.role)"
-                  [attr.data-testid]="'user-row-role-badge-' + user.id" />
+                <tk-badge [variant]="getRoleVariant(user.role)" [label]="getRoleLabel(user.role)" [attr.data-testid]="'user-row-role-badge-' + user.id" />
               </td>
               <td class="table__cell">
-                <tk-badge
-                  [variant]="getStatusVariant(user.status)"
-                  [label]="getStatusLabel(user.status)"
-                  [attr.data-testid]="'user-row-status-badge-' + user.id" />
+                <tk-badge [variant]="getStatusVariant(user.status)" [label]="getStatusLabel(user.status)" [attr.data-testid]="'user-row-status-badge-' + user.id" />
               </td>
               <td class="table__cell table__cell--secondary">
                 @if (user.last_login_at) {
@@ -73,12 +67,43 @@
           }
         </tbody>
       </table>
+
       @if (isLoadingUsers()) {
-        <div class="loading-container">
-          <tk-spinner size="md" />
+        <div class="loading-container"><tk-spinner size="md" /></div>
+      }
+
+      @if (showUsersPagination()) {
+        <div class="table-pagination">
+          <div class="table-pagination__size">
+            <span class="table-pagination__label">Rows per page:</span>
+            <div class="size-dropdown users-size-dropdown">
+              <button class="size-dropdown__trigger" (click)="toggleUsersSizeDropdown()">
+                {{ usersPageSize() }}
+                <span class="size-dropdown__chevron" [class.size-dropdown__chevron--open]="usersSizeDropdownOpen()"></span>
+              </button>
+              @if (usersSizeDropdownOpen()) {
+                <div class="size-dropdown__menu">
+                  @for (opt of usersPageSizeOptions; track opt) {
+                    <button class="size-dropdown__option" [class.size-dropdown__option--active]="opt === usersPageSize()" (click)="selectUsersPageSize(opt)">{{ opt }}</button>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+          <span class="table-pagination__info">{{ usersRangeStart() }}&ndash;{{ usersRangeEnd() }} of {{ totalUsers() }}</span>
+          <div class="table-pagination__controls">
+            <button class="table-pagination__btn" [disabled]="!canUsersPrev()" (click)="usersPrevPage()">&lsaquo;</button>
+            <button class="table-pagination__btn" [disabled]="!canUsersNext()" (click)="usersNextPage()">&rsaquo;</button>
+          </div>
         </div>
       }
     </div>
+
+    @if (usersPagination(); as p) {
+      @if (p.has_more) {
+        <tk-pagination [hasMore]="p.has_more" [totalCount]="p.total_count" [currentCount]="users().length" (loadMore)="loadMoreUsers()" />
+      }
+    }
   </section>
 
   <!-- Pending Invitations -->
@@ -98,17 +123,14 @@
           </tr>
         </thead>
         <tbody>
-          @for (inv of invitations(); track inv.id) {
+          @for (inv of paginatedInvitations(); track inv.id) {
             <tr class="table__row" [attr.data-testid]="'invitation-row-' + inv.id">
               <td class="table__cell table__cell--name" [attr.data-testid]="'invitation-row-email-' + inv.id">{{ inv.email }}</td>
               <td class="table__cell">
                 <tk-badge [variant]="getRoleVariant(inv.role)" [label]="getRoleLabel(inv.role)" />
               </td>
               <td class="table__cell">
-                <tk-badge
-                  [variant]="getInvitationStatusVariant(inv.status)"
-                  [label]="getInvitationStatusLabel(inv.status)"
-                  [attr.data-testid]="'invitation-row-status-badge-' + inv.id" />
+                <tk-badge [variant]="getInvitationStatusVariant(inv.status)" [label]="getInvitationStatusLabel(inv.status)" [attr.data-testid]="'invitation-row-status-badge-' + inv.id" />
               </td>
               <td class="table__cell table__cell--secondary">{{ inv.invited_by.display_name }}</td>
               <td class="table__cell table__cell--secondary">{{ inv.created_at | relativeTime }}</td>
@@ -133,11 +155,42 @@
           }
         </tbody>
       </table>
+
       @if (isLoadingInvitations()) {
-        <div class="loading-container">
-          <tk-spinner size="md" />
+        <div class="loading-container"><tk-spinner size="md" /></div>
+      }
+
+      @if (showInvPagination()) {
+        <div class="table-pagination">
+          <div class="table-pagination__size">
+            <span class="table-pagination__label">Rows per page:</span>
+            <div class="size-dropdown inv-size-dropdown">
+              <button class="size-dropdown__trigger" (click)="toggleInvSizeDropdown()">
+                {{ invPageSize() }}
+                <span class="size-dropdown__chevron" [class.size-dropdown__chevron--open]="invSizeDropdownOpen()"></span>
+              </button>
+              @if (invSizeDropdownOpen()) {
+                <div class="size-dropdown__menu">
+                  @for (opt of invPageSizeOptions; track opt) {
+                    <button class="size-dropdown__option" [class.size-dropdown__option--active]="opt === invPageSize()" (click)="selectInvPageSize(opt)">{{ opt }}</button>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+          <span class="table-pagination__info">{{ invRangeStart() }}&ndash;{{ invRangeEnd() }} of {{ totalInvitations() }}</span>
+          <div class="table-pagination__controls">
+            <button class="table-pagination__btn" [disabled]="!canInvPrev()" (click)="invPrevPage()">&lsaquo;</button>
+            <button class="table-pagination__btn" [disabled]="!canInvNext()" (click)="invNextPage()">&rsaquo;</button>
+          </div>
         </div>
       }
     </div>
+
+    @if (invitationsPagination(); as p) {
+      @if (p.has_more) {
+        <tk-pagination [hasMore]="p.has_more" [totalCount]="p.total_count" [currentCount]="invitations().length" (loadMore)="loadMoreInvitations()" />
+      }
+    }
   </section>
 </div>

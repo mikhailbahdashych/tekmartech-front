@@ -1,21 +1,43 @@
-<div class="tk-select" [class.tk-select--error]="error()" [class.tk-select--disabled]="disabled() || isDisabled()">
+<div class="tk-select"
+     [class.tk-select--error]="error()"
+     [class.tk-select--disabled]="disabled() || isDisabled()"
+     [class.tk-select--open]="isOpen()">
   @if (label()) {
     <label class="tk-select__label">{{ label() }}</label>
   }
-  <select
-    class="tk-select__field"
-    [disabled]="disabled() || isDisabled()"
-    [value]="value()"
-    [attr.data-testid]="testId()"
-    (change)="onSelect($event)"
-    (blur)="onBlur()">
-    @if (placeholder()) {
-      <option value="" [selected]="!value()">{{ placeholder() }}</option>
-    }
-    @for (opt of options(); track opt.value) {
-      <option [value]="opt.value">{{ opt.label }}</option>
-    }
-  </select>
+
+  <button type="button"
+          class="tk-select__trigger"
+          [class.tk-select__trigger--placeholder]="isPlaceholder()"
+          [disabled]="disabled() || isDisabled()"
+          [attr.data-testid]="testId()"
+          (click)="toggle()"
+          (keydown)="onKeydown($event)">
+    <span class="tk-select__value">{{ displayLabel() }}</span>
+    <span class="tk-select__chevron"></span>
+  </button>
+
+  @if (isOpen()) {
+    <div class="tk-select__menu">
+      @if (placeholder()) {
+        <button type="button"
+                class="tk-select__option"
+                [class.tk-select__option--active]="!value()"
+                (click)="select(null)">
+          {{ placeholder() }}
+        </button>
+      }
+      @for (opt of options(); track opt.value) {
+        <button type="button"
+                class="tk-select__option"
+                [class.tk-select__option--active]="opt.value === value()"
+                (click)="select(opt)">
+          {{ opt.label }}
+        </button>
+      }
+    </div>
+  }
+
   @if (error()) {
     <div class="tk-select__error">{{ error() }}</div>
   }

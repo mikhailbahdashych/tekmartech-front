@@ -5,8 +5,8 @@ import { TkInputComponent } from '@shared/components/tk-input/tk-input.component
 import { TkSelectComponent, TkSelectOption } from '@shared/components/tk-select/tk-select.component';
 import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
 import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
-import { UserService } from '../../services/user.service';
-import { InvitationResponse } from '../../models/user-management.model';
+import { UserService } from '@features/users/services/user.service';
+import { InvitationResponse } from '@features/users/models/user-management.model';
 
 @Component({
   selector: 'app-invite-dialog',

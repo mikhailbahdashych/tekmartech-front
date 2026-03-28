@@ -15,7 +15,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (row of sortedRows(); track $index) {
+      @for (row of paginatedRows(); track $index) {
         <tr class="tk-table__row">
           @for (col of columns(); track col.key; let i = $index) {
             <td class="tk-table__td"
@@ -36,9 +36,42 @@
       }
     </tbody>
   </table>
+
   @if (loading()) {
     <div class="tk-table__loading">
       <tk-spinner size="md" />
+    </div>
+  }
+
+  @if (isPaginated()) {
+    <div class="tk-table__pagination">
+      <div class="tk-table__pagination-size">
+        <span class="tk-table__pagination-label">Rows per page:</span>
+        <div class="tk-table__size-dropdown">
+          <button class="tk-table__size-trigger" (click)="toggleSizeDropdown()">
+            {{ activePageSize() }}
+            <span class="tk-table__size-chevron" [class.tk-table__size-chevron--open]="sizeDropdownOpen()"></span>
+          </button>
+          @if (sizeDropdownOpen()) {
+            <div class="tk-table__size-menu">
+              @for (opt of pageSizeOptions(); track opt) {
+                <button class="tk-table__size-option"
+                        [class.tk-table__size-option--active]="opt === activePageSize()"
+                        (click)="selectPageSize(opt)">
+                  {{ opt }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+      <span class="tk-table__pagination-info">
+        {{ rangeStart() }}&ndash;{{ rangeEnd() }} of {{ totalRows() }}
+      </span>
+      <div class="tk-table__pagination-controls">
+        <button class="tk-table__pagination-btn" [disabled]="!canPrev()" (click)="prevPage()">&lsaquo;</button>
+        <button class="tk-table__pagination-btn" [disabled]="!canNext()" (click)="nextPage()">&rsaquo;</button>
+      </div>
     </div>
   }
 </div>

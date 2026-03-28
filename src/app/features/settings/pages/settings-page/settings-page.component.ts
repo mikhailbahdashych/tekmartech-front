@@ -10,7 +10,7 @@ import { TkBadgeComponent } from '@shared/components/tk-badge/tk-badge.component
 import { TkCardComponent } from '@shared/components/tk-card/tk-card.component';
 import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
 import { Organization } from '@core/models';
-import { OrganizationService } from '../../services/organization.service';
+import { OrganizationService } from '@features/settings/services/organization.service';
 import { AuthService } from '@core/services/auth.service';
 
 @Component({

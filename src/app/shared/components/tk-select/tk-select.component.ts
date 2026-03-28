@@ -1,4 +1,4 @@
-import { Component, input, output, signal, forwardRef } from '@angular/core';
+import { Component, HostListener, computed, input, output, signal, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 export interface TkSelectOption {
@@ -28,18 +28,51 @@ export class TkSelectComponent implements ControlValueAccessor {
 
   readonly value = signal('');
   readonly isDisabled = signal(false);
+  readonly isOpen = signal(false);
+
+  readonly displayLabel = computed(() => {
+    const val = this.value();
+    if (!val) return this.placeholder() || '';
+    const opt = this.options().find(o => o.value === val);
+    return opt?.label ?? val;
+  });
+
+  readonly isPlaceholder = computed(() => !this.value());
 
   private onChange: (value: string) => void = () => {};
   private onTouched: () => void = () => {};
 
-  onSelect(event: Event): void {
-    const val = (event.target as HTMLSelectElement).value;
+  toggle(): void {
+    if (this.disabled() || this.isDisabled()) return;
+    this.isOpen.update(v => !v);
+  }
+
+  select(opt: TkSelectOption | null): void {
+    const val = opt?.value ?? '';
     this.value.set(val);
     this.onChange(val);
     this.valueChange.emit(val);
+    this.isOpen.set(false);
+    this.onTouched();
   }
 
-  onBlur(): void { this.onTouched(); }
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (this.isOpen() && !(event.target as HTMLElement).closest('.tk-select')) {
+      this.isOpen.set(false);
+      this.onTouched();
+    }
+  }
+
+  onKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape') {
+      this.isOpen.set(false);
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.toggle();
+    }
+  }
+
   writeValue(value: string): void { this.value.set(value ?? ''); }
   registerOnChange(fn: (value: string) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }

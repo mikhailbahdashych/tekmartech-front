@@ -2,7 +2,7 @@ import { Component, input, output } from '@angular/core';
 import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
 import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
 import { Check, X } from 'lucide-angular';
-import { QueryPlan } from '../../models';
+import { QueryPlan } from '@features/queries/models';
 
 @Component({
   selector: 'app-plan-approval',

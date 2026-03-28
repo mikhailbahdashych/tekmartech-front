@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, tap, catchError, of, firstValueFrom } from 'rxjs';
 import { ApiService } from './api.service';
-import { API_PATHS } from '../constants/api-paths';
+import { API_PATHS } from '@core/constants/api-paths';
 import {
   User,
   Organization,
@@ -11,7 +11,7 @@ import {
   AuthResponse,
   RefreshResponse,
   AcceptInvitationRequest,
-} from '../models';
+} from '@core/models';
 
 const USER_CACHE_KEY = 'tekmar_user_cache';
 const ORG_CACHE_KEY = 'tekmar_org_cache';
