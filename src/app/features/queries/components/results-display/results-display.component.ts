@@ -1,13 +1,14 @@
 import { Component, input, output } from '@angular/core';
-import { LucideAngularModule, Download, AlertTriangle } from 'lucide-angular';
-import { MatButtonModule } from '@angular/material/button';
-import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
-import { ResultData } from '../../models';
+import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
+import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
+import { TkTableComponent, TkTableColumn } from '@shared/components/tk-table/tk-table.component';
+import { Download, AlertTriangle } from 'lucide-angular';
+import { ResultData, ResultTable } from '../../models';
 
 @Component({
   selector: 'app-results-display',
   standalone: true,
-  imports: [LucideAngularModule, MatButtonModule, DataTableComponent],
+  imports: [TkButtonComponent, TkIconComponent, TkTableComponent],
   templateUrl: './results-display.component.html',
   styleUrl: './results-display.component.scss',
 })
@@ -22,5 +23,9 @@ export class ResultsDisplayComponent {
   formatDuration(ms: number): string {
     if (ms < 1000) return `${ms}ms`;
     return `${(ms / 1000).toFixed(1)}s`;
+  }
+
+  getTableColumns(table: ResultTable): TkTableColumn[] {
+    return table.columns.map(c => ({ key: c.key, label: c.label, type: c.data_type, sortable: c.sortable }));
   }
 }

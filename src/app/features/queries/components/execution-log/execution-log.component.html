@@ -1,39 +1,37 @@
-<div class="execution-card" data-testid="query-execution-container">
-  <div class="flex items-center justify-between mb-4">
-    <div class="text-xs font-medium uppercase tracking-wider text-slate-400">Execution Progress</div>
-    <div class="text-xs text-slate-500" data-testid="query-execution-progress-text">
+<div class="exec" data-testid="query-execution-container">
+  <div class="exec__header">
+    <div class="exec__label">Execution Progress</div>
+    <div class="exec__progress" data-testid="query-execution-progress-text">
       Step {{ completedCount() }} of {{ totalSteps() }}
     </div>
   </div>
 
-  <div class="space-y-0">
+  <div class="exec__steps">
     @for (step of steps(); track step.stepId; let i = $index) {
-      <div class="step-entry" [class.step-failed]="step.status === 'failed'" [attr.data-testid]="'query-execution-step-' + i">
-        <!-- Status icon -->
-        <div class="step-icon" [attr.data-testid]="'query-execution-step-status-' + i">
+      <div class="exec__step" [class.exec__step--failed]="step.status === 'failed'" [attr.data-testid]="'query-execution-step-' + i">
+        <div class="exec__step-icon" [attr.data-testid]="'query-execution-step-status-' + i">
           @switch (step.status) {
             @case ('running') {
-              <lucide-icon [img]="icons.Loader2" [size]="18" [strokeWidth]="2" class="text-blue-500 animate-spin"></lucide-icon>
+              <tk-icon [name]="icons.Loader2" size="md" class="exec__icon--running" />
             }
             @case ('completed') {
-              <lucide-icon [img]="icons.CheckCircle2" [size]="18" [strokeWidth]="2" class="text-emerald-500"></lucide-icon>
+              <tk-icon [name]="icons.CheckCircle2" size="md" class="exec__icon--success" />
             }
             @case ('failed') {
-              <lucide-icon [img]="icons.XCircle" [size]="18" [strokeWidth]="2" class="text-red-500"></lucide-icon>
+              <tk-icon [name]="icons.XCircle" size="md" class="exec__icon--error" />
             }
           }
         </div>
 
-        <!-- Content -->
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-2">
-            <span class="text-sm font-medium text-slate-900" [attr.data-testid]="'query-execution-step-tool-name-' + i">{{ step.toolDisplayName }}</span>
-            <span class="text-xs text-slate-400">via {{ step.integrationDisplayName }}</span>
+        <div class="exec__step-content">
+          <div class="exec__step-header">
+            <span class="exec__step-tool" [attr.data-testid]="'query-execution-step-tool-name-' + i">{{ step.toolDisplayName }}</span>
+            <span class="exec__step-integration">via {{ step.integrationDisplayName }}</span>
           </div>
-          <div class="text-xs text-slate-500 mt-0.5">{{ step.description }}</div>
+          <div class="exec__step-desc">{{ step.description }}</div>
 
           @if (step.status === 'completed') {
-            <div class="flex items-center gap-3 mt-1 text-xs text-slate-500">
+            <div class="exec__step-meta">
               @if (step.durationMs != null) {
                 <span [attr.data-testid]="'query-execution-step-duration-' + i">{{ formatDuration(step.durationMs) }}</span>
               }
@@ -42,20 +40,17 @@
               }
             </div>
             @if (step.summary) {
-              <div class="mt-1 text-xs text-slate-400" [attr.data-testid]="'query-execution-step-summary-' + i">{{ step.summary }}</div>
+              <div class="exec__step-summary" [attr.data-testid]="'query-execution-step-summary-' + i">{{ step.summary }}</div>
             }
           }
 
           @if (step.status === 'failed' && step.errorMessage) {
-            <div class="mt-1 text-xs text-red-600" [attr.data-testid]="'query-execution-step-error-' + i">{{ step.errorMessage }}</div>
+            <div class="exec__step-error" [attr.data-testid]="'query-execution-step-error-' + i">{{ step.errorMessage }}</div>
           }
         </div>
 
-        <!-- Duration badge -->
         @if (step.durationMs != null && step.status !== 'running') {
-          <div class="text-xs text-slate-400 tabular-nums">
-            {{ formatDuration(step.durationMs) }}
-          </div>
+          <div class="exec__step-duration">{{ formatDuration(step.durationMs) }}</div>
         }
       </div>
     }

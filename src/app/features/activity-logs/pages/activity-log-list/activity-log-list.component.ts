@@ -1,15 +1,13 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
+import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
+import { TkPaginationComponent } from '@shared/components/tk-pagination/tk-pagination.component';
 import { ActivityLogService } from '../../services/activity-log.service';
-import { UserService } from '../../../users/services/user.service';
+import { UserService } from '@features/users/services/user.service';
 import { ActivityLogResponse, ActivityAction } from '../../models/activity-log.model';
-import { PaginationResponse } from '../../../queries/models';
-import { User } from '../../../../core/models';
+import { PaginationResponse } from '@features/queries/models';
+import { User } from '@core/models';
 
 interface ActionOption { value: ActivityAction; label: string }
 
@@ -48,10 +46,8 @@ const ACTION_LABELS: Record<ActivityAction, (meta: Record<string, unknown> | nul
   standalone: true,
   imports: [
     DatePipe,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatProgressSpinnerModule,
-    PaginationComponent,
+    TkSpinnerComponent,
+    TkPaginationComponent,
   ],
   templateUrl: './activity-log-list.component.html',
   styleUrl: './activity-log-list.component.scss',

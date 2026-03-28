@@ -1,0 +1,22 @@
+<div class="tk-select" [class.tk-select--error]="error()" [class.tk-select--disabled]="disabled() || isDisabled()">
+  @if (label()) {
+    <label class="tk-select__label">{{ label() }}</label>
+  }
+  <select
+    class="tk-select__field"
+    [disabled]="disabled() || isDisabled()"
+    [value]="value()"
+    [attr.data-testid]="testId()"
+    (change)="onSelect($event)"
+    (blur)="onBlur()">
+    @if (placeholder()) {
+      <option value="" disabled [selected]="!value()">{{ placeholder() }}</option>
+    }
+    @for (opt of options(); track opt.value) {
+      <option [value]="opt.value">{{ opt.label }}</option>
+    }
+  </select>
+  @if (error()) {
+    <div class="tk-select__error">{{ error() }}</div>
+  }
+</div>

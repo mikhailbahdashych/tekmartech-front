@@ -1,98 +1,102 @@
-<div class="max-w-6xl mx-auto" data-testid="integration-list-container">
+<div class="page-container" data-testid="integration-list-container">
   <!-- Header -->
-  <div class="flex items-center justify-between mb-6">
+  <div class="page-header">
     <div>
-      <h1 class="font-heading text-xl font-semibold text-slate-900">Integrations</h1>
-      <p class="mt-1 text-sm text-slate-500">Connect your infrastructure to start querying</p>
+      <h1 class="page-title">Integrations</h1>
+      <p class="page-subtitle">Connect your infrastructure to start querying</p>
     </div>
-    <button mat-flat-button class="connect-btn" (click)="openConnectDialog()" data-testid="integration-connect-button">
-      <lucide-icon [img]="icons.Plus" [size]="18" [strokeWidth]="2" class="mr-1.5"></lucide-icon>
+    <tk-button variant="primary" (click)="openConnectDialog()" data-testid="integration-connect-button">
+      <tk-icon [name]="icons.Plus" size="sm" />
       Connect Integration
-    </button>
+    </tk-button>
   </div>
 
   <!-- Loading -->
   @if (isLoading()) {
-    <div class="flex items-center justify-center py-16">
-      <mat-spinner diameter="28"></mat-spinner>
+    <div class="loading-container">
+      <tk-spinner size="md" />
     </div>
   }
 
   <!-- Empty state -->
   @if (!isLoading() && integrations().length === 0) {
-    <div class="empty-state" data-testid="integration-empty-state">
-      <lucide-icon [img]="icons.Plug" [size]="48" [strokeWidth]="1" class="text-slate-300"></lucide-icon>
-      <h3 class="mt-4 text-base font-medium text-slate-700">No integrations connected</h3>
-      <p class="mt-1 text-sm text-slate-500">Connect your infrastructure to start querying your systems.</p>
-      <button mat-flat-button class="connect-btn mt-4" (click)="openConnectDialog()" data-testid="integration-empty-state-connect-button">
-        <lucide-icon [img]="icons.Plus" [size]="18" [strokeWidth]="2" class="mr-1.5"></lucide-icon>
-        Connect Integration
-      </button>
-    </div>
+    <tk-empty-state
+      [icon]="icons.Plug"
+      heading="No integrations connected"
+      description="Connect your infrastructure to start querying your systems."
+      actionLabel="Connect Integration"
+      (action)="openConnectDialog()"
+      data-testid="integration-empty-state" />
   }
 
   <!-- Integration cards grid -->
   @if (!isLoading() && integrations().length > 0) {
     <div class="integration-grid">
       @for (integration of integrations(); track integration.id) {
-        <div class="integration-card" [attr.data-testid]="'integration-card-' + integration.id">
+        <tk-card padding="md" [attr.data-testid]="'integration-card-' + integration.id">
           <!-- Type badge + status -->
-          <div class="flex items-center justify-between mb-3">
-            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold"
-                  [class]="typeConfig[integration.type].accentClass + ' ' + typeConfig[integration.type].accentBgClass"
+          <div class="card-top-row">
+            <span class="type-badge"
+                  [class]="'type-badge--' + integration.type"
                   [attr.data-testid]="'integration-card-type-' + integration.id">
               {{ typeConfig[integration.type].label }}
             </span>
-            <app-status-badge [status]="integration.status" [configMap]="statusConfig" [attr.data-testid]="'integration-card-status-badge-' + integration.id" />
+            <tk-badge
+              [variant]="getStatusVariant(integration.status)"
+              [label]="getStatusLabel(integration.status)"
+              [attr.data-testid]="'integration-card-status-badge-' + integration.id" />
           </div>
 
           <!-- Display name -->
-          <h3 class="font-heading text-base font-semibold text-slate-900" [attr.data-testid]="'integration-card-name-' + integration.id">{{ integration.display_name }}</h3>
+          <h3 class="card-name" [attr.data-testid]="'integration-card-name-' + integration.id">{{ integration.display_name }}</h3>
 
           <!-- Health status -->
-          <div class="mt-3 text-sm">
+          <div class="card-health">
             @if (integration.last_health_check_status; as health) {
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-medium">Health:</span>
-                <app-status-badge [status]="health" [configMap]="healthConfig" [attr.data-testid]="'integration-card-health-badge-' + integration.id" />
+              <div class="health-row">
+                <span class="health-label">Health:</span>
+                <tk-badge
+                  [variant]="getHealthVariant(health)"
+                  [label]="getHealthLabel(health)"
+                  [attr.data-testid]="'integration-card-health-badge-' + integration.id" />
               </div>
               @if (integration.last_health_check_at) {
-                <div class="text-xs text-slate-400 mt-0.5">
+                <div class="health-time">
                   Last checked: {{ integration.last_health_check_at | relativeTime }}
                 </div>
               }
             } @else {
-              <div class="text-xs text-slate-400">Not checked yet</div>
+              <div class="health-time">Not checked yet</div>
             }
           </div>
 
           <!-- Connected info -->
-          <div class="mt-3 text-xs text-slate-500 space-y-0.5">
+          <div class="card-meta">
             <div>Connected by {{ integration.connected_by.display_name }}</div>
             <div>{{ integration.created_at | relativeTime }}</div>
           </div>
 
           <!-- Actions -->
-          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2">
-            <button mat-button class="test-btn"
+          <div class="card-actions">
+            <button class="action-btn action-btn--test"
                     [disabled]="isTesting(integration.id)"
                     (click)="testConnection(integration)"
                     [attr.data-testid]="'integration-card-test-button-' + integration.id">
               @if (isTesting(integration.id)) {
-                <mat-spinner diameter="14" class="mr-1.5"></mat-spinner>
+                <tk-spinner size="sm" />
               } @else {
-                <lucide-icon [img]="icons.RefreshCw" [size]="14" [strokeWidth]="2" class="mr-1"></lucide-icon>
+                <tk-icon [name]="icons.RefreshCw" size="sm" />
               }
               Test
             </button>
-            <button mat-button class="disconnect-text-btn"
+            <button class="action-btn action-btn--disconnect"
                     (click)="openDisconnectDialog(integration)"
                     [attr.data-testid]="'integration-card-disconnect-button-' + integration.id">
-              <lucide-icon [img]="icons.Unplug" [size]="14" [strokeWidth]="2" class="mr-1"></lucide-icon>
+              <tk-icon [name]="icons.Unplug" size="sm" />
               Disconnect
             </button>
           </div>
-        </div>
+        </tk-card>
       }
     </div>
   }

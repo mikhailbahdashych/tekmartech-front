@@ -1,18 +1,17 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { LucideAngularModule, Plus, MoreVertical } from 'lucide-angular';
-import { StatusBadgeComponent, StatusConfig } from '../../../../shared/components/status-badge/status-badge.component';
-import { RelativeTimePipe } from '../../../../shared/pipes/relative-time.pipe';
+import { Plus, MoreVertical } from 'lucide-angular';
+import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
+import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
+import { TkBadgeComponent, TkBadgeVariant } from '@shared/components/tk-badge/tk-badge.component';
+import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
+import { RelativeTimePipe } from '@shared/pipes/relative-time.pipe';
 import { UserService } from '../../services/user.service';
-import { InvitationResponse } from '../../models/user-management.model';
-import { User } from '../../../../core/models';
-import { AuthService } from '../../../../core/services/auth.service';
+import { InvitationResponse, InvitationStatus } from '../../models/user-management.model';
+import { User } from '@core/models';
+import { AuthService } from '@core/services/auth.service';
 import { InviteDialogComponent } from '../../components/invite-dialog/invite-dialog.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../components/confirm-dialog/confirm-dialog.component';
 
@@ -20,13 +19,11 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../../components/conf
   selector: 'app-user-list',
   standalone: true,
   imports: [
-    MatButtonModule,
     MatMenuModule,
-    MatProgressSpinnerModule,
-    MatIconModule,
-    MatTooltipModule,
-    LucideAngularModule,
-    StatusBadgeComponent,
+    TkButtonComponent,
+    TkSpinnerComponent,
+    TkBadgeComponent,
+    TkIconComponent,
     RelativeTimePipe,
   ],
   templateUrl: './user-list.component.html',
@@ -45,25 +42,44 @@ export class UserListComponent implements OnInit {
   readonly isLoadingUsers = signal(true);
   readonly isLoadingInvitations = signal(true);
 
-  readonly roleConfig: Record<string, StatusConfig> = {
-    admin:  { label: 'Admin',  colorClass: 'text-indigo-700', bgClass: 'bg-indigo-50' },
-    member: { label: 'Member', colorClass: 'text-slate-600',  bgClass: 'bg-slate-100' },
-  };
-
-  readonly statusConfig: Record<string, StatusConfig> = {
-    active:   { label: 'Active',   colorClass: 'text-emerald-700', bgClass: 'bg-emerald-50' },
-    disabled: { label: 'Disabled', colorClass: 'text-slate-600',   bgClass: 'bg-slate-100' },
-  };
-
-  readonly invitationStatusConfig: Record<string, StatusConfig> = {
-    pending:  { label: 'Pending',  colorClass: 'text-amber-700',   bgClass: 'bg-amber-50' },
-    accepted: { label: 'Accepted', colorClass: 'text-emerald-700', bgClass: 'bg-emerald-50' },
-    expired:  { label: 'Expired',  colorClass: 'text-slate-600',   bgClass: 'bg-slate-100' },
-    revoked:  { label: 'Revoked',  colorClass: 'text-slate-600',   bgClass: 'bg-slate-100' },
-  };
-
   get currentUserId(): string | null {
     return this.authService.currentUser()?.id ?? null;
+  }
+
+  getRoleVariant(role: string): TkBadgeVariant {
+    return role === 'admin' ? 'accent' : 'neutral';
+  }
+
+  getRoleLabel(role: string): string {
+    return role === 'admin' ? 'Admin' : 'Member';
+  }
+
+  getStatusVariant(status: string): TkBadgeVariant {
+    return status === 'active' ? 'success' : 'neutral';
+  }
+
+  getStatusLabel(status: string): string {
+    return status === 'active' ? 'Active' : 'Disabled';
+  }
+
+  getInvitationStatusVariant(status: InvitationStatus): TkBadgeVariant {
+    const map: Record<InvitationStatus, TkBadgeVariant> = {
+      pending: 'warning',
+      accepted: 'success',
+      expired: 'neutral',
+      revoked: 'neutral',
+    };
+    return map[status] ?? 'neutral';
+  }
+
+  getInvitationStatusLabel(status: InvitationStatus): string {
+    const map: Record<InvitationStatus, string> = {
+      pending: 'Pending',
+      accepted: 'Accepted',
+      expired: 'Expired',
+      revoked: 'Revoked',
+    };
+    return map[status] ?? status;
   }
 
   ngOnInit(): void {

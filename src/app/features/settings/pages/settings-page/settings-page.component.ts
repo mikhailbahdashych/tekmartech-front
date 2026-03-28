@@ -1,27 +1,30 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
-import { LucideAngularModule, Copy, Check } from 'lucide-angular';
-import { Organization } from '../../../../core/models';
+import { Copy, Check } from 'lucide-angular';
+import { TkInputComponent } from '@shared/components/tk-input/tk-input.component';
+import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
+import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
+import { TkBadgeComponent } from '@shared/components/tk-badge/tk-badge.component';
+import { TkCardComponent } from '@shared/components/tk-card/tk-card.component';
+import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
+import { Organization } from '@core/models';
 import { OrganizationService } from '../../services/organization.service';
-import { AuthService } from '../../../../core/services/auth.service';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-settings-page',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
     DatePipe,
-    LucideAngularModule,
+    TkInputComponent,
+    TkButtonComponent,
+    TkSpinnerComponent,
+    TkBadgeComponent,
+    TkCardComponent,
+    TkIconComponent,
   ],
   templateUrl: './settings-page.component.html',
   styleUrl: './settings-page.component.scss',
@@ -53,7 +56,6 @@ export class SettingsPageComponent implements OnInit {
   saveName(): void {
     if (this.nameControl.invalid) return;
     this.isSaving.set(true);
-
     this.orgService.updateOrganization(this.nameControl.value!).subscribe({
       next: (response) => {
         this.org.set(response.organization);

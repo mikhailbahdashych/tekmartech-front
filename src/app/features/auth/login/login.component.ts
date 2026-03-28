@@ -1,14 +1,12 @@
 import { Component, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs';
-import { AuthService } from '../../../core/services/auth.service';
-import { LoginRequest, ApiError } from '../../../core/models';
+import { AuthService } from '@core/services/auth.service';
+import { LoginRequest, ApiError } from '@core/models';
+import { TkInputComponent } from '@shared/components/tk-input/tk-input.component';
+import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
+import { TkCardComponent } from '@shared/components/tk-card/tk-card.component';
 
 @Component({
   selector: 'app-login',
@@ -16,11 +14,9 @@ import { LoginRequest, ApiError } from '../../../core/models';
   imports: [
     ReactiveFormsModule,
     RouterLink,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
+    TkInputComponent,
+    TkButtonComponent,
+    TkCardComponent,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',

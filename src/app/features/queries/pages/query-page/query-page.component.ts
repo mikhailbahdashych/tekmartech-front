@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { LucideAngularModule, RotateCcw, AlertCircle, Ban } from 'lucide-angular';
-import { MatButtonModule } from '@angular/material/button';
+import { RotateCcw, AlertCircle, Ban } from 'lucide-angular';
+import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
+import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
+import { TkCardComponent } from '@shared/components/tk-card/tk-card.component';
 import { QueryPageStore } from '../../services/query-page.store';
 import { QueryInputComponent } from '../../components/query-input/query-input.component';
 import { InterpretationDisplayComponent } from '../../components/interpretation-display/interpretation-display.component';
@@ -13,8 +15,9 @@ import { TransparencyLogComponent } from '../../components/transparency-log/tran
   selector: 'app-query-page',
   standalone: true,
   imports: [
-    LucideAngularModule,
-    MatButtonModule,
+    TkButtonComponent,
+    TkIconComponent,
+    TkCardComponent,
     QueryInputComponent,
     InterpretationDisplayComponent,
     PlanApprovalComponent,

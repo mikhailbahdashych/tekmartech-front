@@ -1,27 +1,25 @@
-<div class="plan-card" data-testid="query-plan-container">
-  <div class="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400">Query Plan</div>
+<div class="plan" data-testid="query-plan-container">
+  <div class="plan__label">Query Plan</div>
 
   @if (planSummary(); as summary) {
-    <p class="text-sm text-slate-700 mb-4" data-testid="query-plan-summary-text">{{ summary }}</p>
+    <p class="plan__summary" data-testid="query-plan-summary-text">{{ summary }}</p>
   }
 
-  <!-- Steps -->
-  <div class="space-y-0" data-testid="query-plan-steps-list">
+  <div class="plan__steps" data-testid="query-plan-steps-list">
     @for (step of plan().steps; track step.step_id; let i = $index) {
-      <div class="step-row" [attr.data-testid]="'query-plan-step-' + i">
-        <div class="step-number">{{ i + 1 }}</div>
-        <div class="flex-1 min-w-0">
-          <div class="text-sm font-medium text-slate-900" [attr.data-testid]="'query-plan-step-description-' + i">{{ step.description }}</div>
-          <div class="mt-0.5 text-xs text-slate-500">
-            <span class="font-mono" [attr.data-testid]="'query-plan-step-tool-name-' + i">{{ step.tool_name }}</span>
+      <div class="plan__step" [attr.data-testid]="'query-plan-step-' + i">
+        <div class="plan__step-number">{{ i + 1 }}</div>
+        <div class="plan__step-content">
+          <div class="plan__step-desc" [attr.data-testid]="'query-plan-step-description-' + i">{{ step.description }}</div>
+          <div class="plan__step-tool">
+            <span class="plan__step-tool-name" [attr.data-testid]="'query-plan-step-tool-name-' + i">{{ step.tool_name }}</span>
           </div>
         </div>
       </div>
     }
   </div>
 
-  <!-- Metadata -->
-  <div class="mt-4 flex items-center gap-4 text-xs text-slate-500">
+  <div class="plan__meta">
     <span>{{ plan().steps.length }} {{ plan().steps.length === 1 ? 'step' : 'steps' }}</span>
     <span>~{{ plan().estimated_tool_calls }} tool calls</span>
     @if (estimatedDuration(); as dur) {
@@ -29,33 +27,16 @@
     }
   </div>
 
-  <!-- Actions -->
   @if (showActions()) {
-    <div class="mt-5 flex items-center gap-3">
-      <button mat-flat-button
-              class="approve-btn"
-              [disabled]="isApproving() || isRejecting()"
-              (click)="approve.emit()"
-              data-testid="query-plan-approve-button">
-        @if (isApproving()) {
-          <mat-spinner diameter="16" class="inline-spinner"></mat-spinner>
-        } @else {
-          <lucide-icon [img]="icons.Check" [size]="16" [strokeWidth]="2" class="mr-1"></lucide-icon>
-          Approve & Execute
-        }
-      </button>
-      <button mat-button
-              class="reject-btn"
-              [disabled]="isApproving() || isRejecting()"
-              (click)="reject.emit()"
-              data-testid="query-plan-reject-button">
-        @if (isRejecting()) {
-          <mat-spinner diameter="16"></mat-spinner>
-        } @else {
-          <lucide-icon [img]="icons.X" [size]="16" [strokeWidth]="2" class="mr-1"></lucide-icon>
-          Reject
-        }
-      </button>
+    <div class="plan__actions">
+      <tk-button variant="primary" [loading]="isApproving()" [disabled]="isApproving() || isRejecting()" (click)="approve.emit()" data-testid="query-plan-approve-button">
+        <tk-icon [name]="icons.Check" size="sm" />
+        Approve & Execute
+      </tk-button>
+      <tk-button variant="secondary" [loading]="isRejecting()" [disabled]="isApproving() || isRejecting()" (click)="reject.emit()" data-testid="query-plan-reject-button">
+        <tk-icon [name]="icons.X" size="sm" />
+        Reject
+      </tk-button>
     </div>
   }
 </div>

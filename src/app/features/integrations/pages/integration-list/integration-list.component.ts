@@ -1,18 +1,17 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { LucideAngularModule, Plus, Plug, RefreshCw, Unplug } from 'lucide-angular';
-import { StatusBadgeComponent } from '../../../../shared/components/status-badge/status-badge.component';
-import { RelativeTimePipe } from '../../../../shared/pipes/relative-time.pipe';
+import { Plug, RefreshCw, Unplug, Plus } from 'lucide-angular';
+import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
+import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
+import { TkBadgeComponent, TkBadgeVariant } from '@shared/components/tk-badge/tk-badge.component';
+import { TkCardComponent } from '@shared/components/tk-card/tk-card.component';
+import { TkEmptyStateComponent } from '@shared/components/tk-empty-state/tk-empty-state.component';
+import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
+import { RelativeTimePipe } from '@shared/pipes/relative-time.pipe';
 import { IntegrationService } from '../../services/integration.service';
-import { IntegrationResponse } from '../../models';
-import {
-  INTEGRATION_TYPE_CONFIG,
-  INTEGRATION_STATUS_CONFIG,
-  HEALTH_STATUS_CONFIG,
-} from '../../constants/integration-config';
+import { IntegrationResponse, IntegrationStatus, HealthStatus } from '../../models';
+import { INTEGRATION_TYPE_CONFIG } from '../../constants/integration-config';
 import { ConnectDialogComponent } from '../../components/connect-dialog/connect-dialog.component';
 import { DisconnectDialogComponent, DisconnectDialogData } from '../../components/disconnect-dialog/disconnect-dialog.component';
 
@@ -20,10 +19,12 @@ import { DisconnectDialogComponent, DisconnectDialogData } from '../../component
   selector: 'app-integration-list',
   standalone: true,
   imports: [
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    LucideAngularModule,
-    StatusBadgeComponent,
+    TkButtonComponent,
+    TkSpinnerComponent,
+    TkBadgeComponent,
+    TkCardComponent,
+    TkEmptyStateComponent,
+    TkIconComponent,
     RelativeTimePipe,
   ],
   templateUrl: './integration-list.component.html',
@@ -36,8 +37,6 @@ export class IntegrationListComponent implements OnInit {
 
   readonly icons = { Plus, Plug, RefreshCw, Unplug };
   readonly typeConfig = INTEGRATION_TYPE_CONFIG;
-  readonly statusConfig = INTEGRATION_STATUS_CONFIG;
-  readonly healthConfig = HEALTH_STATUS_CONFIG;
 
   readonly integrations = signal<IntegrationResponse[]>([]);
   readonly isLoading = signal(true);
@@ -45,6 +44,42 @@ export class IntegrationListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadIntegrations();
+  }
+
+  getStatusVariant(status: IntegrationStatus): TkBadgeVariant {
+    const map: Record<IntegrationStatus, TkBadgeVariant> = {
+      active: 'success',
+      inactive: 'neutral',
+      error: 'error',
+    };
+    return map[status] ?? 'neutral';
+  }
+
+  getStatusLabel(status: IntegrationStatus): string {
+    const map: Record<IntegrationStatus, string> = {
+      active: 'Active',
+      inactive: 'Inactive',
+      error: 'Error',
+    };
+    return map[status] ?? status;
+  }
+
+  getHealthVariant(health: HealthStatus): TkBadgeVariant {
+    const map: Record<HealthStatus, TkBadgeVariant> = {
+      healthy: 'success',
+      unhealthy: 'error',
+      unknown: 'neutral',
+    };
+    return map[health] ?? 'neutral';
+  }
+
+  getHealthLabel(health: HealthStatus): string {
+    const map: Record<HealthStatus, string> = {
+      healthy: 'Healthy',
+      unhealthy: 'Unhealthy',
+      unknown: 'Unknown',
+    };
+    return map[health] ?? health;
   }
 
   openConnectDialog(): void {

@@ -1,0 +1,13 @@
+<button
+  [type]="type()"
+  [disabled]="disabled() || loading()"
+  [class]="'tk-btn tk-btn--' + variant() + ' tk-btn--' + size()"
+  [class.tk-btn--icon-only]="iconOnly()"
+  [class.tk-btn--loading]="loading()">
+  @if (loading()) {
+    <tk-spinner size="sm" />
+  }
+  <span class="tk-btn__content" [class.tk-btn__content--hidden]="loading()">
+    <ng-content />
+  </span>
+</button>

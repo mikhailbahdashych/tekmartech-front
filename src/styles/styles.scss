@@ -1,0 +1,27 @@
+@use '@angular/material' as mat;
+
+// Design system partials
+@import 'variables';
+@import 'reset';
+@import 'typography';
+@import 'layout';
+@import 'animations';
+
+// Angular Material — restricted to dialog, menu, snackbar only
+@include mat.core();
+
+$tekmar-primary: mat.define-palette(mat.$indigo-palette, 500, 300, 700);
+$tekmar-warn: mat.define-palette(mat.$red-palette, 500);
+
+$tekmar-theme: mat.define-light-theme((
+  color: (
+    primary: $tekmar-primary,
+    accent: $tekmar-primary,
+    warn: $tekmar-warn,
+  ),
+  density: 0,
+));
+
+@include mat.dialog-theme($tekmar-theme);
+@include mat.menu-theme($tekmar-theme);
+@include mat.snack-bar-theme($tekmar-theme);

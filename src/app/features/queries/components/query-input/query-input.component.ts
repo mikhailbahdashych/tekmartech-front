@@ -1,15 +1,14 @@
-import { Component, input, output } from '@angular/core';
+import { Component, effect, input, output } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { LucideAngularModule, Send } from 'lucide-angular';
+import { TkTextareaComponent } from '@shared/components/tk-textarea/tk-textarea.component';
+import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
+import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
+import { Send } from 'lucide-angular';
 
 @Component({
   selector: 'app-query-input',
   standalone: true,
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatProgressSpinnerModule, LucideAngularModule],
+  imports: [ReactiveFormsModule, TkTextareaComponent, TkButtonComponent, TkIconComponent],
   templateUrl: './query-input.component.html',
   styleUrl: './query-input.component.scss',
 })
@@ -20,6 +19,16 @@ export class QueryInputComponent {
 
   readonly icons = { Send };
   readonly queryControl = new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(10000)]);
+
+  constructor() {
+    effect(() => {
+      if (this.disabled()) {
+        this.queryControl.disable({ emitEvent: false });
+      } else {
+        this.queryControl.enable({ emitEvent: false });
+      }
+    });
+  }
 
   onSubmit(): void {
     if (this.queryControl.invalid || this.isSubmitting() || this.disabled()) return;

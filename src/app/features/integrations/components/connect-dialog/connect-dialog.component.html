@@ -1,5 +1,5 @@
 <div class="dialog-container" data-testid="integration-connect-dialog">
-  <h2 mat-dialog-title class="font-heading text-lg font-semibold text-slate-900">
+  <h2 mat-dialog-title class="dialog-title">
     @if (step() === 'type-selection') {
       Connect Integration
     } @else {
@@ -10,22 +10,21 @@
   <mat-dialog-content>
     <!-- Step 1: Type selection -->
     @if (step() === 'type-selection') {
-      <p class="text-sm text-slate-500 mb-4">Choose the type of integration to connect.</p>
-      <div class="space-y-3">
+      <p class="dialog-description">Choose the type of integration to connect.</p>
+      <div class="type-list">
         @for (type of integrationTypes; track type) {
           <button class="type-card" (click)="selectType(type)" [attr.data-testid]="'integration-type-card-' + (type === 'google_workspace' ? 'google-workspace' : type)">
-            <div class="flex items-center justify-between">
-              <div>
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold"
-                      [class]="typeConfig[type].accentClass + ' ' + typeConfig[type].accentBgClass">
+            <div class="type-card__content">
+              <div class="type-card__info">
+                <span class="type-badge" [class]="'type-badge--' + type">
                   {{ typeConfig[type].label }}
                 </span>
-                <p class="mt-2 text-sm text-slate-700">{{ typeConfig[type].description }}</p>
-                <div class="mt-2 text-xs text-slate-400">
+                <p class="type-card__description">{{ typeConfig[type].description }}</p>
+                <div class="type-card__tools">
                   {{ typeConfig[type].tools.length }} tools available
                 </div>
               </div>
-              <lucide-icon [img]="icons.ChevronRight" [size]="18" [strokeWidth]="1.5" class="text-slate-300 ml-3 shrink-0"></lucide-icon>
+              <tk-icon [name]="icons.ChevronRight" size="sm" />
             </div>
           </button>
         }
@@ -35,66 +34,64 @@
     <!-- Step 2: Credential form -->
     @if (step() === 'credentials') {
       <button class="back-link" (click)="goBack()" data-testid="integration-connect-back-button">
-        <lucide-icon [img]="icons.ArrowLeft" [size]="14" [strokeWidth]="2"></lucide-icon>
+        <tk-icon [name]="icons.ArrowLeft" size="sm" />
         Back to type selection
       </button>
 
       @if (errorMessage(); as error) {
-        <div class="mt-3 mb-4 rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700" data-testid="integration-connect-error-text">
+        <div class="error-banner" data-testid="integration-connect-error-text">
           {{ error }}
         </div>
       }
 
       <!-- AWS form -->
       @if (selectedType() === 'aws') {
-        <form [formGroup]="awsForm" class="mt-4 space-y-4">
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Display Name</mat-label>
-            <input matInput formControlName="display_name" placeholder="Production AWS" data-testid="integration-connect-display-name-input">
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Access Key ID</mat-label>
-            <input matInput formControlName="access_key_id" class="font-mono" data-testid="integration-connect-aws-access-key-input">
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Secret Access Key</mat-label>
-            <input matInput formControlName="secret_access_key"
-                   [type]="hidePassword() ? 'password' : 'text'" class="font-mono" data-testid="integration-connect-aws-secret-key-input">
-            <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()">
-              <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-            </button>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Region</mat-label>
-            <mat-select formControlName="region" data-testid="integration-connect-aws-region-select">
-              @for (region of awsRegions; track region.value) {
-                <mat-option [value]="region.value">{{ region.label }} ({{ region.value }})</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
+        <form [formGroup]="awsForm" class="credential-form">
+          <tk-input
+            label="Display Name"
+            placeholder="Production AWS"
+            formControlName="display_name"
+            testId="integration-connect-display-name-input" />
+          <tk-input
+            label="Access Key ID"
+            formControlName="access_key_id"
+            [monospace]="true"
+            testId="integration-connect-aws-access-key-input" />
+          <tk-input
+            label="Secret Access Key"
+            type="password"
+            formControlName="secret_access_key"
+            [monospace]="true"
+            testId="integration-connect-aws-secret-key-input" />
+          <tk-select
+            label="Region"
+            formControlName="region"
+            placeholder="Select a region"
+            [options]="awsRegionOptions"
+            testId="integration-connect-aws-region-select" />
         </form>
       }
 
       <!-- GitHub form -->
       @if (selectedType() === 'github') {
-        <form [formGroup]="githubForm" class="mt-4 space-y-4">
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Display Name</mat-label>
-            <input matInput formControlName="display_name" placeholder="Company GitHub" data-testid="integration-connect-display-name-input">
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Personal Access Token</mat-label>
-            <input matInput formControlName="personal_access_token"
-                   [type]="hidePassword() ? 'password' : 'text'" class="font-mono" data-testid="integration-connect-github-pat-input">
-            <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()">
-              <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-            </button>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Organization</mat-label>
-            <input matInput formControlName="organization" placeholder="my-company" data-testid="integration-connect-github-org-input">
-          </mat-form-field>
-          <p class="text-xs text-slate-400 -mt-2">
+        <form [formGroup]="githubForm" class="credential-form">
+          <tk-input
+            label="Display Name"
+            placeholder="Company GitHub"
+            formControlName="display_name"
+            testId="integration-connect-display-name-input" />
+          <tk-input
+            label="Personal Access Token"
+            type="password"
+            formControlName="personal_access_token"
+            [monospace]="true"
+            testId="integration-connect-github-pat-input" />
+          <tk-input
+            label="Organization"
+            placeholder="my-company"
+            formControlName="organization"
+            testId="integration-connect-github-org-input" />
+          <p class="helper-text">
             The token needs read-only permissions: Organization Members (read), Administration (read), Repository Contents (read), Metadata (read), Pull Requests (read).
           </p>
         </form>
@@ -102,20 +99,25 @@
 
       <!-- Google Workspace form -->
       @if (selectedType() === 'google_workspace') {
-        <form [formGroup]="googleForm" class="mt-4 space-y-4">
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Display Name</mat-label>
-            <input matInput formControlName="display_name" placeholder="Corporate Workspace" data-testid="integration-connect-display-name-input">
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Service Account JSON</mat-label>
-            <textarea matInput formControlName="service_account_json" rows="6" class="font-mono text-xs" data-testid="integration-connect-google-json-textarea"></textarea>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Delegated Email (optional)</mat-label>
-            <input matInput formControlName="delegated_email" placeholder="admin@company.com" data-testid="integration-connect-google-email-input">
-          </mat-form-field>
-          <p class="text-xs text-slate-400 -mt-2">
+        <form [formGroup]="googleForm" class="credential-form">
+          <tk-input
+            label="Display Name"
+            placeholder="Corporate Workspace"
+            formControlName="display_name"
+            testId="integration-connect-display-name-input" />
+          <tk-textarea
+            label="Service Account JSON"
+            formControlName="service_account_json"
+            [rows]="6"
+            [monospace]="true"
+            testId="integration-connect-google-json-textarea" />
+          <tk-input
+            label="Delegated Email (optional)"
+            placeholder="admin@company.com"
+            type="email"
+            formControlName="delegated_email"
+            testId="integration-connect-google-email-input" />
+          <p class="helper-text">
             Requires a service account with domain-wide delegation enabled. The delegated email must be a Workspace admin.
           </p>
         </form>
@@ -125,17 +127,15 @@
 
   @if (step() === 'credentials') {
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()" [disabled]="isSubmitting()">Cancel</button>
-      <button mat-flat-button class="connect-btn"
-              [disabled]="isSubmitting()"
-              (click)="onSubmit()"
-              data-testid="integration-connect-submit-button">
-        @if (isSubmitting()) {
-          <mat-spinner diameter="18" class="inline-spinner" data-testid="integration-connect-loading-spinner"></mat-spinner>
-        } @else {
-          Connect
-        }
-      </button>
+      <tk-button variant="secondary" [disabled]="isSubmitting()" (click)="onCancel()">Cancel</tk-button>
+      <tk-button
+        variant="primary"
+        [loading]="isSubmitting()"
+        [disabled]="isSubmitting()"
+        (click)="onSubmit()"
+        data-testid="integration-connect-submit-button">
+        Connect
+      </tk-button>
     </mat-dialog-actions>
   }
 </div>

@@ -1,0 +1,43 @@
+.tk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-medium);
+  white-space: nowrap;
+
+  &--sm { padding: 1px var(--space-2); font-size: var(--text-xs); }
+  &--md { padding: 2px var(--space-3); font-size: var(--text-sm); }
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  // Dot-only mode: just the dot, no background
+  &--dot:not(:has(.tk-badge__label)) {
+    padding: 0;
+    background: none;
+  }
+
+  // Variants
+  &--success { background: var(--color-success-light); color: #16a34a; }
+  &--success .tk-badge__dot { background: var(--color-success); }
+
+  &--warning { background: var(--color-warning-light); color: #d97706; }
+  &--warning .tk-badge__dot { background: var(--color-warning); }
+
+  &--error { background: var(--color-error-light); color: #dc2626; }
+  &--error .tk-badge__dot { background: var(--color-error); }
+
+  &--info { background: var(--color-info-light); color: #2563eb; }
+  &--info .tk-badge__dot { background: var(--color-info); }
+
+  &--neutral { background: var(--color-neutral-light); color: var(--color-text-secondary); }
+  &--neutral .tk-badge__dot { background: var(--color-neutral); }
+
+  &--accent { background: var(--color-accent-light); color: var(--color-accent); }
+  &--accent .tk-badge__dot { background: var(--color-accent); }
+}

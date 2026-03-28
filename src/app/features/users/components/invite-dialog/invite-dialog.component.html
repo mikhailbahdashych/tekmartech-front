@@ -1,0 +1,34 @@
+<div data-testid="user-invite-dialog">
+  <h2 mat-dialog-title class="dialog-title">Invite User</h2>
+  <mat-dialog-content>
+    @if (errorMessage(); as error) {
+      <div class="error-banner" data-testid="user-invite-error-text">{{ error }}</div>
+    }
+    <form [formGroup]="form" class="invite-form">
+      <tk-input
+        label="Email"
+        type="email"
+        formControlName="email"
+        [error]="form.controls.email.touched && form.controls.email.invalid
+          ? (form.controls.email.hasError('required') ? 'Email is required' : 'Please enter a valid email')
+          : null"
+        testId="user-invite-email-input" />
+      <tk-select
+        label="Role"
+        formControlName="role"
+        [options]="roleOptions"
+        testId="user-invite-role-select" />
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <tk-button variant="secondary" [disabled]="isSubmitting()" (click)="dialogRef.close(null)">Cancel</tk-button>
+    <tk-button
+      variant="primary"
+      [loading]="isSubmitting()"
+      [disabled]="isSubmitting()"
+      (click)="onSubmit()"
+      data-testid="user-invite-submit-button">
+      Send Invitation
+    </tk-button>
+  </mat-dialog-actions>
+</div>

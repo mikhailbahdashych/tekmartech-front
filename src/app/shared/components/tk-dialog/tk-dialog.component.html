@@ -1,0 +1,9 @@
+<div class="tk-dialog">
+  <h2 mat-dialog-title class="tk-dialog__title">{{ title() }}</h2>
+  <mat-dialog-content class="tk-dialog__body">
+    <ng-content />
+  </mat-dialog-content>
+  <mat-dialog-actions class="tk-dialog__actions" align="end">
+    <ng-content select="[tkDialogActions]" />
+  </mat-dialog-actions>
+</div>

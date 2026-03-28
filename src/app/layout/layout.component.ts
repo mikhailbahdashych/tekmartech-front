@@ -7,14 +7,8 @@ import { WebSocketService } from '../core/services/websocket.service';
   selector: 'app-layout',
   standalone: true,
   imports: [RouterOutlet, SidebarComponent],
-  template: `
-    <div class="flex h-screen">
-      <app-sidebar />
-      <main class="flex-1 overflow-y-auto bg-slate-50 px-8 py-6">
-        <router-outlet />
-      </main>
-    </div>
-  `,
+  templateUrl: './layout.component.html',
+  styleUrl: './layout.component.scss',
 })
 export class LayoutComponent implements OnInit, OnDestroy {
   private wsService = inject(WebSocketService);

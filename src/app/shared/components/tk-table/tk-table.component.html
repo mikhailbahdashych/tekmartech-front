@@ -1,0 +1,44 @@
+<div class="tk-table-wrap">
+  <table class="tk-table">
+    <thead>
+      <tr>
+        @for (col of columns(); track col.key) {
+          <th class="tk-table__th"
+              [class.tk-table__th--sortable]="col.sortable !== false"
+              (click)="toggleSort(col)">
+            {{ col.label }}
+            @if (sortKey() === col.key) {
+              <span class="tk-table__sort-indicator">{{ sortDir() === 'asc' ? '\u2191' : '\u2193' }}</span>
+            }
+          </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of sortedRows(); track $index) {
+        <tr class="tk-table__row">
+          @for (col of columns(); track col.key; let i = $index) {
+            <td class="tk-table__td"
+                [class.tk-table__td--mono]="col.type === 'datetime'"
+                [class.tk-table__td--number]="col.type === 'number'">
+              {{ formatCell(row[i], col) }}
+            </td>
+          }
+        </tr>
+      } @empty {
+        @if (!loading()) {
+          <tr>
+            <td [attr.colspan]="columns().length" class="tk-table__empty">
+              {{ emptyMessage() }}
+            </td>
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+  @if (loading()) {
+    <div class="tk-table__loading">
+      <tk-spinner size="md" />
+    </div>
+  }
+</div>

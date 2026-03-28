@@ -1,4 +1,4 @@
-<div class="max-w-4xl mx-auto space-y-6">
+<div class="query-page">
   <!-- Query Input -->
   <app-query-input
     [isSubmitting]="store.isSubmitting()"
@@ -48,31 +48,31 @@
 
   <!-- Failed state (execution-level failure) -->
   @if (store.phase() === 'failed' && store.plan()) {
-    <div class="rounded-lg bg-red-50 border border-red-200 p-5">
-      <div class="flex items-center gap-2 mb-2">
-        <lucide-icon [img]="icons.AlertCircle" [size]="18" [strokeWidth]="2" class="text-red-500"></lucide-icon>
-        <span class="text-sm font-medium text-red-800">Query Failed</span>
+    <tk-card class="failed-card">
+      <div class="failed-card__header">
+        <tk-icon [name]="icons.AlertCircle" size="md" [strokeWidth]="2" class="failed-card__icon" />
+        <span class="failed-card__title">Query Failed</span>
       </div>
-      <p class="text-sm text-red-700" data-testid="query-failed-error-text">{{ store.errorMessage() }}</p>
-      <button mat-flat-button class="new-query-btn mt-4" (click)="onNewQuery()" data-testid="query-failed-new-query-button">
-        <lucide-icon [img]="icons.RotateCcw" [size]="16" [strokeWidth]="2" class="mr-1.5"></lucide-icon>
+      <p class="failed-card__message" data-testid="query-failed-error-text">{{ store.errorMessage() }}</p>
+      <tk-button variant="secondary" (click)="onNewQuery()" data-testid="query-failed-new-query-button" class="failed-card__action">
+        <tk-icon [name]="icons.RotateCcw" size="sm" [strokeWidth]="2" />
         New Query
-      </button>
-    </div>
+      </tk-button>
+    </tk-card>
   }
 
   <!-- Rejected state -->
   @if (store.phase() === 'rejected') {
-    <div class="rounded-lg bg-slate-50 border border-slate-200 p-5">
-      <div class="flex items-center gap-2 mb-2">
-        <lucide-icon [img]="icons.Ban" [size]="18" [strokeWidth]="2" class="text-slate-400"></lucide-icon>
-        <span class="text-sm font-medium text-slate-700" data-testid="query-rejected-text">Query Rejected</span>
+    <tk-card class="rejected-card">
+      <div class="rejected-card__header">
+        <tk-icon [name]="icons.Ban" size="md" [strokeWidth]="2" class="rejected-card__icon" />
+        <span class="rejected-card__title" data-testid="query-rejected-text">Query Rejected</span>
       </div>
-      <p class="text-sm text-slate-500">The query plan was rejected and will not be executed.</p>
-      <button mat-flat-button class="new-query-btn mt-4" (click)="onNewQuery()">
-        <lucide-icon [img]="icons.RotateCcw" [size]="16" [strokeWidth]="2" class="mr-1.5"></lucide-icon>
+      <p class="rejected-card__message">The query plan was rejected and will not be executed.</p>
+      <tk-button variant="secondary" (click)="onNewQuery()" class="rejected-card__action">
+        <tk-icon [name]="icons.RotateCcw" size="sm" [strokeWidth]="2" />
         New Query
-      </button>
-    </div>
+      </tk-button>
+    </tk-card>
   }
 </div>

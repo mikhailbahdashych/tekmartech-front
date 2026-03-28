@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ApiService } from '../../../core/services/api.service';
-import { API_PATHS } from '../../../core/constants/api-paths';
+import { ApiService } from '@core/services/api.service';
+import { API_PATHS } from '@core/constants/api-paths';
 import {
   IntegrationResponse,
   IntegrationListResponse,
