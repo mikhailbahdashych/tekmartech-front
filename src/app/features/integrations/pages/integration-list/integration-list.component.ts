@@ -86,6 +86,7 @@ export class IntegrationListComponent implements OnInit {
     const dialogRef = this.dialog.open(ConnectDialogComponent, {
       width: '560px',
       disableClose: false,
+      panelClass: 'tk-dialog-overflow',
     });
 
     dialogRef.afterClosed().subscribe((result: IntegrationResponse | null) => {
