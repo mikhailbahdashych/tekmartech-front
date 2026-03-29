@@ -1,9 +1,10 @@
 <div class="interpretation" data-testid="query-interpretation-container">
   <div class="interpretation__label">AI Analysis</div>
-  <div class="interpretation__text" data-testid="query-interpretation-text">
-    {{ text() }}<!--
-    -->@if (isStreaming()) {<span class="interpretation__cursor" data-testid="query-interpretation-cursor"></span>}
-  </div>
+  <div class="interpretation__text" data-testid="query-interpretation-text"
+       [innerHTML]="text() | markdown"></div>
+  @if (isStreaming()) {
+    <span class="interpretation__cursor" data-testid="query-interpretation-cursor"></span>
+  }
 </div>
 
 @if (errorMessage(); as error) {
