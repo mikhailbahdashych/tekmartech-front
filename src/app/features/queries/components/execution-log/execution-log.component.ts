@@ -1,11 +1,12 @@
 import { Component, computed, input } from '@angular/core';
-import { LucideAngularModule, Loader2, CheckCircle2, XCircle } from 'lucide-angular';
-import { ExecutionStepState } from '../../services/query-page.store';
+import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
+import { Loader2, CheckCircle2, XCircle } from 'lucide-angular';
+import { ExecutionStepState } from '@features/queries/services/query-page.store';
 
 @Component({
   selector: 'app-execution-log',
   standalone: true,
-  imports: [LucideAngularModule],
+  imports: [TkIconComponent],
   templateUrl: './execution-log.component.html',
   styleUrl: './execution-log.component.scss',
 })

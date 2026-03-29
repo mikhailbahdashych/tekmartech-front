@@ -1,14 +1,15 @@
-<div class="interpretation-card" data-testid="query-interpretation-container">
-  <div class="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400">AI Analysis</div>
-  <div class="interpretation-text" data-testid="query-interpretation-text">
-    {{ text() }}<!--
-    -->@if (isStreaming()) {<span class="cursor-blink" data-testid="query-interpretation-cursor"></span>}
-  </div>
+<div class="interpretation" data-testid="query-interpretation-container">
+  <div class="interpretation__label">AI Analysis</div>
+  <div class="interpretation__text" data-testid="query-interpretation-text"
+       [innerHTML]="text() | markdown"></div>
+  @if (isStreaming()) {
+    <span class="interpretation__cursor" data-testid="query-interpretation-cursor"></span>
+  }
 </div>
 
 @if (errorMessage(); as error) {
-  <div class="mt-3 rounded-lg bg-red-50 border border-red-200 p-4">
-    <div class="text-sm font-medium text-red-800">Interpretation Failed</div>
-    <div class="mt-1 text-sm text-red-700" data-testid="query-interpretation-error-text">{{ error }}</div>
+  <div class="interpretation__error">
+    <div class="interpretation__error-title">Interpretation Failed</div>
+    <div data-testid="query-interpretation-error-text">{{ error }}</div>
   </div>
 }

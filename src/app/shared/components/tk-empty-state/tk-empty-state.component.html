@@ -1,0 +1,12 @@
+<div class="tk-empty-state">
+  @if (icon()) {
+    <tk-icon [name]="icon()" size="xl" />
+  }
+  <h3 class="tk-empty-state__heading">{{ heading() }}</h3>
+  @if (description()) {
+    <p class="tk-empty-state__description">{{ description() }}</p>
+  }
+  @if (actionLabel()) {
+    <tk-button variant="primary" (click)="action.emit()">{{ actionLabel() }}</tk-button>
+  }
+</div>

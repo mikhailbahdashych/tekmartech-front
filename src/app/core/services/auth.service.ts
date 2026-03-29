@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, tap, catchError, of, firstValueFrom } from 'rxjs';
 import { ApiService } from './api.service';
-import { API_PATHS } from '../constants/api-paths';
+import { API_PATHS } from '@core/constants/api-paths';
 import {
   User,
   Organization,
@@ -11,7 +11,7 @@ import {
   AuthResponse,
   RefreshResponse,
   AcceptInvitationRequest,
-} from '../models';
+} from '@core/models';
 
 const USER_CACHE_KEY = 'tekmar_user_cache';
 const ORG_CACHE_KEY = 'tekmar_org_cache';
@@ -133,23 +133,23 @@ export class AuthService {
     this.isAuthenticated.set(false);
     this.currentUser.set(null);
     this.currentOrganization.set(null);
-    sessionStorage.removeItem(USER_CACHE_KEY);
-    sessionStorage.removeItem(ORG_CACHE_KEY);
+    localStorage.removeItem(USER_CACHE_KEY);
+    localStorage.removeItem(ORG_CACHE_KEY);
   }
 
   private cacheUserData(user: User, organization: Organization): void {
     try {
-      sessionStorage.setItem(USER_CACHE_KEY, JSON.stringify(user));
-      sessionStorage.setItem(ORG_CACHE_KEY, JSON.stringify(organization));
+      localStorage.setItem(USER_CACHE_KEY, JSON.stringify(user));
+      localStorage.setItem(ORG_CACHE_KEY, JSON.stringify(organization));
     } catch {
-      // sessionStorage unavailable — not critical
+      // localStorage unavailable — not critical
     }
   }
 
   private hydrateUserFromCache(): void {
     try {
-      const userJson = sessionStorage.getItem(USER_CACHE_KEY);
-      const orgJson = sessionStorage.getItem(ORG_CACHE_KEY);
+      const userJson = localStorage.getItem(USER_CACHE_KEY);
+      const orgJson = localStorage.getItem(ORG_CACHE_KEY);
       if (userJson) {
         this.currentUser.set(JSON.parse(userJson) as User);
       }

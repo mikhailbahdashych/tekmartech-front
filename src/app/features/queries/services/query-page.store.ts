@@ -1,14 +1,14 @@
 import { Injectable, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { QueryService } from './query.service';
-import { WebSocketService } from '../../../core/services/websocket.service';
+import { WebSocketService } from '@core/services/websocket.service';
 import {
   QueryPlan,
   ResultData,
   TransparencyLog,
   QueryWsEvent,
   QueryDetailResponse,
-} from '../models';
+} from '@features/queries/models';
 
 export type QueryPhase =
   | 'idle'

@@ -1,0 +1,6 @@
+<div class="tk-pagination">
+  <span class="tk-pagination__text">Showing {{ currentCount() }} of {{ totalCount() }}</span>
+  @if (hasMore()) {
+    <tk-button variant="secondary" size="sm" (click)="loadMore.emit()">Load more</tk-button>
+  }
+</div>

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiService } from '../../../core/services/api.service';
-import { API_PATHS } from '../../../core/constants/api-paths';
-import { Organization } from '../../../core/models';
+import { ApiService } from '@core/services/api.service';
+import { API_PATHS } from '@core/constants/api-paths';
+import { Organization } from '@core/models';
 
 @Injectable({ providedIn: 'root' })
 export class OrganizationService {

@@ -1,8 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 import { Observable, Subject, filter, map } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 import { AuthService } from './auth.service';
-import { QueryWsEvent } from '../../features/queries/models';
+import { QueryWsEvent } from '@features/queries/models';
 
 type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
 

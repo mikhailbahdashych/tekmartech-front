@@ -1,21 +1,24 @@
-<div class="max-w-4xl mx-auto space-y-6" data-testid="query-detail-container">
+<div class="query-detail" data-testid="query-detail-container">
   <!-- Back button + header -->
   <div>
-    <button mat-button class="back-btn mb-3" (click)="goBack()">
-      <lucide-icon [img]="icons.ArrowLeft" [size]="16" [strokeWidth]="2" class="mr-1"></lucide-icon>
+    <tk-button variant="ghost" size="sm" (click)="goBack()" class="query-detail__back-btn">
+      <tk-icon [name]="icons.ArrowLeft" size="sm" [strokeWidth]="2" />
       Back to History
-    </button>
+    </tk-button>
 
     @if (store.queryText()) {
-      <div class="query-header-card">
-        <div class="flex items-start justify-between gap-4">
-          <p class="text-sm text-slate-900 flex-1">{{ store.queryText() }}</p>
-          <app-status-badge [status]="store.phase()" [configMap]="statusConfig" data-testid="query-detail-status-badge" />
+      <tk-card class="query-detail__header-card">
+        <div class="query-detail__header-row">
+          <p class="query-detail__query-text">{{ store.queryText() }}</p>
+          <tk-badge
+            [variant]="getStatusVariant(store.phase())"
+            [label]="getStatusLabel(store.phase())"
+            data-testid="query-detail-status-badge" />
         </div>
-      </div>
+      </tk-card>
     } @else {
-      <div class="flex items-center justify-center py-12">
-        <mat-spinner diameter="24"></mat-spinner>
+      <div class="query-detail__loading">
+        <tk-spinner size="md" />
       </div>
     }
   </div>
@@ -64,22 +67,22 @@
 
   <!-- Error state -->
   @if (store.phase() === 'failed' && store.errorMessage() && store.plan()) {
-    <div class="rounded-lg bg-red-50 border border-red-200 p-5">
-      <div class="flex items-center gap-2 mb-2">
-        <lucide-icon [img]="icons.AlertCircle" [size]="18" [strokeWidth]="2" class="text-red-500"></lucide-icon>
-        <span class="text-sm font-medium text-red-800">Query Failed</span>
+    <tk-card class="failed-card">
+      <div class="failed-card__header">
+        <tk-icon [name]="icons.AlertCircle" size="md" [strokeWidth]="2" class="failed-card__icon" />
+        <span class="failed-card__title">Query Failed</span>
       </div>
-      <p class="text-sm text-red-700" data-testid="query-failed-error-text">{{ store.errorMessage() }}</p>
-    </div>
+      <p class="failed-card__message" data-testid="query-failed-error-text">{{ store.errorMessage() }}</p>
+    </tk-card>
   }
 
   <!-- Rejected state -->
   @if (store.phase() === 'rejected') {
-    <div class="rounded-lg bg-slate-50 border border-slate-200 p-5">
-      <div class="flex items-center gap-2">
-        <lucide-icon [img]="icons.Ban" [size]="18" [strokeWidth]="2" class="text-slate-400"></lucide-icon>
-        <span class="text-sm font-medium text-slate-700" data-testid="query-rejected-text">Query was rejected</span>
+    <tk-card class="rejected-card">
+      <div class="rejected-card__header">
+        <tk-icon [name]="icons.Ban" size="md" [strokeWidth]="2" class="rejected-card__icon" />
+        <span class="rejected-card__title" data-testid="query-rejected-text">Query was rejected</span>
       </div>
-    </div>
+    </tk-card>
   }
 </div>

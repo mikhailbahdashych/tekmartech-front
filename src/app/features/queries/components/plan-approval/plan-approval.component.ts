@@ -1,13 +1,13 @@
 import { Component, input, output } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { LucideAngularModule, Check, X } from 'lucide-angular';
-import { QueryPlan } from '../../models';
+import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
+import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
+import { Check, X } from 'lucide-angular';
+import { QueryPlan } from '@features/queries/models';
 
 @Component({
   selector: 'app-plan-approval',
   standalone: true,
-  imports: [MatButtonModule, MatProgressSpinnerModule, LucideAngularModule],
+  imports: [TkButtonComponent, TkIconComponent],
   templateUrl: './plan-approval.component.html',
   styleUrl: './plan-approval.component.scss',
 })

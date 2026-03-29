@@ -1,0 +1,77 @@
+<div class="tk-table-wrap">
+  <table class="tk-table">
+    <thead>
+      <tr>
+        @for (col of columns(); track col.key) {
+          <th class="tk-table__th"
+              [class.tk-table__th--sortable]="col.sortable !== false"
+              (click)="toggleSort(col)">
+            {{ col.label }}
+            @if (sortKey() === col.key) {
+              <span class="tk-table__sort-indicator">{{ sortDir() === 'asc' ? '\u2191' : '\u2193' }}</span>
+            }
+          </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of paginatedRows(); track $index) {
+        <tr class="tk-table__row">
+          @for (col of columns(); track col.key; let i = $index) {
+            <td class="tk-table__td"
+                [class.tk-table__td--mono]="col.type === 'datetime'"
+                [class.tk-table__td--number]="col.type === 'number'">
+              {{ formatCell(row[i], col) }}
+            </td>
+          }
+        </tr>
+      } @empty {
+        @if (!loading()) {
+          <tr>
+            <td [attr.colspan]="columns().length" class="tk-table__empty">
+              {{ emptyMessage() }}
+            </td>
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+
+  @if (loading()) {
+    <div class="tk-table__loading">
+      <tk-spinner size="md" />
+    </div>
+  }
+
+  @if (isPaginated()) {
+    <div class="tk-table__pagination">
+      <div class="tk-table__pagination-size">
+        <span class="tk-table__pagination-label">Rows per page:</span>
+        <div class="tk-table__size-dropdown">
+          <button class="tk-table__size-trigger" (click)="toggleSizeDropdown()">
+            {{ activePageSize() }}
+            <span class="tk-table__size-chevron" [class.tk-table__size-chevron--open]="sizeDropdownOpen()"></span>
+          </button>
+          @if (sizeDropdownOpen()) {
+            <div class="tk-table__size-menu">
+              @for (opt of pageSizeOptions(); track opt) {
+                <button class="tk-table__size-option"
+                        [class.tk-table__size-option--active]="opt === activePageSize()"
+                        (click)="selectPageSize(opt)">
+                  {{ opt }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+      <span class="tk-table__pagination-info">
+        {{ rangeStart() }}&ndash;{{ rangeEnd() }} of {{ totalRows() }}
+      </span>
+      <div class="tk-table__pagination-controls">
+        <button class="tk-table__pagination-btn" [disabled]="!canPrev()" (click)="prevPage()">&lsaquo;</button>
+        <button class="tk-table__pagination-btn" [disabled]="!canNext()" (click)="nextPage()">&rsaquo;</button>
+      </div>
+    </div>
+  }
+</div>

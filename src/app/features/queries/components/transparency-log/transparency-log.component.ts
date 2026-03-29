@@ -1,11 +1,13 @@
 import { Component, input, signal } from '@angular/core';
-import { LucideAngularModule, ChevronDown, ChevronRight } from 'lucide-angular';
-import { TransparencyLog } from '../../models';
+import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
+import { TkBadgeComponent, TkBadgeVariant } from '@shared/components/tk-badge/tk-badge.component';
+import { ChevronDown, ChevronRight } from 'lucide-angular';
+import { TransparencyLog } from '@features/queries/models';
 
 @Component({
   selector: 'app-transparency-log',
   standalone: true,
-  imports: [LucideAngularModule],
+  imports: [TkIconComponent, TkBadgeComponent],
   templateUrl: './transparency-log.component.html',
   styleUrl: './transparency-log.component.scss',
 })
@@ -23,12 +25,12 @@ export class TransparencyLogComponent {
     return `${(ms / 1000).toFixed(1)}s`;
   }
 
-  statusClass(status: string): string {
+  statusVariant(status: string): TkBadgeVariant {
     switch (status) {
-      case 'success': return 'text-emerald-700 bg-emerald-50';
-      case 'error': return 'text-red-700 bg-red-50';
-      case 'partial': return 'text-amber-700 bg-amber-50';
-      default: return 'text-slate-600 bg-slate-100';
+      case 'success': case 'completed': return 'success';
+      case 'error': case 'failed': return 'error';
+      case 'partial': return 'warning';
+      default: return 'neutral';
     }
   }
 }

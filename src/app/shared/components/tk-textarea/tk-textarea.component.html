@@ -1,0 +1,18 @@
+<div class="tk-textarea" [class.tk-textarea--error]="error()" [class.tk-textarea--disabled]="disabled() || isDisabled()">
+  @if (label()) {
+    <label class="tk-textarea__label">{{ label() }}</label>
+  }
+  <textarea
+    class="tk-textarea__field"
+    [class.tk-textarea__field--mono]="monospace()"
+    [placeholder]="placeholder()"
+    [rows]="rows()"
+    [disabled]="disabled() || isDisabled()"
+    [value]="value()"
+    [attr.data-testid]="testId()"
+    (input)="onInput($event)"
+    (blur)="onBlur()"></textarea>
+  @if (error()) {
+    <div class="tk-textarea__error">{{ error() }}</div>
+  }
+</div>

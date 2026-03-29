@@ -38,8 +38,8 @@ If the contract does not define something, ask — do not assume.
 |---------|--------|
 | Framework | Angular (latest stable) |
 | Language | TypeScript (strict mode) |
-| Styling | Tailwind CSS for utility-based styling + SCSS for component-specific overrides |
-| Component library | Angular Material (for form controls, tables, dialogs, snackbars, menus) |
+| Styling | Custom SCSS design system with CSS custom properties (no Tailwind) |
+| Component library | Custom reusable components (inputs, buttons, badges, cards, tables). Angular Material retained ONLY for complex structural components: mat-dialog, mat-menu, mat-snackbar, mat-paginator. All form controls, buttons, badges, cards, and tables are custom. |
 | Icons | Lucide Angular (lucide-angular) |
 | State management | Angular signals and services. No external state library (NgRx, Akita) for the MVP. Services hold application state; components consume it via signals or observables. |
 | HTTP | Angular HttpClient with interceptors for auth token injection and error handling |
@@ -389,305 +389,278 @@ directly (for example, `/queries/550e8400-e29b-41d4-a716-446655440000`).
 
 ---
 
+
 ## Design Direction
 
 Tekmar is a professional B2B SaaS tool for security and compliance
 teams. The visual language communicates trust, precision, and technical
-competence. The design references Vanta and Datadog: clean, minimal,
-data-focused, and free of decorative elements. Every pixel serves a
-functional purpose. The interface should feel like a tool built by
-engineers for engineers — dense with information, fast to scan, and
-quiet when nothing needs attention.
+competence. The design references Datadog (data-dense, functional,
+dark sidebar) and Claude (clean conversational interface, warm
+neutrals). Every visual decision prioritizes legibility, information
+density, and quiet confidence. No decorative elements. No gradients.
+No rounded-everything trends. Flat, precise, engineered.
 
 ### Design Principles
 
-1. **Content first.** The UI exists to display data, not to look
-   impressive. Reduce chrome (borders, shadows, gradients) to the
-   minimum needed to establish visual hierarchy. When in doubt, remove.
+1. **Engineered, not designed.** The interface looks like it was built
+   by someone who cares about data, not aesthetics for its own sake.
+   Clean lines, precise alignment, consistent spacing. The beauty
+   comes from order, not decoration.
 
-2. **Progressive disclosure.** Show summary information by default;
-   reveal detail on interaction. Query results show a summary table;
-   the transparency log is one click deeper. Integration cards show
-   status; credential details are behind an expand action.
+2. **Information density where it matters.** Tables, logs, and results
+   should be dense and scannable. Forms and conversational interfaces
+   should breathe. Know which context you are in and adjust accordingly.
 
-3. **Status at a glance.** Every entity (query, integration, user,
-   invitation) has a visible status indicator. The user should be able
-   to scan a list and understand the state of everything without
-   reading text.
+3. **Status at a glance.** Every entity has a visible status. Color
+   dots, not colored backgrounds. Small, precise indicators that
+   communicate without demanding attention.
 
-4. **Quiet until relevant.** Success states are muted (subtle green
-   check marks). Only errors and warnings demand visual attention
-   (vivid color, icons). The default state of the interface is calm.
+4. **Quiet until relevant.** The default state of the interface is
+   calm. Only errors and warnings use vivid color. Success is a
+   subtle green dot, not a green banner. The interface stays out of
+   the way until something needs attention.
 
-### Layout
+### SCSS Architecture
 
-Persistent sidebar navigation on the left, main content area on the
-right. The sidebar is narrow (w-60, 240px) and dark.
+All styles use custom SCSS with CSS custom properties. No Tailwind.
+No utility classes in HTML templates. All styling lives in SCSS files.
 
-**Sidebar structure (top to bottom):**
-- Brand mark: the word "Tekmar" in Montserrat SemiBold, white, text-lg.
-  No logo icon in the MVP — the wordmark is sufficient.
-- Spacing (mt-8).
-- Navigation section — primary:
-  - "New Query" button: full-width, indigo-500 background, white text,
-    rounded-lg, font-medium. This is the most prominent interactive
-    element in the sidebar. It stands apart from the navigation links.
-  - Spacing (mt-6).
-- Navigation section — links (each is a row with an icon and label):
-  - Queries (icon: command-line or terminal icon) — `/queries`
-  - Integrations (icon: plug or link icon) — `/integrations` (admin)
-  - Team (icon: users icon) — `/users` (admin)
-  - Activity Log (icon: list/clock icon) — `/activity-logs` (admin)
-  - Settings (icon: cog/gear icon) — `/settings` (admin)
-- Links use: text-sm, text-slate-400 default, text-white on hover,
-  bg-slate-700/50 on hover, bg-slate-700 + text-white for active route.
-  Icons are 18px, same color as text.
-- Spacer (flex-1, pushes user info to bottom).
-- User section at bottom: small avatar circle (initials-based, bg-indigo-500),
-  display name (text-sm, text-white), role badge (tiny text-xs pill:
-  "Admin" in indigo-400/20 bg with indigo-300 text, "Member" in
-  slate-600 bg with slate-300 text). Logout as a small icon button
-  (door/arrow icon, text-slate-500, hover text-white).
+**File structure:**
+```
+src/
+├── styles/
+│   ├── _variables.scss          ← CSS custom properties (colors, spacing, typography)
+│   ├── _reset.scss              ← Minimal CSS reset (normalize-like)
+│   ├── _typography.scss         ← Font imports, type scale, text utilities
+│   ├── _layout.scss             ← Layout primitives (container, flex, grid patterns)
+│   ├── _animations.scss         ← Shared transitions and keyframes
+│   └── styles.scss              ← Main entry: imports all partials
+│
+├── app/
+│   └── shared/
+│       └── components/
+│           ├── tk-button/       ← Custom button component
+│           ├── tk-input/        ← Custom text input component
+│           ├── tk-textarea/     ← Custom textarea component
+│           ├── tk-select/       ← Custom select/dropdown component
+│           ├── tk-badge/        ← Status badge component
+│           ├── tk-card/         ← Card container component
+│           ├── tk-table/        ← Data table component
+│           ├── tk-dialog/       ← Dialog/modal wrapper (uses mat-dialog internally)
+│           ├── tk-snackbar/     ← Toast notification component
+│           ├── tk-pagination/   ← Pagination controls
+│           ├── tk-spinner/      ← Loading spinner
+│           ├── tk-empty-state/  ← Empty state pattern
+│           └── tk-icon/         ← Icon wrapper (uses lucide-angular)
+```
 
-**Main content area:**
-- Background: bg-slate-50.
-- Inner padding: px-8 py-6.
-- Maximum content width: max-w-6xl (1152px) for content-heavy pages
-  (tables, forms). The query experience page uses full width.
-- Page header pattern: page title (text-xl, font-semibold, text-slate-900)
-  on the left, primary action button on the right (e.g., "Connect
-  Integration", "Invite User"). Below the header, an optional
-  description line (text-sm, text-slate-500). Divider line (border-b,
-  border-slate-200) below.
+All custom components use the `tk-` prefix to distinguish them from
+Angular Material components and third-party libraries.
+
+**CSS custom properties** — all design tokens are defined as CSS custom
+properties in `_variables.scss` and referenced throughout. This enables
+future theme switching (light/dark) with a single class change on the
+root element.
 
 ### Color System
 
-All colors use the Tailwind CSS palette. Define custom CSS variables
-for semantic usage so colors are consistent and changeable in one place.
+Define all colors as CSS custom properties in `_variables.scss`:
 
-**Surface colors:**
-- Sidebar background: `slate-900`
-- Sidebar hover: `slate-800` or `slate-700/50`
-- Sidebar active: `slate-700`
-- Main background: `slate-50`
-- Card background: `white`
-- Card border: `slate-200`
-- Card shadow: `shadow-sm` (Tailwind's smallest shadow)
+```scss
+:root {
+  // --- Surface colors ---
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8f9fb;
+  --color-bg-tertiary: #f1f3f5;
+  --color-bg-sidebar: #1a1d24;
+  --color-bg-sidebar-hover: #252830;
+  --color-bg-sidebar-active: #2d3039;
+  --color-bg-overlay: rgba(0, 0, 0, 0.5);
 
-**Text colors:**
-- Primary text: `slate-900`
-- Secondary text: `slate-500`
-- Tertiary text / captions: `slate-400`
-- Sidebar text: `slate-400` (default), `white` (active/hover)
-- Link text: `indigo-600`
+  // --- Border colors ---
+  --color-border-primary: #e2e5ea;
+  --color-border-secondary: #edf0f3;
+  --color-border-focus: #6366f1;
 
-**Brand and accent:**
-- Primary action (buttons, links, active indicators): `indigo-600`
-  (hover: `indigo-700`, active: `indigo-800`)
-- Primary action text: `white`
-- Focus ring: `ring-2 ring-indigo-500 ring-offset-2`
+  // --- Text colors ---
+  --color-text-primary: #111318;
+  --color-text-secondary: #5f6577;
+  --color-text-tertiary: #8b90a0;
+  --color-text-inverse: #ffffff;
+  --color-text-sidebar: #8b90a0;
+  --color-text-sidebar-active: #ffffff;
+  --color-text-link: #6366f1;
 
-**Semantic colors (used for status indicators, badges, alerts):**
-- Success: `emerald-600` text on `emerald-50` background, `emerald-500`
-  for icons and borders
-- Warning: `amber-600` text on `amber-50` background, `amber-500` for
-  icons and borders
-- Error / destructive: `red-600` text on `red-50` background, `red-500`
-  for icons and borders
-- Info / neutral: `blue-600` text on `blue-50` background
+  // --- Brand / Accent ---
+  --color-accent: #6366f1;
+  --color-accent-hover: #5558e6;
+  --color-accent-active: #4a4dd4;
+  --color-accent-light: #eef2ff;
 
-**Query status colors (specific to the query lifecycle):**
-- interpreting: `blue-500` (in progress)
-- awaiting_approval: `amber-500` (needs attention)
-- approved: `indigo-500` (acknowledged)
-- executing: `blue-500` (in progress, same as interpreting)
-- completed: `emerald-500` (success)
-- failed: `red-500` (error)
-- rejected: `slate-400` (dismissed)
+  // --- Semantic: Status ---
+  --color-success: #22c55e;
+  --color-success-light: #f0fdf4;
+  --color-warning: #f59e0b;
+  --color-warning-light: #fffbeb;
+  --color-error: #ef4444;
+  --color-error-light: #fef2f2;
+  --color-info: #3b82f6;
+  --color-info-light: #eff6ff;
+  --color-neutral: #8b90a0;
+  --color-neutral-light: #f8f9fb;
 
-**Integration status colors:**
-- active: `emerald-500`
-- inactive: `slate-400`
-- error: `red-500`
-- Health: healthy = `emerald-500`, unhealthy = `red-500`, unknown = `slate-400`
+  // --- Spacing scale (4px base) ---
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
 
-### Typography
+  // --- Border radius ---
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-full: 9999px;
 
-**Font family:** Montserrat for headings and UI elements, loaded from
-Google Fonts. System font stack (`-apple-system, BlinkMacSystemFont,
-"Segoe UI", Roboto, sans-serif`) as fallback and for body text / data
-display. Monospace: `"JetBrains Mono", "Fira Code", ui-monospace,
-monospace` for technical values (query IDs, tool names, JSON, code).
+  // --- Shadows ---
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
 
-Configure in Tailwind:
-```
-fontFamily: {
-  heading: ['Montserrat', 'sans-serif'],
-  sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
-  mono: ['"JetBrains Mono"', '"Fira Code"', 'ui-monospace', 'monospace'],
+  // --- Transitions ---
+  --transition-fast: 120ms ease;
+  --transition-normal: 200ms ease;
+
+  // --- Sidebar ---
+  --sidebar-width: 240px;
 }
 ```
 
-**Type scale:**
-- Page title: `font-heading text-xl font-semibold text-slate-900`
-- Section header: `font-heading text-base font-semibold text-slate-800`
-- Table column header: `text-xs font-medium text-slate-500 uppercase tracking-wider`
-- Body text: `text-sm text-slate-700` (14px)
-- Secondary text: `text-sm text-slate-500`
-- Caption / label: `text-xs text-slate-500`
-- Data in tables: `text-sm text-slate-900`
-- Monospace values: `font-mono text-xs text-slate-600`
-- Button text: `text-sm font-medium`
+**Query status color mapping:**
+- interpreting: `var(--color-info)`
+- awaiting_approval: `var(--color-warning)`
+- approved: `var(--color-accent)`
+- executing: `var(--color-info)`
+- completed: `var(--color-success)`
+- failed: `var(--color-error)`
+- rejected: `var(--color-neutral)`
 
-**Line height:** Use Tailwind defaults (leading-5 for text-sm,
-leading-6 for text-base). Tables use tighter line height (leading-5).
+**Integration status mapping:**
+- active: `var(--color-success)`
+- inactive: `var(--color-neutral)`
+- error: `var(--color-error)`
 
-### Components
+### Typography
 
-**Buttons:**
-- Primary: `bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg px-4 py-2 text-sm font-medium shadow-sm`
-- Secondary: `bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 rounded-lg px-4 py-2 text-sm font-medium`
-- Destructive: `bg-red-600 text-white hover:bg-red-700 rounded-lg px-4 py-2 text-sm font-medium`
-- Ghost (for icon buttons in tables): `text-slate-400 hover:text-slate-600 p-1 rounded`
-- Disabled state: `opacity-50 cursor-not-allowed`
-- Loading state: replace text with a small spinner, maintain button width.
+**Fonts:** Inter for all UI text. JetBrains Mono for code and
+technical values. Load from Google Fonts.
 
-**Status badges:** Small inline pills used in tables and detail views.
-Pattern: `inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium`
-with color combinations from the semantic or status color sets. Example:
-completed = `bg-emerald-50 text-emerald-700`, failed = `bg-red-50 text-red-700`,
-awaiting_approval = `bg-amber-50 text-amber-700`.
+```scss
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 15px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --leading-tight: 1.3;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.6;
+}
+```
 
-**Cards:** Used for contained content blocks (query results, plan steps,
-integration details). Pattern: `bg-white rounded-lg border border-slate-200
-shadow-sm`. Inner padding: `p-5`. Cards do not use heavy shadows — the
-border and minimal shadow are sufficient. Cards stack vertically with
-`space-y-4` between them.
+### Custom Component Specifications
 
-**Tables:** The primary data display pattern. Use Angular Material
-mat-table for structure, styled with Tailwind:
-- Table container: `bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden`
-- Header row: `bg-slate-50 border-b border-slate-200`
-- Header cells: `text-xs font-medium text-slate-500 uppercase tracking-wider px-4 py-3`
-- Body cells: `text-sm text-slate-900 px-4 py-3`
-- Row dividers: `border-b border-slate-100`
-- Row hover: `hover:bg-slate-50`
-- Status column: use status badges (not colored text).
-- Action column (last): icon buttons for edit, delete, test, etc.
-- Pagination below the table: `mat-paginator` styled to match.
+All custom components live in `src/app/shared/components/` with the
+`tk-` prefix. Each has its own `.component.ts`, `.component.html`,
+`.component.scss` with scoped styles.
 
-**Forms:** Use Angular Material form fields (mat-form-field) with the
-`outline` appearance. Style to match the Tailwind aesthetic:
-- Labels: `text-sm font-medium text-slate-700` above the field.
-- Input text: `text-sm`
-- Error messages: `text-xs text-red-600` below the field.
-- Field spacing: `space-y-4` between form fields.
+**tk-button** — variants: primary, secondary, ghost, destructive.
+Sizes: sm, md, lg. States: default, hover, active, disabled, loading.
+Props: variant, size, disabled, loading, type, icon.
 
-**Dialogs:** Angular Material mat-dialog for confirmations and inline
-forms (invite user, connect integration). Max width 480px for simple
-dialogs, 640px for complex forms. Title in font-heading font-semibold.
-Actions row with cancel (secondary button) and confirm (primary or
-destructive button).
+**tk-input** — text input with label, helper text, error state,
+optional icon, password show/hide toggle. Props: label, placeholder,
+type, error, helperText, disabled, icon, monospace. Uses Reactive Forms.
 
-**Snackbar / Toasts:** Angular Material mat-snackbar for transient
-notifications. Success: green-tinted background. Error: red-tinted
-background. Appear at the bottom-center of the viewport. Auto-dismiss
-after 4 seconds (errors: 6 seconds).
+**tk-textarea** — multiline input. Props: label, rows, autoExpand,
+error, disabled.
 
-**Empty states:** When a list view has no data, display a centered
-container with: a subtle gray icon (48px), a heading (text-base
-font-medium text-slate-700) explaining what would appear, a description
-(text-sm text-slate-500) explaining how to populate it, and a primary
-action button. Example: icon of a plug, "No integrations connected",
-"Connect your infrastructure to start querying.", [Connect Integration]
-button.
+**tk-select** — custom dropdown. Props: label, options, placeholder,
+error, disabled.
+
+**tk-badge** — status indicator pill. Props: variant (success, warning,
+error, info, neutral, accent), size, dot (boolean for dot-only mode).
+
+**tk-card** — content container. Props: padding, noBorder.
+
+**tk-table** — data table using native HTML table, not mat-table.
+Props: columns, rows, loading, emptyMessage. Includes sortable headers
+and row hover. Action column via ng-template projection.
+
+**tk-pagination** — page controls. Props: totalCount, limit,
+currentCursor. Event: pageChange.
+
+**tk-spinner** — CSS-only spinner. Sizes: sm (16px), md (24px), lg (40px).
+
+**tk-empty-state** — icon, heading, description, action button.
+
+**tk-dialog** — wraps mat-dialog for portal rendering and focus trap.
+Custom interior styling.
+
+**tk-snackbar** — wraps mat-snackbar. Variants: success, error, info.
+
+### Layout
+
+Sidebar: fixed left, full height, var(--sidebar-width), dark background.
+Main content: margin-left sidebar width, var(--color-bg-secondary)
+background, max-width 1120px content area with var(--space-8) padding.
+
+Sidebar structure: brand wordmark "Tekmar" in Inter semibold, "New Query"
+accent button, navigation links with Lucide icons and active state
+(left accent border), user section at bottom with initials avatar and
+role badge.
+
+Page header pattern: title left, action button right, bottom border
+divider.
 
 ### Page-Specific Design
 
-**Auth pages (login, register):** Full-page layout, no sidebar.
-Background: `bg-slate-50` or a very subtle gradient (`from-slate-50
-to-white`). Centered card: `max-w-md w-full bg-white rounded-xl
-shadow-lg p-8`. "Tekmar" wordmark above the card in `font-heading
-text-2xl font-bold text-slate-900`. Form inputs stacked vertically
-with full-width submit button at the bottom. Link to the other auth
-page below the card (e.g., "Don't have an account? Sign up" in
-text-sm text-slate-500 with a text-indigo-600 link).
+**Auth pages:** Full-page, no sidebar, centered card max-width 400px,
+"Tekmar" wordmark above.
 
-**Query page (the core product experience):** This page has a unique
-layout distinct from management pages. At the top, a large query input
-area styled like a conversational input — a tall textarea (min 3 rows)
-in a card, with a prominent submit button. This is the hero interaction.
-Below the input, the query lifecycle plays out in a vertical flow:
-- Interpretation phase: a card showing the AI's analysis text streaming
-  in real time. The text appears progressively with a subtle cursor or
-  fade-in effect. Use a slightly off-white background (`bg-slate-50`)
-  to distinguish AI-generated content from user content.
-- Plan approval phase: the plan displayed as a vertical stepper or
-  numbered list. Each step is a row showing: step number (circle with
-  number), tool display name (font-medium), integration name (text-xs
-  text-slate-500), and description. Approve and Reject buttons below.
-- Execution phase: a live log that updates in real time. Each step
-  shows: a status indicator (spinning for in-progress, green check for
-  complete, red X for failed), the tool name, duration, and a brief
-  summary. This should feel like watching a CI/CD pipeline log.
-- Results phase: one or more data tables rendered with the standard
-  table component. Above the tables: a summary card showing total
-  records, execution time, and a "Download CSV" button.
+**Query page:** Conversational input card at top, streaming text area
+with blinking cursor, plan as numbered step list, execution as live log
+with status dots, results as tk-table with summary header and CSV
+download.
 
-**Query history page:** Standard table layout. Columns: query text
-(truncated, clickable to detail), status badge, who submitted it,
-when (relative time), result summary (if completed). Click a row to
-navigate to the full query detail page.
-
-**Integration management page:** A grid or list of connected
-integrations, each as a card showing: integration type icon (or a
-colored dot for the type), display name, status badge, last health
-check time, and action buttons (test, disconnect). A prominent
-"Connect Integration" button in the page header. The connect form is
-a dialog with fields that change based on the selected integration
-type (AWS shows access key fields, GitHub shows PAT field, Google
-shows service account JSON upload).
-
-**User management page:** Standard table. Columns: display name,
-email, role badge, status, last login (relative time), actions
-(change role, remove). "Invite User" button in the page header. The
-invite form is a simple dialog: email + role select.
-
-**Activity log page:** Standard table. Columns: timestamp, user (name
-+ email), action (formatted as a human-readable sentence, e.g.,
-"Connected integration 'Production AWS'"), and a metadata column for
-additional context. Filters above the table: action type dropdown,
-user dropdown.
-
-### Responsive Behavior
-
-The MVP targets desktop browsers at 1280px and wider. The sidebar is
-always visible (no collapse toggle in MVP). On screens narrower than
-1280px, the layout should not break — content scrolls horizontally
-if needed. Do not invest in mobile-responsive design for the MVP.
+**Management pages:** Page header, optional filter bar, tk-table or
+card grid. Integrations use cards, everything else uses tables.
 
 ### Animation and Transitions
 
-Keep animations minimal and purposeful.
-- Page transitions: none (instant route changes).
-- Sidebar link hover/active: `transition-colors duration-150`.
-- Button hover: `transition-colors duration-150`.
-- Streaming text (interpretation): each text chunk appears immediately
-  when received, no artificial typing delay. A blinking cursor at the
-  end of the text indicates more content is coming.
-- Execution log: step entries slide in from the left with a quick
-  `transition-all duration-200` when added. Status changes (spinning
-  to checkmark) are instant.
-- Dialogs: Angular Material's default fade-in animation is sufficient.
-- Snackbars: default slide-in from bottom.
+Minimal: 120ms on interactive hover/focus. No page transitions. Streaming
+text appears instantly. Execution log entries appear instantly. Dialogs
+and snackbars use mat defaults. Spinner uses CSS keyframe rotation.
 
 ### Iconography
 
-Use Lucide icons (the open-source icon set, successor to Feather
-icons). Install `lucide-angular` or use SVG icons directly. Consistent
-size: 18px for navigation and inline icons, 20px for buttons,
-48px for empty state illustrations. Consistent stroke width: 1.5px.
-Color inherits from the parent text color.
+Lucide icons via lucide-angular. 16px inline, 18px navigation, 20px
+buttons, 40px empty states. Stroke width 1.5px. Color inherits.
+
+### Responsive Behavior
+
+Desktop-first at 1280px+. Sidebar always visible. No mobile optimization.
 
 ---
 
@@ -727,10 +700,26 @@ or ViewChild. Never use `document.querySelector` or similar.
 restate what the code does. Do add comments that explain non-obvious
 decisions or contract references.
 
-**Test IDs** — every interactive or assertable element must have a
-`data-testid` attribute following the naming convention in
-`testid-manifest.json`. Use kebab-case with a page/feature prefix and
-element-type suffix (e.g., `login-email-input`, `integration-card-{id}`).
-When adding new components or modifying existing ones, update the
-manifest. The manifest is the contract between the frontend and the
-E2E test suite.
+**No Tailwind classes in templates.** All styling uses SCSS with CSS
+custom properties. Never use utility classes (bg-white, flex, p-4, etc.)
+in HTML templates. All visual styling lives in component .scss files
+using the design tokens from `_variables.scss`. If you find yourself
+wanting a utility class, write the equivalent SCSS rule instead.
+
+**Use tk-components for all UI elements.** Never use raw HTML input,
+button, select, or textarea elements in feature components. Always use
+the shared tk-input, tk-button, tk-select, tk-textarea, tk-badge,
+tk-card, tk-table, tk-spinner, and tk-empty-state components. The only
+place raw HTML form elements appear is inside the tk-component
+implementations themselves.
+
+**Angular Material is restricted.** Angular Material is used ONLY for
+mat-dialog (portal rendering, focus trapping), mat-menu (overlay
+positioning), mat-snackbar (toast management), and mat-paginator. All
+other UI (buttons, inputs, tables, cards, badges) uses custom tk-
+components. Do not add new Angular Material component imports.
+
+**data-testid on every interactive element.** Every button, input, link,
+table, card, badge, and significant container must have a `data-testid`
+attribute following the naming convention in `testid-manifest.json`.
+When adding or modifying components, update the manifest.

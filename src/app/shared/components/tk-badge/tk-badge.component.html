@@ -1,0 +1,9 @@
+<span [class]="'tk-badge tk-badge--' + variant() + ' tk-badge--' + size()"
+      [class.tk-badge--dot]="dot()">
+  @if (dot()) {
+    <span class="tk-badge__dot"></span>
+  }
+  @if (label()) {
+    <span class="tk-badge__label">{{ label() }}</span>
+  }
+</span>

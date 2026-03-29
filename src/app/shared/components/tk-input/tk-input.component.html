@@ -1,0 +1,29 @@
+<div class="tk-input" [class.tk-input--error]="error()" [class.tk-input--disabled]="disabled() || isDisabled()">
+  @if (label()) {
+    <label class="tk-input__label">{{ label() }}</label>
+  }
+  <div class="tk-input__wrapper">
+    <input
+      class="tk-input__field"
+      [class.tk-input__field--mono]="monospace()"
+      [type]="currentType"
+      [placeholder]="placeholder()"
+      [disabled]="disabled() || isDisabled()"
+      [autocomplete]="autocomplete()"
+      [value]="value()"
+      [attr.data-testid]="testId()"
+      (input)="onInput($event)"
+      (blur)="onBlur()" />
+    @if (type() === 'password') {
+      <button type="button" class="tk-input__toggle" (click)="togglePassword()" tabindex="-1">
+        <lucide-icon [img]="showPassword() ? icons.EyeOff : icons.Eye" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+      </button>
+    }
+  </div>
+  @if (error()) {
+    <div class="tk-input__error">{{ error() }}</div>
+  }
+  @if (helperText() && !error()) {
+    <div class="tk-input__helper">{{ helperText() }}</div>
+  }
+</div>

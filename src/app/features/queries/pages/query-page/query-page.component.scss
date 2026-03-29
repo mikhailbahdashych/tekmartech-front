@@ -1,14 +1,80 @@
-.new-query-btn {
-  background-color: white !important;
-  color: #334155 !important;
-  border: 1px solid #cbd5e1 !important;
-  border-radius: 0.5rem !important;
-  font-weight: 500 !important;
-  font-size: 0.875rem !important;
-  display: inline-flex !important;
-  align-items: center !important;
+.query-page {
+  max-width: 896px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
 
-  &:hover {
-    background-color: #f8fafc !important;
+// Failed state card
+.failed-card {
+  ::ng-deep .tk-card {
+    background: var(--color-error-light);
+    border-color: #fecaca;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+
+  &__icon {
+    color: var(--color-error);
+  }
+
+  &__title {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: #991b1b;
+  }
+
+  &__message {
+    font-size: var(--text-sm);
+    color: #b91c1c;
+    margin: 0;
+  }
+
+  &__action {
+    display: inline-flex;
+    margin-top: var(--space-4);
+  }
+}
+
+// Rejected state card
+.rejected-card {
+  ::ng-deep .tk-card {
+    background: var(--color-bg-secondary);
+    border-color: var(--color-border-primary);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+
+  &__icon {
+    color: var(--color-text-tertiary);
+  }
+
+  &__title {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-text-primary);
+  }
+
+  &__message {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  &__action {
+    display: inline-flex;
+    margin-top: var(--space-4);
   }
 }

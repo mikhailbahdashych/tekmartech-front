@@ -1,5 +1,4 @@
-import { IntegrationType, IntegrationStatus, HealthStatus } from '../models';
-import { StatusConfig } from '../../../shared/components/status-badge/status-badge.component';
+import { IntegrationType } from '@features/integrations/models';
 
 export interface IntegrationTypeConfig {
   label: string;
@@ -48,18 +47,6 @@ export const INTEGRATION_TYPE_CONFIG: Record<IntegrationType, IntegrationTypeCon
       'Login Events',
     ],
   },
-};
-
-export const INTEGRATION_STATUS_CONFIG: Record<IntegrationStatus, StatusConfig> = {
-  active:   { label: 'Active',   colorClass: 'text-emerald-700', bgClass: 'bg-emerald-50' },
-  inactive: { label: 'Inactive', colorClass: 'text-slate-600',   bgClass: 'bg-slate-100' },
-  error:    { label: 'Error',    colorClass: 'text-red-700',     bgClass: 'bg-red-50' },
-};
-
-export const HEALTH_STATUS_CONFIG: Record<HealthStatus, StatusConfig> = {
-  healthy:   { label: 'Healthy',   colorClass: 'text-emerald-700', bgClass: 'bg-emerald-50' },
-  unhealthy: { label: 'Unhealthy', colorClass: 'text-red-700',     bgClass: 'bg-red-50' },
-  unknown:   { label: 'Unknown',   colorClass: 'text-slate-600',   bgClass: 'bg-slate-100' },
 };
 
 export const AWS_REGIONS = [

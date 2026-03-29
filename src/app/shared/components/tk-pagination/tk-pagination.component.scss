@@ -1,0 +1,8 @@
+.tk-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}

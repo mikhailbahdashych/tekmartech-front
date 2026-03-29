@@ -1,15 +1,14 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
-import { ActivityLogService } from '../../services/activity-log.service';
-import { UserService } from '../../../users/services/user.service';
-import { ActivityLogResponse, ActivityAction } from '../../models/activity-log.model';
-import { PaginationResponse } from '../../../queries/models';
-import { User } from '../../../../core/models';
+import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
+import { TkPaginationComponent } from '@shared/components/tk-pagination/tk-pagination.component';
+import { TkSelectComponent, TkSelectOption } from '@shared/components/tk-select/tk-select.component';
+import { ActivityLogService } from '@features/activity-logs/services/activity-log.service';
+import { UserService } from '@features/users/services/user.service';
+import { ActivityLogResponse, ActivityAction } from '@features/activity-logs/models/activity-log.model';
+import { PaginationResponse } from '@features/queries/models';
+import { User } from '@core/models';
 
 interface ActionOption { value: ActivityAction; label: string }
 
@@ -48,10 +47,9 @@ const ACTION_LABELS: Record<ActivityAction, (meta: Record<string, unknown> | nul
   standalone: true,
   imports: [
     DatePipe,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatProgressSpinnerModule,
-    PaginationComponent,
+    TkSpinnerComponent,
+    TkPaginationComponent,
+    TkSelectComponent,
   ],
   templateUrl: './activity-log-list.component.html',
   styleUrl: './activity-log-list.component.scss',
@@ -61,7 +59,10 @@ export class ActivityLogListComponent implements OnInit {
   private userService = inject(UserService);
   private router = inject(Router);
 
-  readonly actionOptions = ACTION_OPTIONS;
+  readonly actionSelectOptions: TkSelectOption[] = ACTION_OPTIONS.map(o => ({ value: o.value, label: o.label }));
+  readonly userSelectOptions = computed<TkSelectOption[]>(() =>
+    this.users().map(u => ({ value: u.id, label: u.display_name }))
+  );
 
   readonly logs = signal<ActivityLogResponse[]>([]);
   readonly pagination = signal<PaginationResponse | null>(null);
@@ -69,6 +70,24 @@ export class ActivityLogListComponent implements OnInit {
   readonly isLoading = signal(true);
   readonly actionFilter = signal('');
   readonly userFilter = signal('');
+
+  // Client-side display pagination
+  readonly displayPage = signal(0);
+  readonly displayPageSize = signal(25);
+  readonly pageSizeOptions = [10, 25, 50, 100];
+  readonly sizeDropdownOpen = signal(false);
+
+  readonly paginatedLogs = computed(() => {
+    const start = this.displayPage() * this.displayPageSize();
+    return this.logs().slice(start, start + this.displayPageSize());
+  });
+  readonly totalDisplayRows = computed(() => this.logs().length);
+  readonly totalDisplayPages = computed(() => Math.max(1, Math.ceil(this.totalDisplayRows() / this.displayPageSize())));
+  readonly showDisplayPagination = computed(() => this.totalDisplayRows() > this.displayPageSize());
+  readonly displayRangeStart = computed(() => this.totalDisplayRows() === 0 ? 0 : this.displayPage() * this.displayPageSize() + 1);
+  readonly displayRangeEnd = computed(() => Math.min((this.displayPage() + 1) * this.displayPageSize(), this.totalDisplayRows()));
+  readonly canDisplayPrev = computed(() => this.displayPage() > 0);
+  readonly canDisplayNext = computed(() => this.displayPage() < this.totalDisplayPages() - 1);
 
   ngOnInit(): void {
     this.loadLogs();
@@ -85,18 +104,32 @@ export class ActivityLogListComponent implements OnInit {
   onActionFilterChange(action: string): void {
     this.actionFilter.set(action);
     this.logs.set([]);
+    this.displayPage.set(0);
     this.loadLogs();
   }
 
   onUserFilterChange(userId: string): void {
     this.userFilter.set(userId);
     this.logs.set([]);
+    this.displayPage.set(0);
     this.loadLogs();
   }
 
   loadMore(): void {
     const cursor = this.pagination()?.next_cursor;
     if (cursor) this.loadLogs(cursor);
+  }
+
+  displayPrevPage(): void { if (this.canDisplayPrev()) this.displayPage.update(p => p - 1); }
+  displayNextPage(): void { if (this.canDisplayNext()) this.displayPage.update(p => p + 1); }
+  selectDisplayPageSize(size: number): void { this.displayPageSize.set(size); this.displayPage.set(0); this.sizeDropdownOpen.set(false); }
+  toggleSizeDropdown(): void { this.sizeDropdownOpen.update(v => !v); }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (this.sizeDropdownOpen() && !(event.target as HTMLElement).closest('.size-dropdown')) {
+      this.sizeDropdownOpen.set(false);
+    }
   }
 
   navigateToTarget(log: ActivityLogResponse): void {

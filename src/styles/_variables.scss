@@ -1,0 +1,88 @@
+:root {
+  // --- Surface colors ---
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8f9fb;
+  --color-bg-tertiary: #f1f3f5;
+  --color-bg-sidebar: #1a1d24;
+  --color-bg-sidebar-hover: #252830;
+  --color-bg-sidebar-active: #2d3039;
+  --color-bg-overlay: rgba(0, 0, 0, 0.5);
+
+  // --- Border colors ---
+  --color-border-primary: #e2e5ea;
+  --color-border-secondary: #edf0f3;
+  --color-border-focus: #6366f1;
+
+  // --- Text colors ---
+  --color-text-primary: #111318;
+  --color-text-secondary: #5f6577;
+  --color-text-tertiary: #8b90a0;
+  --color-text-inverse: #ffffff;
+  --color-text-sidebar: #8b90a0;
+  --color-text-sidebar-active: #ffffff;
+  --color-text-link: #6366f1;
+
+  // --- Brand / Accent ---
+  --color-accent: #6366f1;
+  --color-accent-hover: #5558e6;
+  --color-accent-active: #4a4dd4;
+  --color-accent-light: #eef2ff;
+
+  // --- Semantic: Status ---
+  --color-success: #22c55e;
+  --color-success-light: #f0fdf4;
+  --color-warning: #f59e0b;
+  --color-warning-light: #fffbeb;
+  --color-error: #ef4444;
+  --color-error-light: #fef2f2;
+  --color-info: #3b82f6;
+  --color-info-light: #eff6ff;
+  --color-neutral: #8b90a0;
+  --color-neutral-light: #f8f9fb;
+
+  // --- Spacing scale (4px base) ---
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  // --- Border radius ---
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-full: 9999px;
+
+  // --- Shadows ---
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  // --- Transitions ---
+  --transition-fast: 120ms ease;
+  --transition-normal: 200ms ease;
+
+  // --- Sidebar ---
+  --sidebar-width: 240px;
+
+  // --- Typography ---
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 15px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --leading-tight: 1.3;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.6;
+}

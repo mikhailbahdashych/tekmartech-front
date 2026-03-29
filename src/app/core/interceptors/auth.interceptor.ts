@@ -2,8 +2,8 @@ import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpErrorResponse } from
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, throwError, switchMap, catchError, filter, take } from 'rxjs';
-import { AuthService } from '../services/auth.service';
-import { AUTH_EXCLUSION_PATHS } from '../constants/api-paths';
+import { AuthService } from '@core/services/auth.service';
+import { AUTH_EXCLUSION_PATHS } from '@core/constants/api-paths';
 
 function isExcludedPath(url: string): boolean {
   return AUTH_EXCLUSION_PATHS.some(path => url.includes(path));

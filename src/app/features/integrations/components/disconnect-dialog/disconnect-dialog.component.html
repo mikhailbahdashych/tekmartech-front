@@ -1,0 +1,27 @@
+<div data-testid="integration-disconnect-dialog">
+  <h2 mat-dialog-title class="dialog-title">
+    Disconnect Integration
+  </h2>
+  <mat-dialog-content>
+    <div class="warning-row">
+      <tk-icon [name]="icons.AlertTriangle" size="md" />
+      <div>
+        <p class="warning-text">
+          Disconnect <strong>{{ data.displayName }}</strong>?
+        </p>
+        <p class="warning-subtext">
+          This will remove the integration and its stored credentials. Existing query results will be preserved.
+        </p>
+      </div>
+    </div>
+    @if (errorMessage(); as error) {
+      <div class="error-banner">{{ error }}</div>
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <tk-button variant="secondary" [disabled]="isDisconnecting()" (click)="onCancel()" data-testid="integration-disconnect-cancel-button">Cancel</tk-button>
+    <tk-button variant="destructive" [loading]="isDisconnecting()" [disabled]="isDisconnecting()" (click)="onDisconnect()" data-testid="integration-disconnect-confirm-button">
+      Disconnect
+    </tk-button>
+  </mat-dialog-actions>
+</div>

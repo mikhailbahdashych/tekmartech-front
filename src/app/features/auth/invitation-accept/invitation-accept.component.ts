@@ -1,14 +1,12 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { finalize } from 'rxjs';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService } from '@core/services/auth.service';
+import { TkInputComponent } from '@shared/components/tk-input/tk-input.component';
+import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
+import { TkCardComponent } from '@shared/components/tk-card/tk-card.component';
 
 function passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
   const password = group.get('password')?.value;
@@ -23,11 +21,9 @@ function passwordMatchValidator(group: AbstractControl): ValidationErrors | null
   imports: [
     ReactiveFormsModule,
     RouterLink,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
+    TkInputComponent,
+    TkButtonComponent,
+    TkCardComponent,
   ],
   templateUrl: './invitation-accept.component.html',
   styleUrl: './invitation-accept.component.scss',

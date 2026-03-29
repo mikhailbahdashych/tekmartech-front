@@ -1,63 +1,63 @@
-<div class="max-w-6xl mx-auto" data-testid="user-list-container">
+<div class="page-container" data-testid="user-list-container">
   <!-- Header -->
-  <div class="flex items-center justify-between mb-6">
+  <div class="page-header">
     <div>
-      <h1 class="font-heading text-xl font-semibold text-slate-900">Team</h1>
-      <p class="mt-1 text-sm text-slate-500">Manage team members and invitations</p>
+      <h1 class="page-title">Team</h1>
+      <p class="page-subtitle">Manage team members and invitations</p>
     </div>
-    <button mat-flat-button class="invite-btn" (click)="openInviteDialog()" data-testid="user-invite-button">
-      <lucide-icon [img]="icons.Plus" [size]="18" [strokeWidth]="2" class="mr-1.5"></lucide-icon>
+    <tk-button variant="primary" (click)="openInviteDialog()" data-testid="user-invite-button">
+      <tk-icon [name]="icons.Plus" size="sm" />
       Invite User
-    </button>
+    </tk-button>
   </div>
 
   <!-- Team Members -->
-  <section class="mb-8">
-    <h2 class="font-heading text-base font-semibold text-slate-800 mb-3">Team Members</h2>
+  <section class="section">
+    <h2 class="section-title">Team Members</h2>
     <div class="table-container">
-      <table class="w-full" data-testid="user-table">
+      <table class="table" data-testid="user-table">
         <thead>
-          <tr class="bg-slate-50 border-b border-slate-200">
-            <th class="table-header">Name</th>
-            <th class="table-header">Email</th>
-            <th class="table-header">Role</th>
-            <th class="table-header">Status</th>
-            <th class="table-header">Last Login</th>
-            <th class="table-header w-12"></th>
+          <tr class="table__header-row">
+            <th class="table__header">Name</th>
+            <th class="table__header">Email</th>
+            <th class="table__header">Role</th>
+            <th class="table__header">Status</th>
+            <th class="table__header">Last Login</th>
+            <th class="table__header table__header--actions"></th>
           </tr>
         </thead>
         <tbody>
-          @for (user of users(); track user.id) {
-            <tr class="table-row" [attr.data-testid]="'user-row-' + user.id">
-              <td class="table-cell font-medium text-slate-900" [attr.data-testid]="'user-row-name-' + user.id">{{ user.display_name }}</td>
-              <td class="table-cell text-slate-500" [attr.data-testid]="'user-row-email-' + user.id">{{ user.email }}</td>
-              <td class="table-cell">
-                <app-status-badge [status]="user.role" [configMap]="roleConfig" [attr.data-testid]="'user-row-role-badge-' + user.id" />
+          @for (user of paginatedUsers(); track user.id) {
+            <tr class="table__row" [attr.data-testid]="'user-row-' + user.id">
+              <td class="table__cell table__cell--name" [attr.data-testid]="'user-row-name-' + user.id">{{ user.display_name }}</td>
+              <td class="table__cell table__cell--secondary" [attr.data-testid]="'user-row-email-' + user.id">{{ user.email }}</td>
+              <td class="table__cell">
+                <tk-badge [variant]="getRoleVariant(user.role)" [label]="getRoleLabel(user.role)" [attr.data-testid]="'user-row-role-badge-' + user.id" />
               </td>
-              <td class="table-cell">
-                <app-status-badge [status]="user.status" [configMap]="statusConfig" [attr.data-testid]="'user-row-status-badge-' + user.id" />
+              <td class="table__cell">
+                <tk-badge [variant]="getStatusVariant(user.status)" [label]="getStatusLabel(user.status)" [attr.data-testid]="'user-row-status-badge-' + user.id" />
               </td>
-              <td class="table-cell text-slate-500">
+              <td class="table__cell table__cell--secondary">
                 @if (user.last_login_at) {
                   {{ user.last_login_at | relativeTime }}
                 } @else {
-                  <span class="text-slate-400">Never</span>
+                  <span class="text-tertiary">Never</span>
                 }
               </td>
-              <td class="table-cell">
-                <button mat-icon-button [matMenuTriggerFor]="userMenu" class="text-slate-400 hover:text-slate-600" [attr.data-testid]="'user-row-actions-menu-' + user.id">
-                  <lucide-icon [img]="icons.MoreVertical" [size]="16" [strokeWidth]="2"></lucide-icon>
+              <td class="table__cell">
+                <button class="menu-trigger" [matMenuTriggerFor]="userMenu" [attr.data-testid]="'user-row-actions-menu-' + user.id">
+                  <tk-icon [name]="icons.MoreVertical" size="sm" />
                 </button>
                 <mat-menu #userMenu="matMenu">
                   <button mat-menu-item (click)="changeRole(user)" [attr.data-testid]="'user-row-change-role-' + user.id">
                     {{ user.role === 'admin' ? 'Change to Member' : 'Change to Admin' }}
                   </button>
                   @if (user.id === currentUserId) {
-                    <button mat-menu-item disabled matTooltip="You cannot remove yourself" [attr.data-testid]="'user-row-remove-' + user.id">
-                      <span class="text-slate-400">Remove from organization</span>
+                    <button mat-menu-item disabled [attr.data-testid]="'user-row-remove-' + user.id">
+                      <span class="text-tertiary">Remove from organization</span>
                     </button>
                   } @else {
-                    <button mat-menu-item class="text-red-600" (click)="removeUser(user)" [attr.data-testid]="'user-row-remove-' + user.id">
+                    <button mat-menu-item class="menu-item--danger" (click)="removeUser(user)" [attr.data-testid]="'user-row-remove-' + user.id">
                       Remove from organization
                     </button>
                   }
@@ -67,48 +67,81 @@
           }
         </tbody>
       </table>
+
       @if (isLoadingUsers()) {
-        <div class="flex justify-center py-6"><mat-spinner diameter="24"></mat-spinner></div>
+        <div class="loading-container"><tk-spinner size="md" /></div>
+      }
+
+      @if (showUsersPagination()) {
+        <div class="table-pagination">
+          <div class="table-pagination__size">
+            <span class="table-pagination__label">Rows per page:</span>
+            <div class="size-dropdown users-size-dropdown">
+              <button class="size-dropdown__trigger" (click)="toggleUsersSizeDropdown()">
+                {{ usersPageSize() }}
+                <span class="size-dropdown__chevron" [class.size-dropdown__chevron--open]="usersSizeDropdownOpen()"></span>
+              </button>
+              @if (usersSizeDropdownOpen()) {
+                <div class="size-dropdown__menu">
+                  @for (opt of usersPageSizeOptions; track opt) {
+                    <button class="size-dropdown__option" [class.size-dropdown__option--active]="opt === usersPageSize()" (click)="selectUsersPageSize(opt)">{{ opt }}</button>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+          <span class="table-pagination__info">{{ usersRangeStart() }}&ndash;{{ usersRangeEnd() }} of {{ totalUsers() }}</span>
+          <div class="table-pagination__controls">
+            <button class="table-pagination__btn" [disabled]="!canUsersPrev()" (click)="usersPrevPage()">&lsaquo;</button>
+            <button class="table-pagination__btn" [disabled]="!canUsersNext()" (click)="usersNextPage()">&rsaquo;</button>
+          </div>
+        </div>
       }
     </div>
+
+    @if (usersPagination(); as p) {
+      @if (p.has_more) {
+        <tk-pagination [hasMore]="p.has_more" [totalCount]="p.total_count" [currentCount]="users().length" (loadMore)="loadMoreUsers()" />
+      }
+    }
   </section>
 
   <!-- Pending Invitations -->
   <section>
-    <h2 class="font-heading text-base font-semibold text-slate-800 mb-3">Pending Invitations</h2>
+    <h2 class="section-title">Pending Invitations</h2>
     <div class="table-container">
-      <table class="w-full" data-testid="invitation-table">
+      <table class="table" data-testid="invitation-table">
         <thead>
-          <tr class="bg-slate-50 border-b border-slate-200">
-            <th class="table-header">Email</th>
-            <th class="table-header">Role</th>
-            <th class="table-header">Status</th>
-            <th class="table-header">Invited By</th>
-            <th class="table-header">Sent</th>
-            <th class="table-header">Expires</th>
-            <th class="table-header w-12"></th>
+          <tr class="table__header-row">
+            <th class="table__header">Email</th>
+            <th class="table__header">Role</th>
+            <th class="table__header">Status</th>
+            <th class="table__header">Invited By</th>
+            <th class="table__header">Sent</th>
+            <th class="table__header">Expires</th>
+            <th class="table__header table__header--actions"></th>
           </tr>
         </thead>
         <tbody>
-          @for (inv of invitations(); track inv.id) {
-            <tr class="table-row" [attr.data-testid]="'invitation-row-' + inv.id">
-              <td class="table-cell text-slate-900" [attr.data-testid]="'invitation-row-email-' + inv.id">{{ inv.email }}</td>
-              <td class="table-cell">
-                <app-status-badge [status]="inv.role" [configMap]="roleConfig" />
+          @for (inv of paginatedInvitations(); track inv.id) {
+            <tr class="table__row" [attr.data-testid]="'invitation-row-' + inv.id">
+              <td class="table__cell table__cell--name" [attr.data-testid]="'invitation-row-email-' + inv.id">{{ inv.email }}</td>
+              <td class="table__cell">
+                <tk-badge [variant]="getRoleVariant(inv.role)" [label]="getRoleLabel(inv.role)" />
               </td>
-              <td class="table-cell">
-                <app-status-badge [status]="inv.status" [configMap]="invitationStatusConfig" [attr.data-testid]="'invitation-row-status-badge-' + inv.id" />
+              <td class="table__cell">
+                <tk-badge [variant]="getInvitationStatusVariant(inv.status)" [label]="getInvitationStatusLabel(inv.status)" [attr.data-testid]="'invitation-row-status-badge-' + inv.id" />
               </td>
-              <td class="table-cell text-slate-500">{{ inv.invited_by.display_name }}</td>
-              <td class="table-cell text-slate-500">{{ inv.created_at | relativeTime }}</td>
-              <td class="table-cell text-slate-500">{{ inv.expires_at | relativeTime }}</td>
-              <td class="table-cell">
+              <td class="table__cell table__cell--secondary">{{ inv.invited_by.display_name }}</td>
+              <td class="table__cell table__cell--secondary">{{ inv.created_at | relativeTime }}</td>
+              <td class="table__cell table__cell--secondary">{{ inv.expires_at | relativeTime }}</td>
+              <td class="table__cell">
                 @if (inv.status === 'pending') {
-                  <button mat-icon-button [matMenuTriggerFor]="invMenu" class="text-slate-400 hover:text-slate-600">
-                    <lucide-icon [img]="icons.MoreVertical" [size]="16" [strokeWidth]="2"></lucide-icon>
+                  <button class="menu-trigger" [matMenuTriggerFor]="invMenu">
+                    <tk-icon [name]="icons.MoreVertical" size="sm" />
                   </button>
                   <mat-menu #invMenu="matMenu">
-                    <button mat-menu-item class="text-red-600" (click)="revokeInvitation(inv)" [attr.data-testid]="'invitation-row-revoke-' + inv.id">Revoke</button>
+                    <button mat-menu-item class="menu-item--danger" (click)="revokeInvitation(inv)" [attr.data-testid]="'invitation-row-revoke-' + inv.id">Revoke</button>
                   </mat-menu>
                 }
               </td>
@@ -116,15 +149,48 @@
           } @empty {
             @if (!isLoadingInvitations()) {
               <tr>
-                <td colspan="7" class="px-4 py-8 text-center text-sm text-slate-400">No pending invitations</td>
+                <td colspan="7" class="table__empty">No pending invitations</td>
               </tr>
             }
           }
         </tbody>
       </table>
+
       @if (isLoadingInvitations()) {
-        <div class="flex justify-center py-6"><mat-spinner diameter="24"></mat-spinner></div>
+        <div class="loading-container"><tk-spinner size="md" /></div>
+      }
+
+      @if (showInvPagination()) {
+        <div class="table-pagination">
+          <div class="table-pagination__size">
+            <span class="table-pagination__label">Rows per page:</span>
+            <div class="size-dropdown inv-size-dropdown">
+              <button class="size-dropdown__trigger" (click)="toggleInvSizeDropdown()">
+                {{ invPageSize() }}
+                <span class="size-dropdown__chevron" [class.size-dropdown__chevron--open]="invSizeDropdownOpen()"></span>
+              </button>
+              @if (invSizeDropdownOpen()) {
+                <div class="size-dropdown__menu">
+                  @for (opt of invPageSizeOptions; track opt) {
+                    <button class="size-dropdown__option" [class.size-dropdown__option--active]="opt === invPageSize()" (click)="selectInvPageSize(opt)">{{ opt }}</button>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+          <span class="table-pagination__info">{{ invRangeStart() }}&ndash;{{ invRangeEnd() }} of {{ totalInvitations() }}</span>
+          <div class="table-pagination__controls">
+            <button class="table-pagination__btn" [disabled]="!canInvPrev()" (click)="invPrevPage()">&lsaquo;</button>
+            <button class="table-pagination__btn" [disabled]="!canInvNext()" (click)="invNextPage()">&rsaquo;</button>
+          </div>
+        </div>
       }
     </div>
+
+    @if (invitationsPagination(); as p) {
+      @if (p.has_more) {
+        <tk-pagination [hasMore]="p.has_more" [totalCount]="p.total_count" [currentCount]="invitations().length" (loadMore)="loadMoreInvitations()" />
+      }
+    }
   </section>
 </div>

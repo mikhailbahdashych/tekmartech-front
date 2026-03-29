@@ -1,16 +1,16 @@
 import { Component, signal, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LucideAngularModule, ArrowLeft, ChevronRight } from 'lucide-angular';
-import { IntegrationService } from '../../services/integration.service';
-import { IntegrationType, IntegrationResponse, ConnectIntegrationPayload } from '../../models';
-import { INTEGRATION_TYPE_CONFIG, AWS_REGIONS } from '../../constants/integration-config';
+import { TkInputComponent } from '@shared/components/tk-input/tk-input.component';
+import { TkTextareaComponent } from '@shared/components/tk-textarea/tk-textarea.component';
+import { TkSelectComponent, TkSelectOption } from '@shared/components/tk-select/tk-select.component';
+import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
+import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
+import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
+import { IntegrationService } from '@features/integrations/services/integration.service';
+import { IntegrationType, IntegrationResponse, ConnectIntegrationPayload } from '@features/integrations/models';
+import { INTEGRATION_TYPE_CONFIG, AWS_REGIONS } from '@features/integrations/constants/integration-config';
 
 type DialogStep = 'type-selection' | 'credentials';
 
@@ -20,13 +20,13 @@ type DialogStep = 'type-selection' | 'credentials';
   imports: [
     ReactiveFormsModule,
     MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
     LucideAngularModule,
+    TkInputComponent,
+    TkTextareaComponent,
+    TkSelectComponent,
+    TkButtonComponent,
+    TkSpinnerComponent,
+    TkIconComponent,
   ],
   templateUrl: './connect-dialog.component.html',
   styleUrl: './connect-dialog.component.scss',
@@ -38,8 +38,12 @@ export class ConnectDialogComponent {
 
   readonly icons = { ArrowLeft, ChevronRight };
   readonly typeConfig = INTEGRATION_TYPE_CONFIG;
-  readonly awsRegions = AWS_REGIONS;
   readonly integrationTypes: IntegrationType[] = ['aws', 'github', 'google_workspace'];
+
+  readonly awsRegionOptions: TkSelectOption[] = AWS_REGIONS.map(r => ({
+    value: r.value,
+    label: `${r.label} (${r.value})`,
+  }));
 
   readonly step = signal<DialogStep>('type-selection');
   readonly selectedType = signal<IntegrationType | null>(null);

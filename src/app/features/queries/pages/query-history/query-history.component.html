@@ -1,66 +1,63 @@
-<div class="max-w-6xl mx-auto">
+<div class="query-history">
   <!-- Header -->
-  <div class="flex items-center justify-between mb-6">
+  <div class="query-history__header">
     <div>
-      <h1 class="font-heading text-xl font-semibold text-slate-900">Query History</h1>
-      <p class="mt-1 text-sm text-slate-500">View past queries and their results</p>
+      <h1 class="query-history__title">Query History</h1>
+      <p class="query-history__subtitle">View past queries and their results</p>
     </div>
   </div>
 
   <!-- Filters -->
-  <div class="mb-4 flex items-center gap-3">
-    <mat-form-field appearance="outline" class="filter-field">
-      <mat-label>Status</mat-label>
-      <mat-select [value]="statusFilter()" (selectionChange)="onStatusFilterChange($event.value)" data-testid="query-history-status-filter">
-        <mat-option value="">All statuses</mat-option>
-        @for (opt of statusOptions; track opt.value) {
-          <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+  <div class="query-history__filters">
+    <tk-select
+      label="Status"
+      placeholder="All statuses"
+      [options]="statusSelectOptions"
+      (valueChange)="onStatusFilterChange($event)"
+      [testId]="'query-history-status-filter'" />
   </div>
 
   <!-- Table -->
   <div class="table-container">
-    <table class="w-full" data-testid="query-history-table">
+    <table class="table" data-testid="query-history-table">
       <thead>
-        <tr class="bg-slate-50 border-b border-slate-200">
-          <th class="table-header">Query</th>
-          <th class="table-header">Status</th>
-          <th class="table-header">Submitted by</th>
-          <th class="table-header">When</th>
-          <th class="table-header">Summary</th>
+        <tr class="table__header-row">
+          <th class="table__header-cell">Query</th>
+          <th class="table__header-cell">Status</th>
+          <th class="table__header-cell">Submitted by</th>
+          <th class="table__header-cell">When</th>
+          <th class="table__header-cell">Summary</th>
         </tr>
       </thead>
       <tbody>
-        @for (query of queries(); track query.id) {
-          <tr class="table-row cursor-pointer" (click)="navigateToQuery(query)" [attr.data-testid]="'query-history-row-' + query.id">
-            <td class="table-cell max-w-xs">
-              <span class="text-slate-900" [title]="query.query_text">
+        @for (query of paginatedQueries(); track query.id) {
+          <tr class="table__row table__row--clickable" (click)="navigateToQuery(query)" [attr.data-testid]="'query-history-row-' + query.id">
+            <td class="table__cell table__cell--query">
+              <span class="table__query-text" [title]="query.query_text">
                 {{ truncateText(query.query_text) }}
               </span>
               @if (query.integration_ids.length > 0) {
-                <div class="mt-0.5 text-[11px] text-slate-400">
+                <div class="table__integration-labels">
                   @for (id of query.integration_ids; track id; let last = $last) {
                     {{ getIntegrationLabel(id) }}{{ last ? '' : ', ' }}
                   }
                 </div>
               }
             </td>
-            <td class="table-cell">
-              <app-status-badge [status]="query.status" [configMap]="statusConfig" />
+            <td class="table__cell">
+              <tk-badge [variant]="getStatusVariant(query.status)" [label]="getStatusLabel(query.status)" />
             </td>
-            <td class="table-cell text-slate-500">
+            <td class="table__cell table__cell--secondary">
               {{ query.initiated_by.display_name }}
             </td>
-            <td class="table-cell text-slate-500">
+            <td class="table__cell table__cell--secondary">
               {{ query.submitted_at | relativeTime }}
             </td>
-            <td class="table-cell text-slate-500 max-w-xs">
+            <td class="table__cell table__cell--secondary table__cell--summary">
               @if (query.result_summary) {
                 {{ truncateText(query.result_summary, 60) }}
               } @else if (query.error_message) {
-                <span class="text-red-600">{{ truncateText(query.error_message, 60) }}</span>
+                <span class="table__error-text">{{ truncateText(query.error_message, 60) }}</span>
               } @else {
                 —
               }
@@ -69,8 +66,8 @@
         } @empty {
           @if (!isLoading()) {
             <tr>
-              <td colspan="5" class="px-4 py-12 text-center">
-                <div class="text-slate-400 text-sm">No queries found</div>
+              <td colspan="5" class="table__empty">
+                <div class="table__empty-text">No queries found</div>
               </td>
             </tr>
           }
@@ -79,20 +76,47 @@
     </table>
 
     @if (isLoading()) {
-      <div class="flex items-center justify-center py-8">
-        <mat-spinner diameter="24"></mat-spinner>
+      <div class="table__loading"><tk-spinner size="md" /></div>
+    }
+
+    @if (showDisplayPagination()) {
+      <div class="table-pagination">
+        <div class="table-pagination__size">
+          <span class="table-pagination__label">Rows per page:</span>
+          <div class="size-dropdown">
+            <button class="size-dropdown__trigger" (click)="toggleSizeDropdown()">
+              {{ displayPageSize() }}
+              <span class="size-dropdown__chevron" [class.size-dropdown__chevron--open]="sizeDropdownOpen()"></span>
+            </button>
+            @if (sizeDropdownOpen()) {
+              <div class="size-dropdown__menu">
+                @for (opt of pageSizeOptions; track opt) {
+                  <button class="size-dropdown__option"
+                          [class.size-dropdown__option--active]="opt === displayPageSize()"
+                          (click)="selectDisplayPageSize(opt)">{{ opt }}</button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+        <span class="table-pagination__info">{{ displayRangeStart() }}&ndash;{{ displayRangeEnd() }} of {{ totalDisplayRows() }}</span>
+        <div class="table-pagination__controls">
+          <button class="table-pagination__btn" [disabled]="!canDisplayPrev()" (click)="displayPrevPage()">&lsaquo;</button>
+          <button class="table-pagination__btn" [disabled]="!canDisplayNext()" (click)="displayNextPage()">&rsaquo;</button>
+        </div>
       </div>
     }
   </div>
 
-  <!-- Pagination -->
   @if (pagination(); as p) {
-    <div data-testid="query-history-pagination">
-      <app-pagination
-        [hasMore]="p.has_more"
-        [totalCount]="p.total_count"
-        [currentCount]="queries().length"
-        (loadMore)="loadMore()" />
-    </div>
+    @if (p.has_more) {
+      <div data-testid="query-history-pagination">
+        <tk-pagination
+          [hasMore]="p.has_more"
+          [totalCount]="p.total_count"
+          [currentCount]="queries().length"
+          (loadMore)="loadMore()" />
+      </div>
+    }
   }
 </div>

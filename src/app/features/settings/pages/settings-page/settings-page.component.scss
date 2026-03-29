@@ -1,33 +1,97 @@
-.settings-card {
-  background: white;
-  border-radius: 0.75rem;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  padding: 1.5rem;
+.page-container {
+  max-width: 768px;
+  margin: 0 auto;
 }
 
-.compact-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-  display: none;
+.page-header {
+  margin-bottom: var(--space-6);
 }
 
-.save-btn {
-  background-color: #4f46e5 !important;
-  color: white !important;
-  border-radius: 0.5rem !important;
-  font-size: 0.875rem !important;
-  height: 40px !important;
-
-  &:hover:not([disabled]) { background-color: #4338ca !important; }
-  &[disabled] { opacity: 0.5; }
+.page-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
 }
 
-.inline-spinner {
-  display: inline-block;
-  ::ng-deep circle { stroke: white; }
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-12) 0;
+}
+
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.setting-row {}
+
+.setting-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.name-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+
+  tk-input {
+    flex: 1;
+  }
+}
+
+.tier-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.tier-hint {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+.id-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.org-id {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-secondary);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-primary);
 }
 
 .copy-btn {
-  width: 28px !important;
-  height: 28px !important;
-  line-height: 28px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: color 150ms;
+
+  &:hover {
+    color: var(--color-text-secondary);
+  }
+}
+
+.setting-value {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
 }

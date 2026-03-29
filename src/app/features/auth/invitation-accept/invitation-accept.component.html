@@ -1,103 +1,97 @@
 <div class="auth-page">
   <div class="auth-container">
     <!-- Brand -->
-    <div class="mb-8 text-center">
-      <h1 class="font-heading text-2xl font-bold text-slate-900">Tekmar</h1>
+    <div class="auth-brand">
+      <h1 class="auth-brand__text">Tekmar</h1>
     </div>
 
     <!-- No token state -->
     @if (noToken()) {
-      <div class="auth-card text-center">
-        <p data-testid="invitation-error-text" class="text-sm text-slate-700 mb-4">Invalid invitation link. No token provided.</p>
-        <a routerLink="/login" class="font-medium text-indigo-600 hover:text-indigo-700 text-sm" data-testid="invitation-login-link">Go to login</a>
-      </div>
+      <tk-card padding="lg">
+        <div class="no-token">
+          <p data-testid="invitation-error-text" class="no-token__message">Invalid invitation link. No token provided.</p>
+          <a routerLink="/login" class="auth-link" data-testid="invitation-login-link">Go to login</a>
+        </div>
+      </tk-card>
     } @else {
       <!-- Card -->
-      <div class="auth-card">
-        <h2 class="font-heading text-xl font-semibold text-slate-900 mb-6">Accept your invitation</h2>
+      <tk-card padding="lg">
+        <h2 class="auth-heading">Accept your invitation</h2>
 
         <!-- Error messages -->
         @if (errorMessage(); as error) {
           @if (errorCode() === 'invitations.already_accepted') {
-            <div data-testid="invitation-error-text" class="mb-4 rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-700">
+            <div data-testid="invitation-error-text" class="alert alert--warning">
               {{ error }}
-              <a routerLink="/login" class="block mt-1 font-medium text-indigo-600 hover:text-indigo-700" data-testid="invitation-login-link">Go to login</a>
+              <a routerLink="/login" class="alert__link" data-testid="invitation-login-link">Go to login</a>
             </div>
           } @else {
-            <div data-testid="invitation-error-text" class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+            <div data-testid="invitation-error-text" class="alert alert--error">
               {{ error }}
             </div>
           }
         }
 
-        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form">
           <!-- Email (read-only) -->
           @if (email(); as emailValue) {
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Email</mat-label>
-              <input matInput [value]="emailValue" disabled type="email" data-testid="invitation-email-input">
-            </mat-form-field>
+            <div class="readonly-field">
+              <label class="readonly-field__label">Email</label>
+              <div class="readonly-field__value" data-testid="invitation-email-input">{{ emailValue }}</div>
+            </div>
           }
 
           <!-- Display Name -->
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Your Name</mat-label>
-            <input matInput formControlName="display_name" autocomplete="name" data-testid="invitation-display-name-input">
-            @if (form.controls.display_name.hasError('required') && form.controls.display_name.touched) {
-              <mat-error>Name is required</mat-error>
-            }
-          </mat-form-field>
+          <tk-input
+            label="Your Name"
+            autocomplete="name"
+            formControlName="display_name"
+            [testId]="'invitation-display-name-input'"
+            [error]="form.controls.display_name.touched && form.controls.display_name.hasError('required')
+              ? 'Name is required'
+              : null" />
 
           <!-- Password -->
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Password</mat-label>
-            <input matInput formControlName="password"
-                   [type]="hidePassword() ? 'password' : 'text'"
-                   autocomplete="new-password"
-                   data-testid="invitation-password-input">
-            <button mat-icon-button matSuffix type="button" (click)="togglePassword()">
-              <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-            </button>
-            @if (form.controls.password.hasError('required') && form.controls.password.touched) {
-              <mat-error>Password is required</mat-error>
-            }
-            @if (form.controls.password.hasError('minlength') && form.controls.password.touched) {
-              <mat-error>Must be at least 8 characters</mat-error>
-            }
-          </mat-form-field>
+          <tk-input
+            label="Password"
+            type="password"
+            autocomplete="new-password"
+            formControlName="password"
+            [testId]="'invitation-password-input'"
+            [error]="form.controls.password.touched && form.controls.password.hasError('required')
+              ? 'Password is required'
+              : form.controls.password.touched && form.controls.password.hasError('minlength')
+                ? 'Must be at least 8 characters'
+                : null" />
 
           <!-- Confirm Password -->
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Confirm Password</mat-label>
-            <input matInput formControlName="confirm_password"
-                   [type]="hideConfirmPassword() ? 'password' : 'text'"
-                   autocomplete="new-password"
-                   data-testid="invitation-confirm-password-input">
-            <button mat-icon-button matSuffix type="button" (click)="toggleConfirmPassword()">
-              <mat-icon>{{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-            </button>
-            @if (form.controls.confirm_password.hasError('required') && form.controls.confirm_password.touched) {
-              <mat-error>Please confirm your password</mat-error>
-            }
-            @if (form.hasError('passwordMismatch') && form.controls.confirm_password.touched) {
-              <mat-error>Passwords do not match</mat-error>
-            }
-          </mat-form-field>
+          <tk-input
+            label="Confirm Password"
+            type="password"
+            autocomplete="new-password"
+            formControlName="confirm_password"
+            [testId]="'invitation-confirm-password-input'"
+            [error]="form.controls.confirm_password.touched && form.controls.confirm_password.hasError('required')
+              ? 'Please confirm your password'
+              : form.controls.confirm_password.touched && form.hasError('passwordMismatch')
+                ? 'Passwords do not match'
+                : null" />
 
           <!-- Submit -->
-          <button mat-flat-button type="submit" class="auth-submit-btn" [disabled]="isLoading()" data-testid="invitation-submit-button">
-            @if (isLoading()) {
-              <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
-            } @else {
-              Accept & Join
-            }
-          </button>
+          <tk-button
+            variant="primary"
+            type="submit"
+            [disabled]="isLoading()"
+            [loading]="isLoading()"
+            data-testid="invitation-submit-button">
+            Accept & Join
+          </tk-button>
         </form>
-      </div>
+      </tk-card>
 
-      <p class="mt-6 text-center text-sm text-slate-500">
+      <p class="auth-footer">
         Already have an account?
-        <a routerLink="/login" class="font-medium text-indigo-600 hover:text-indigo-700">Sign in</a>
+        <a routerLink="/login" class="auth-link">Sign in</a>
       </p>
     }
   </div>
