@@ -1,4 +1,4 @@
-import { Component, computed } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { LucideAngularModule, Terminal, Plug, Users, Clock, Settings, LogOut, Plus, History } from 'lucide-angular';
 import { AuthService } from '@core/services/auth.service';
@@ -19,6 +19,8 @@ interface NavItem {
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
+  readonly state = input<'expanded' | 'collapsed' | 'hidden'>('expanded');
+
   readonly icons = { Terminal, Plug, Users, Clock, Settings, LogOut, Plus, History };
 
   readonly navItems: NavItem[] = [
@@ -46,6 +48,9 @@ export class SidebarComponent {
   readonly visibleNavItems = computed(() =>
     this.navItems.filter(item => !item.adminOnly || this.isAdmin())
   );
+
+  readonly isExpanded = computed(() => this.state() === 'expanded');
+  readonly isCollapsed = computed(() => this.state() === 'collapsed');
 
   constructor(public authService: AuthService) {}
 
