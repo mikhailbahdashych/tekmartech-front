@@ -6,6 +6,7 @@
           [class.sidebar-toggle--over-sidebar]="sidebarState() === 'expanded'"
           [class.sidebar-toggle--over-main]="sidebarState() !== 'expanded'"
           (click)="toggleSidebar()"
+          data-testid="sidebar-toggle-button"
           title="Toggle sidebar">
     <tk-icon [name]="icons.PanelLeft" size="sm" [strokeWidth]="1.5" />
   </button>

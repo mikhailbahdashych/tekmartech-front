@@ -47,6 +47,7 @@
   <div class="sidebar__theme">
     <button class="sidebar__theme-btn"
             (click)="themeService.toggle()"
+            data-testid="sidebar-theme-toggle"
             [title]="isCollapsed() ? (themeService.theme() === 'light' ? 'Dark mode' : 'Light mode') : ''">
       <lucide-icon [img]="themeService.theme() === 'light' ? icons.Moon : icons.Sun" [size]="18" [strokeWidth]="1.5"></lucide-icon>
       @if (isExpanded()) {
