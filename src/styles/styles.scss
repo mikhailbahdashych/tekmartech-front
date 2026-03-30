@@ -7,7 +7,7 @@
 @import 'layout';
 @import 'animations';
 
-// Angular Material — restricted to dialog, menu, snackbar only
+// Angular Material — restricted to dialog and menu only
 @include mat.core();
 
 $tekmar-primary: mat.define-palette(mat.$indigo-palette, 500, 300, 700);
@@ -24,7 +24,6 @@ $tekmar-theme: mat.define-light-theme((
 
 @include mat.dialog-theme($tekmar-theme);
 @include mat.menu-theme($tekmar-theme);
-@include mat.snack-bar-theme($tekmar-theme);
 
 // Global overrides for Angular Material dialog/menu
 .mat-mdc-dialog-actions {
@@ -36,6 +35,8 @@ $tekmar-theme: mat.define-light-theme((
 .mat-mdc-dialog-surface {
   background: var(--color-bg-primary) !important;
   color: var(--color-text-primary) !important;
+  padding: var(--space-2) !important;
+  border-radius: var(--radius-lg) !important;
 }
 
 .mat-mdc-menu-panel {

@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { TkNotificationService } from '@shared/components/tk-notification/tk-notification.service';
 import { Plug, RefreshCw, Unplug, Plus } from 'lucide-angular';
 import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
 import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
@@ -35,7 +35,7 @@ import { DisconnectDialogComponent, DisconnectDialogData } from '@features/integ
 export class IntegrationListComponent implements OnInit {
   private integrationService = inject(IntegrationService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
+  private notify = inject(TkNotificationService);
 
   readonly icons = { Plus, Plug, RefreshCw, Unplug };
   readonly typeConfig = INTEGRATION_TYPE_CONFIG;
@@ -94,7 +94,7 @@ export class IntegrationListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result: IntegrationResponse | null) => {
       if (result) {
         this.integrations.update(list => [result, ...list]);
-        this.snackBar.open('Integration connected successfully', 'Dismiss', { duration: 4000 });
+        this.notify.success('Integration connected successfully');
       }
     });
   }
@@ -114,9 +114,9 @@ export class IntegrationListComponent implements OnInit {
         });
         const status = response.integration.last_health_check_status;
         if (status === 'healthy') {
-          this.snackBar.open('Connection is healthy', 'Dismiss', { duration: 4000 });
+          this.notify.success('Connection is healthy');
         } else {
-          this.snackBar.open('Connection check failed — status: ' + status, 'Dismiss', { duration: 6000 });
+          this.notify.error('Connection check failed — status: ' + status);
         }
       },
       error: (err) => {
@@ -125,11 +125,7 @@ export class IntegrationListComponent implements OnInit {
           next.delete(integration.id);
           return next;
         });
-        this.snackBar.open(
-          err.error?.error?.message ?? 'Failed to test connection',
-          'Dismiss',
-          { duration: 6000 },
-        );
+        this.notify.error(err.error?.error?.message ?? 'Failed to test connection');
       },
     });
   }
@@ -148,7 +144,7 @@ export class IntegrationListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((disconnected: boolean) => {
       if (disconnected) {
         this.integrations.update(list => list.filter(i => i.id !== integration.id));
-        this.snackBar.open('Integration disconnected', 'Dismiss', { duration: 4000 });
+        this.notify.success('Integration disconnected');
       }
     });
   }

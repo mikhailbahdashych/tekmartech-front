@@ -30,11 +30,12 @@
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border-primary);
   background: var(--color-bg-primary);
+  color: var(--color-text-primary);
   cursor: pointer;
   transition: border-color 150ms, background-color 150ms;
 
   &:hover {
-    border-color: #c7d2fe;
+    border-color: var(--color-accent-light);
     background-color: var(--color-bg-secondary);
   }
 

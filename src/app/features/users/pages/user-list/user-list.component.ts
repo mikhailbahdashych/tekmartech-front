@@ -1,7 +1,7 @@
 import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { TkNotificationService } from '@shared/components/tk-notification/tk-notification.service';
 import { Plus, MoreVertical } from 'lucide-angular';
 import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
 import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
@@ -36,7 +36,7 @@ export class UserListComponent implements OnInit {
   private userService = inject(UserService);
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
+  private notify = inject(TkNotificationService);
 
   readonly icons = { Plus, MoreVertical };
 
@@ -139,7 +139,7 @@ export class UserListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((invitation: InvitationResponse | null) => {
       if (invitation) {
         this.invitations.update(list => [invitation, ...list]);
-        this.snackBar.open(`Invitation sent to ${invitation.email}`, 'Dismiss', { duration: 4000 });
+        this.notify.success(`Invitation sent to ${invitation.email}`);
       }
     });
   }
@@ -158,10 +158,10 @@ export class UserListComponent implements OnInit {
       this.userService.changeRole(user.id, newRole).subscribe({
         next: (response) => {
           this.users.update(list => list.map(u => u.id === user.id ? response.user : u));
-          this.snackBar.open(`${user.display_name} is now ${newRole}`, 'Dismiss', { duration: 4000 });
+          this.notify.success(`${user.display_name} is now ${newRole}`);
         },
         error: (err) => {
-          this.snackBar.open(err.error?.error?.message ?? 'Failed to change role', 'Dismiss', { duration: 6000 });
+          this.notify.error(err.error?.error?.message ?? 'Failed to change role');
         },
       });
     });
@@ -180,10 +180,10 @@ export class UserListComponent implements OnInit {
       this.userService.removeUser(user.id).subscribe({
         next: () => {
           this.users.update(list => list.filter(u => u.id !== user.id));
-          this.snackBar.open(`${user.display_name} has been removed`, 'Dismiss', { duration: 4000 });
+          this.notify.success(`${user.display_name} has been removed`);
         },
         error: (err) => {
-          this.snackBar.open(err.error?.error?.message ?? 'Failed to remove user', 'Dismiss', { duration: 6000 });
+          this.notify.error(err.error?.error?.message ?? 'Failed to remove user');
         },
       });
     });
@@ -201,10 +201,10 @@ export class UserListComponent implements OnInit {
       this.userService.revokeInvitation(invitation.id).subscribe({
         next: (response) => {
           this.invitations.update(list => list.map(i => i.id === invitation.id ? response.invitation : i));
-          this.snackBar.open('Invitation revoked', 'Dismiss', { duration: 4000 });
+          this.notify.success('Invitation revoked');
         },
         error: (err) => {
-          this.snackBar.open(err.error?.error?.message ?? 'Failed to revoke invitation', 'Dismiss', { duration: 6000 });
+          this.notify.error(err.error?.error?.message ?? 'Failed to revoke invitation');
         },
       });
     });

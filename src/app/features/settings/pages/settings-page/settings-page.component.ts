@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { TkNotificationService } from '@shared/components/tk-notification/tk-notification.service';
 import { DatePipe } from '@angular/common';
 import { Copy, Check } from 'lucide-angular';
 import { TkInputComponent } from '@shared/components/tk-input/tk-input.component';
@@ -32,7 +32,7 @@ import { AuthService } from '@core/services/auth.service';
 export class SettingsPageComponent implements OnInit {
   private orgService = inject(OrganizationService);
   private authService = inject(AuthService);
-  private snackBar = inject(MatSnackBar);
+  private notify = inject(TkNotificationService);
 
   readonly icons = { Copy, Check };
   readonly org = signal<Organization | null>(null);
@@ -61,11 +61,11 @@ export class SettingsPageComponent implements OnInit {
         this.org.set(response.organization);
         this.authService.currentOrganization.set(response.organization);
         this.isSaving.set(false);
-        this.snackBar.open('Organization name updated', 'Dismiss', { duration: 4000 });
+        this.notify.success('Organization name updated');
       },
       error: (err) => {
         this.isSaving.set(false);
-        this.snackBar.open(err.error?.error?.message ?? 'Failed to update name', 'Dismiss', { duration: 6000 });
+        this.notify.error(err.error?.error?.message ?? 'Failed to update name');
       },
     });
   }
