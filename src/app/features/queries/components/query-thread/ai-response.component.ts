@@ -11,7 +11,7 @@ import { QueryPhase } from '@features/queries/services/query-page.store';
 import { IntegrationResponse } from '@features/integrations/models';
 
 @Component({
-  selector: 'app-ai-response',
+  selector: 'ai-response',
   standalone: true,
   imports: [
     MarkdownPipe,

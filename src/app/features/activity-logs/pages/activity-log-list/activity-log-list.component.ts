@@ -2,7 +2,7 @@ import { Component, HostListener, OnInit, computed, inject, signal } from '@angu
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
-import { TkSelectComponent, TkSelectOption } from '@shared/components/tk-select/tk-select.component';
+import { TkMultiSelectComponent, TkMultiSelectOption } from '@shared/components/tk-multi-select/tk-multi-select.component';
 import { ActivityLogService } from '@features/activity-logs/services/activity-log.service';
 import { UserService } from '@features/users/services/user.service';
 import { ActivityLogResponse, ActivityAction } from '@features/activity-logs/models/activity-log.model';
@@ -42,9 +42,9 @@ const ACTION_LABELS: Record<ActivityAction, (meta: Record<string, unknown> | nul
 };
 
 @Component({
-  selector: 'app-activity-log-list',
+  selector: 'activity-log-list',
   standalone: true,
-  imports: [DatePipe, TkSpinnerComponent, TkSelectComponent],
+  imports: [DatePipe, TkSpinnerComponent, TkMultiSelectComponent],
   templateUrl: './activity-log-list.component.html',
   styleUrl: './activity-log-list.component.scss',
 })
@@ -53,8 +53,8 @@ export class ActivityLogListComponent implements OnInit {
   private userService = inject(UserService);
   private router = inject(Router);
 
-  readonly actionSelectOptions: TkSelectOption[] = ACTION_OPTIONS.map(o => ({ value: o.value, label: o.label }));
-  readonly userSelectOptions = computed<TkSelectOption[]>(() =>
+  readonly actionSelectOptions: TkMultiSelectOption[] = ACTION_OPTIONS.map(o => ({ value: o.value, label: o.label }));
+  readonly userSelectOptions = computed<TkMultiSelectOption[]>(() =>
     this.users().map(u => ({ value: u.id, label: u.display_name }))
   );
 
@@ -62,8 +62,8 @@ export class ActivityLogListComponent implements OnInit {
   readonly pagination = signal<PaginationResponse | null>(null);
   readonly users = signal<User[]>([]);
   readonly isLoading = signal(true);
-  readonly actionFilter = signal('');
-  readonly userFilter = signal('');
+  readonly selectedActions = signal<string[]>([]);
+  readonly selectedUserIds = signal<string[]>([]);
 
   // Server-driven pagination
   readonly pageSize = signal(25);
@@ -91,14 +91,14 @@ export class ActivityLogListComponent implements OnInit {
     return formatter ? formatter(log.metadata) : log.action;
   }
 
-  onActionFilterChange(action: string): void {
-    this.actionFilter.set(action);
+  onActionFilterChange(actions: string[]): void {
+    this.selectedActions.set(actions);
     this.cursorStack.set([]);
     this.loadPage();
   }
 
-  onUserFilterChange(userId: string): void {
-    this.userFilter.set(userId);
+  onUserFilterChange(userIds: string[]): void {
+    this.selectedUserIds.set(userIds);
     this.cursorStack.set([]);
     this.loadPage();
   }
@@ -158,8 +158,8 @@ export class ActivityLogListComponent implements OnInit {
   private loadPage(cursor?: string): void {
     this.isLoading.set(true);
     const params: Record<string, string | number> = { limit: this.pageSize() };
-    if (this.actionFilter()) params['action'] = this.actionFilter();
-    if (this.userFilter()) params['user_id'] = this.userFilter();
+    if (this.selectedActions().length > 0) params['action'] = this.selectedActions().join(',');
+    if (this.selectedUserIds().length > 0) params['user_id'] = this.selectedUserIds().join(',');
     if (cursor) params['cursor'] = cursor;
 
     this.logService.listActivityLogs(params as any).subscribe({

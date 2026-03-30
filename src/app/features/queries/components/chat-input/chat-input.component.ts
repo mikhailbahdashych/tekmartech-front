@@ -3,7 +3,7 @@ import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
 import { Plus, ArrowUp, Send } from 'lucide-angular';
 
 @Component({
-  selector: 'app-chat-input',
+  selector: 'chat-input',
   standalone: true,
   imports: [TkIconComponent],
   templateUrl: './chat-input.component.html',

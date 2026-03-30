@@ -10,7 +10,7 @@ import { AuthService } from '@core/services/auth.service';
 import { ChevronDown } from 'lucide-angular';
 
 @Component({
-  selector: 'app-query-page',
+  selector: 'query-page',
   standalone: true,
   imports: [
     TkIntegrationSelectorComponent,

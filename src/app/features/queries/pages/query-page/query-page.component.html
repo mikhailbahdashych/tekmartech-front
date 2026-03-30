@@ -5,7 +5,7 @@
       <h1 class="query-page__greeting">Hey there, {{ firstName() }}</h1>
 
       <div class="query-page__welcome-input">
-        <app-chat-input
+        <chat-input
           [isSubmitting]="store.isSubmitting()"
           [disabled]="false"
           placeholder="How can I help you today?"
@@ -25,7 +25,7 @@
   <!-- Active conversation layout -->
   <div class="query-page query-page--active">
     <div class="query-page__thread-area" #threadArea (scroll)="onThreadScroll($event)">
-      <app-query-thread
+      <query-thread
         [integrationMap]="integrationMap()"
         (approve)="onApprove()"
         (reject)="onReject()"
@@ -41,7 +41,7 @@
     </div>
 
     <div class="query-page__input-area">
-      <app-chat-input
+      <chat-input
         [isSubmitting]="store.isSubmitting()"
         [disabled]="store.phase() !== 'idle'"
         (submitQuery)="onSubmit($event)" />

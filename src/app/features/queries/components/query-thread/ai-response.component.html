@@ -42,7 +42,7 @@
 
       <div class="ai-response__plan-steps" data-testid="query-plan-steps-list">
         @for (step of queryPlan.steps; track step.step_id; let i = $index) {
-          <app-plan-step-card
+          <plan-step-card
             [step]="step"
             [index]="i"
             [integrationType]="getIntegration(step.integration_id)?.type ?? null"

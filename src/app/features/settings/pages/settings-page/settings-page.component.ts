@@ -14,7 +14,7 @@ import { OrganizationService } from '@features/settings/services/organization.se
 import { AuthService } from '@core/services/auth.service';
 
 @Component({
-  selector: 'app-settings-page',
+  selector: 'settings-page',
   standalone: true,
   imports: [
     ReactiveFormsModule,

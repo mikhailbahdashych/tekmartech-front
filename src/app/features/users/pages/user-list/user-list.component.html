@@ -11,9 +11,28 @@
     </tk-button>
   </div>
 
+  <div class="filter-bar">
+    <div class="filter-bar__search">
+      <tk-search-input placeholder="Search by name or email..." [testId]="'users'" (searchChange)="onSearchChange($event)" />
+    </div>
+    <div class="filter-bar__filter">
+      <tk-multi-select label="Role" [options]="roleFilterOptions" [selectedValues]="selectedRoles()" allLabel="All roles" [testId]="'user-role'" (selectionChange)="onRoleFilterChange($event)" />
+    </div>
+    <div class="filter-bar__filter">
+      <tk-multi-select label="Status" [options]="statusFilterOptions" [selectedValues]="selectedStatuses()" allLabel="All statuses" [testId]="'user-status'" (selectionChange)="onStatusFilterChange($event)" />
+    </div>
+  </div>
+
   <!-- Team Members -->
   <section class="section">
     <h2 class="section-title">Team Members</h2>
+
+    @if (paginatedUsers().length === 0 && !isLoadingUsers()) {
+      <tk-empty-state
+        [icon]="icons.Users"
+        heading="No users found"
+        description="Try adjusting your search or filters." />
+    } @else {
     <div class="table-container">
       <table class="table" data-testid="user-table">
         <thead>
@@ -103,6 +122,7 @@
       @if (p.has_more) {
         <tk-pagination [hasMore]="p.has_more" [totalCount]="p.total_count" [currentCount]="users().length" (loadMore)="loadMoreUsers()" />
       }
+    }
     }
   </section>
 

@@ -3,7 +3,7 @@
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  margin: calc(-1 * var(--space-6)) calc(-1 * var(--space-8));
+  margin: calc(-1 * var(--space-12)) calc(-1 * var(--space-8)) calc(-1 * var(--space-6));
 }
 
 // Welcome state: greeting + input centered on screen

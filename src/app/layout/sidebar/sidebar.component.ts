@@ -13,7 +13,7 @@ interface NavItem {
 }
 
 @Component({
-  selector: 'app-sidebar',
+  selector: 'sidebar',
   standalone: true,
   imports: [RouterLink, RouterLinkActive, LucideAngularModule],
   templateUrl: './sidebar.component.html',

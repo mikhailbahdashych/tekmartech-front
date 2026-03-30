@@ -25,7 +25,7 @@
 
   <!-- Interpretation text -->
   @if (store.interpretationText()) {
-    <app-interpretation-display
+    <interpretation-display
       [text]="store.interpretationText()"
       [isStreaming]="store.isInterpretationStreaming()"
       [errorMessage]="store.phase() === 'failed' && !store.plan() ? store.errorMessage() : null" />
@@ -33,7 +33,7 @@
 
   <!-- Plan -->
   @if (store.plan(); as plan) {
-    <app-plan-approval
+    <plan-approval
       [plan]="plan"
       [planSummary]="store.planSummary()"
       [estimatedDuration]="store.estimatedDuration()"
@@ -46,14 +46,14 @@
 
   <!-- Execution log -->
   @if (store.executionSteps().length > 0) {
-    <app-execution-log
+    <execution-log
       [steps]="store.executionSteps()"
       [totalSteps]="store.totalSteps()" />
   }
 
   <!-- Results -->
   @if (store.phase() === 'completed' && store.resultData(); as data) {
-    <app-results-display
+    <results-display
       [resultSummary]="store.resultSummary()"
       [resultData]="data"
       [executionStatus]="store.executionStatus()"
@@ -62,7 +62,7 @@
 
   <!-- Transparency log -->
   @if (store.transparencyLog(); as log) {
-    <app-transparency-log [log]="log" />
+    <transparency-log [log]="log" />
   }
 
   <!-- Error state -->

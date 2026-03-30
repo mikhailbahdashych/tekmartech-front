@@ -21,13 +21,13 @@
 }
 
 // Filters
-.filters {
+.filter-bar {
   display: flex;
   align-items: flex-end;
   gap: var(--space-3);
   margin-bottom: var(--space-4);
-
-  tk-select { width: 200px; }
+  flex-wrap: wrap;
+  &__filter { flex: 0 0 auto; min-width: 180px; }
 }
 
 // Table

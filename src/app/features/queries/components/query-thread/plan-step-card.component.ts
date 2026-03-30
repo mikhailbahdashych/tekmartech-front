@@ -4,7 +4,7 @@ import { PlanStep } from '@features/queries/models';
 import { getToolDisplayName } from '@features/queries/constants/tool-display-names';
 
 @Component({
-  selector: 'app-plan-step-card',
+  selector: 'plan-step-card',
   standalone: true,
   imports: [TkIntegrationIconComponent],
   templateUrl: './plan-step-card.component.html',

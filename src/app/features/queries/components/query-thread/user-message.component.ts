@@ -8,7 +8,7 @@ interface MessageIntegration {
 }
 
 @Component({
-  selector: 'app-user-message',
+  selector: 'user-message',
   standalone: true,
   imports: [TkIntegrationIconComponent],
   templateUrl: './user-message.component.html',

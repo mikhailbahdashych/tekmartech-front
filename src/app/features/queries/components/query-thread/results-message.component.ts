@@ -7,7 +7,7 @@ import { Download, AlertTriangle, ChevronDown, ChevronRight } from 'lucide-angul
 import { ResultData, ResultTable, TransparencyLog } from '@features/queries/models';
 
 @Component({
-  selector: 'app-results-message',
+  selector: 'results-message',
   standalone: true,
   imports: [TkButtonComponent, TkIconComponent, TkBadgeComponent, TkTableComponent],
   templateUrl: './results-message.component.html',

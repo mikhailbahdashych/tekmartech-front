@@ -16,7 +16,7 @@ import { INTEGRATION_TYPE_CONFIG, AWS_REGIONS } from '@features/integrations/con
 type DialogStep = 'type-selection' | 'credentials';
 
 @Component({
-  selector: 'app-connect-dialog',
+  selector: 'connect-dialog',
   standalone: true,
   imports: [
     ReactiveFormsModule,

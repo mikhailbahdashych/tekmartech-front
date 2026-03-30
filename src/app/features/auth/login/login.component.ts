@@ -9,7 +9,7 @@ import { TkButtonComponent } from '@shared/components/tk-button/tk-button.compon
 import { TkCardComponent } from '@shared/components/tk-card/tk-card.component';
 
 @Component({
-  selector: 'app-login',
+  selector: 'login',
   standalone: true,
   imports: [
     ReactiveFormsModule,

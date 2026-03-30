@@ -11,7 +11,7 @@ export interface ConfirmDialogData {
 }
 
 @Component({
-  selector: 'app-confirm-dialog',
+  selector: 'confirm-dialog',
   standalone: true,
   imports: [MatDialogModule, TkButtonComponent],
   templateUrl: './confirm-dialog.component.html',

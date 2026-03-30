@@ -1,22 +1,18 @@
 <div class="page-container" data-testid="activity-log-container">
   <div class="page-header">
-    <h1 class="page-title">Activity Log</h1>
-    <p class="page-subtitle">Audit trail of all platform activity</p>
+    <div>
+      <h1 class="page-title">Activity Log</h1>
+      <p class="page-subtitle">Audit trail of all platform activity</p>
+    </div>
   </div>
 
-  <div class="filters">
-    <tk-select
-      label="Action"
-      placeholder="All actions"
-      [options]="actionSelectOptions"
-      (valueChange)="onActionFilterChange($event)"
-      [testId]="'activity-log-action-filter'" />
-    <tk-select
-      label="User"
-      placeholder="All users"
-      [options]="userSelectOptions()"
-      (valueChange)="onUserFilterChange($event)"
-      [testId]="'activity-log-user-filter'" />
+  <div class="filter-bar">
+    <div class="filter-bar__filter">
+      <tk-multi-select label="Action" [options]="actionSelectOptions" [selectedValues]="selectedActions()" allLabel="All actions" [testId]="'activity-action'" (selectionChange)="onActionFilterChange($event)" />
+    </div>
+    <div class="filter-bar__filter">
+      <tk-multi-select label="User" [options]="userSelectOptions()" [selectedValues]="selectedUserIds()" allLabel="All users" [testId]="'activity-user'" (selectionChange)="onUserFilterChange($event)" />
+    </div>
   </div>
 
   <div class="table-container">

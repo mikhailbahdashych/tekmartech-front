@@ -7,7 +7,7 @@ import { ExecutionStepState } from '@features/queries/services/query-page.store'
 import { IntegrationResponse } from '@features/integrations/models';
 
 @Component({
-  selector: 'app-execution-message',
+  selector: 'execution-message',
   standalone: true,
   imports: [TkIconComponent, TkIntegrationIconComponent, TkSpinnerComponent],
   templateUrl: './execution-message.component.html',

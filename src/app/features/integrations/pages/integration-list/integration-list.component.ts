@@ -17,7 +17,7 @@ import { ConnectDialogComponent } from '@features/integrations/components/connec
 import { DisconnectDialogComponent, DisconnectDialogData } from '@features/integrations/components/disconnect-dialog/disconnect-dialog.component';
 
 @Component({
-  selector: 'app-integration-list',
+  selector: 'integration-list',
   standalone: true,
   imports: [
     TkButtonComponent,

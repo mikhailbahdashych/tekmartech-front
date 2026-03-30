@@ -5,7 +5,7 @@ import { ChevronDown, ChevronRight } from 'lucide-angular';
 import { TransparencyLog } from '@features/queries/models';
 
 @Component({
-  selector: 'app-transparency-log',
+  selector: 'transparency-log',
   standalone: true,
   imports: [TkIconComponent, TkBadgeComponent],
   templateUrl: './transparency-log.component.html',

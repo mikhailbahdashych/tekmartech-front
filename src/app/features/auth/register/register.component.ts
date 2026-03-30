@@ -16,7 +16,7 @@ function passwordMatchValidator(group: AbstractControl): ValidationErrors | null
 }
 
 @Component({
-  selector: 'app-register',
+  selector: 'register',
   standalone: true,
   imports: [
     ReactiveFormsModule,

@@ -6,13 +6,31 @@
     </div>
   </div>
 
-  <div class="filters">
-    <tk-select
-      label="Status"
-      placeholder="All statuses"
-      [options]="statusSelectOptions"
-      (valueChange)="onStatusFilterChange($event)"
-      [testId]="'query-history-status-filter'" />
+  <div class="filter-bar">
+    <div class="filter-bar__search">
+      <tk-search-input
+        placeholder="Search queries..."
+        [testId]="'queries'"
+        (searchChange)="onSearchChange($event)" />
+    </div>
+    <div class="filter-bar__filter">
+      <tk-multi-select
+        label="Status"
+        [options]="statusFilterOptions"
+        [selectedValues]="selectedStatuses()"
+        allLabel="All statuses"
+        [testId]="'query-status'"
+        (selectionChange)="onStatusFilterChange($event)" />
+    </div>
+    <div class="filter-bar__filter">
+      <tk-multi-select
+        label="Initiated by"
+        [options]="userFilterOptions()"
+        [selectedValues]="selectedUsers()"
+        allLabel="All users"
+        [testId]="'query-user'"
+        (selectionChange)="onUserFilterChange($event)" />
+    </div>
   </div>
 
   @if (queries().length === 0 && !isLoading()) {

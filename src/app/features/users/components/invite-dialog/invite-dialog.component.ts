@@ -9,7 +9,7 @@ import { UserService } from '@features/users/services/user.service';
 import { InvitationResponse } from '@features/users/models/user-management.model';
 
 @Component({
-  selector: 'app-invite-dialog',
+  selector: 'invite-dialog',
   standalone: true,
   imports: [
     ReactiveFormsModule,

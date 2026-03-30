@@ -1,14 +1,14 @@
 <div class="thread" data-testid="query-thread-container">
   <!-- User message -->
   @if (store.queryText()) {
-    <app-user-message
+    <user-message
       [queryText]="store.queryText()"
       [integrations]="getSubmittedIntegrations()" />
   }
 
   <!-- AI response (interpretation + plan) -->
   @if (store.phase() !== 'idle') {
-    <app-ai-response
+    <ai-response
       [interpretationText]="store.interpretationText()"
       [isStreaming]="store.isInterpretationStreaming()"
       [plan]="store.plan()"
@@ -25,7 +25,7 @@
 
   <!-- Execution -->
   @if ((store.phase() === 'executing' || store.phase() === 'completed' || store.phase() === 'failed') && store.executionSteps().length > 0) {
-    <app-execution-message
+    <execution-message
       [steps]="store.executionSteps()"
       [totalSteps]="store.totalSteps()"
       [integrationMap]="integrationMap()" />
@@ -33,7 +33,7 @@
 
   <!-- Results -->
   @if (store.phase() === 'completed' && store.resultData(); as data) {
-    <app-results-message
+    <results-message
       [resultSummary]="store.resultSummary()"
       [resultData]="data"
       [executionStatus]="store.executionStatus()"

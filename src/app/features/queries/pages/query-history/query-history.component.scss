@@ -21,13 +21,15 @@
   color: var(--color-text-secondary);
 }
 
-.filters {
+.filter-bar {
   display: flex;
   align-items: flex-end;
   gap: var(--space-3);
   margin-bottom: var(--space-4);
+  flex-wrap: wrap;
 
-  tk-select { width: 200px; }
+  &__search { flex: 0 0 240px; }
+  &__filter { flex: 0 0 auto; min-width: 160px; }
 }
 
 // Table

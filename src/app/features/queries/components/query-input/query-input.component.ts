@@ -6,7 +6,7 @@ import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
 import { Send } from 'lucide-angular';
 
 @Component({
-  selector: 'app-query-input',
+  selector: 'query-input',
   standalone: true,
   imports: [ReactiveFormsModule, TkTextareaComponent, TkButtonComponent, TkIconComponent],
   templateUrl: './query-input.component.html',

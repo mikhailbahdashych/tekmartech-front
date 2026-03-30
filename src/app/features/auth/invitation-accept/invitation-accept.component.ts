@@ -16,7 +16,7 @@ function passwordMatchValidator(group: AbstractControl): ValidationErrors | null
 }
 
 @Component({
-  selector: 'app-invitation-accept',
+  selector: 'invitation-accept',
   standalone: true,
   imports: [
     ReactiveFormsModule,

@@ -2,7 +2,7 @@ import { Component, input } from '@angular/core';
 import { MarkdownPipe } from '@shared/pipes/markdown.pipe';
 
 @Component({
-  selector: 'app-interpretation-display',
+  selector: 'interpretation-display',
   standalone: true,
   imports: [MarkdownPipe],
   templateUrl: './interpretation-display.component.html',

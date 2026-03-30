@@ -6,7 +6,7 @@ import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
 import { PanelLeft } from 'lucide-angular';
 
 @Component({
-  selector: 'app-layout',
+  selector: 'layout',
   standalone: true,
   imports: [RouterOutlet, SidebarComponent, TkIconComponent],
   templateUrl: './layout.component.html',

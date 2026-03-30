@@ -10,7 +10,7 @@ import { ExecutionMessageComponent } from './execution-message.component';
 import { ResultsMessageComponent } from './results-message.component';
 
 @Component({
-  selector: 'app-query-thread',
+  selector: 'query-thread',
   standalone: true,
   imports: [
     TkButtonComponent,

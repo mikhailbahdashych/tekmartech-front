@@ -2,12 +2,15 @@ import { Component, HostListener, OnInit, computed, inject, signal } from '@angu
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { TkNotificationService } from '@shared/components/tk-notification/tk-notification.service';
-import { Plus, MoreVertical } from 'lucide-angular';
+import { Plus, MoreVertical, Users } from 'lucide-angular';
+import { TkEmptyStateComponent } from '@shared/components/tk-empty-state/tk-empty-state.component';
 import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
 import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
 import { TkBadgeComponent, TkBadgeVariant } from '@shared/components/tk-badge/tk-badge.component';
 import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
 import { TkPaginationComponent } from '@shared/components/tk-pagination/tk-pagination.component';
+import { TkMultiSelectComponent, TkMultiSelectOption } from '@shared/components/tk-multi-select/tk-multi-select.component';
+import { TkSearchInputComponent } from '@shared/components/tk-search-input/tk-search-input.component';
 import { RelativeTimePipe } from '@shared/pipes/relative-time.pipe';
 import { UserService } from '@features/users/services/user.service';
 import { InvitationResponse, InvitationStatus } from '@features/users/models/user-management.model';
@@ -18,7 +21,7 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '@features/users/compo
 import { PaginationResponse } from '@features/queries/models';
 
 @Component({
-  selector: 'app-user-list',
+  selector: 'user-list',
   standalone: true,
   imports: [
     MatMenuModule,
@@ -27,6 +30,9 @@ import { PaginationResponse } from '@features/queries/models';
     TkBadgeComponent,
     TkIconComponent,
     TkPaginationComponent,
+    TkMultiSelectComponent,
+    TkSearchInputComponent,
+    TkEmptyStateComponent,
     RelativeTimePipe,
   ],
   templateUrl: './user-list.component.html',
@@ -38,7 +44,21 @@ export class UserListComponent implements OnInit {
   private dialog = inject(MatDialog);
   private notify = inject(TkNotificationService);
 
-  readonly icons = { Plus, MoreVertical };
+  readonly icons = { Plus, MoreVertical, Users };
+
+  readonly searchQuery = signal('');
+  readonly selectedRoles = signal<string[]>([]);
+  readonly selectedStatuses = signal<string[]>([]);
+
+  readonly roleFilterOptions: TkMultiSelectOption[] = [
+    { value: 'admin', label: 'Admin' },
+    { value: 'member', label: 'Member' },
+  ];
+
+  readonly statusFilterOptions: TkMultiSelectOption[] = [
+    { value: 'active', label: 'Active' },
+    { value: 'disabled', label: 'Disabled' },
+  ];
 
   readonly users = signal<User[]>([]);
   readonly invitations = signal<InvitationResponse[]>([]);
@@ -122,6 +142,24 @@ export class UserListComponent implements OnInit {
     const target = event.target as HTMLElement;
     if (this.usersSizeDropdownOpen() && !target.closest('.users-size-dropdown')) this.usersSizeDropdownOpen.set(false);
     if (this.invSizeDropdownOpen() && !target.closest('.inv-size-dropdown')) this.invSizeDropdownOpen.set(false);
+  }
+
+  onSearchChange(search: string): void {
+    this.searchQuery.set(search);
+    this.usersPage.set(0);
+    this.loadUsers();
+  }
+
+  onRoleFilterChange(roles: string[]): void {
+    this.selectedRoles.set(roles);
+    this.usersPage.set(0);
+    this.loadUsers();
+  }
+
+  onStatusFilterChange(statuses: string[]): void {
+    this.selectedStatuses.set(statuses);
+    this.usersPage.set(0);
+    this.loadUsers();
   }
 
   loadMoreUsers(): void {
@@ -212,7 +250,11 @@ export class UserListComponent implements OnInit {
 
   private loadUsers(cursor?: string): void {
     this.isLoadingUsers.set(true);
-    this.userService.listUsers({ limit: 50, cursor }).subscribe({
+    const params: Record<string, string | number | undefined> = { limit: 50, cursor };
+    if (this.searchQuery()) params['search'] = this.searchQuery();
+    if (this.selectedRoles().length > 0) params['role'] = this.selectedRoles().join(',');
+    if (this.selectedStatuses().length > 0) params['status'] = this.selectedStatuses().join(',');
+    this.userService.listUsers(params as any).subscribe({
       next: (response) => {
         if (cursor) {
           this.users.update(existing => [...existing, ...response.users]);

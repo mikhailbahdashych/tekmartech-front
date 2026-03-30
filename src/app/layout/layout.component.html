@@ -1,5 +1,5 @@
 <div class="app-layout" [class.app-layout--collapsed]="sidebarState() === 'collapsed'" [class.app-layout--hidden]="sidebarState() === 'hidden'">
-  <app-sidebar [state]="sidebarState()" />
+  <sidebar [state]="sidebarState()" />
 
   <!-- Toggle button — always outside the sidebar -->
   <button class="sidebar-toggle"

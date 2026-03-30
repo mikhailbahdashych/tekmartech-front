@@ -3,7 +3,7 @@ import { TkEmptyStateComponent } from '@shared/components/tk-empty-state/tk-empt
 import { Construction } from 'lucide-angular';
 
 @Component({
-  selector: 'app-queries-placeholder',
+  selector: 'queries-placeholder',
   standalone: true,
   imports: [TkEmptyStateComponent],
   template: `
