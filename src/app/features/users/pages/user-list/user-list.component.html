@@ -46,7 +46,7 @@
               </td>
               <td class="table__cell">
                 <button class="menu-trigger" [matMenuTriggerFor]="userMenu" [attr.data-testid]="'user-row-actions-menu-' + user.id">
-                  <tk-icon [name]="icons.MoreVertical" size="sm" />
+                  <tk-icon [name]="icons.MoreVertical" size="md" />
                 </button>
                 <mat-menu #userMenu="matMenu">
                   <button mat-menu-item (click)="changeRole(user)" [attr.data-testid]="'user-row-change-role-' + user.id">
@@ -138,7 +138,7 @@
               <td class="table__cell">
                 @if (inv.status === 'pending') {
                   <button class="menu-trigger" [matMenuTriggerFor]="invMenu">
-                    <tk-icon [name]="icons.MoreVertical" size="sm" />
+                    <tk-icon [name]="icons.MoreVertical" size="md" />
                   </button>
                   <mat-menu #invMenu="matMenu">
                     <button mat-menu-item class="menu-item--danger" (click)="revokeInvitation(inv)" [attr.data-testid]="'invitation-row-revoke-' + inv.id">Revoke</button>

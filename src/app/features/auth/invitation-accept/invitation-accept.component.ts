@@ -94,7 +94,7 @@ export class InvitationAcceptComponent implements OnInit {
       next: () => {
         const orgName = this.authService.currentOrganization()?.name ?? 'the organization';
         this.snackBar.open(`Welcome to ${orgName}!`, 'Dismiss', { duration: 4000 });
-        this.router.navigate(['/queries']);
+        this.router.navigate(['/new']);
       },
       error: (err) => {
         const code = err.error?.error?.code ?? '';

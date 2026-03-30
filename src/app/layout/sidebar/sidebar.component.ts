@@ -24,7 +24,7 @@ export class SidebarComponent {
   readonly icons = { Terminal, Plug, Users, Clock, Settings, LogOut, Plus, History };
 
   readonly navItems: NavItem[] = [
-    { label: 'Queries', route: '/queries', icon: Terminal, adminOnly: false, testId: 'sidebar-nav-queries' },
+    { label: 'Queries', route: '/new', icon: Terminal, adminOnly: false, testId: 'sidebar-nav-queries' },
     { label: 'History', route: '/queries/history', icon: History, adminOnly: false, testId: 'sidebar-nav-history' },
     { label: 'Integrations', route: '/integrations', icon: Plug, adminOnly: true, testId: 'sidebar-nav-integrations' },
     { label: 'Team', route: '/users', icon: Users, adminOnly: true, testId: 'sidebar-nav-team' },

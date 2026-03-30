@@ -28,6 +28,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       {
+        path: 'new',
+        loadComponent: () => import('./features/queries/pages/query-page/query-page.component')
+          .then(m => m.QueryPageComponent),
+      },
+      {
         path: 'queries',
         loadChildren: () => import('./features/queries/queries.routes')
           .then(m => m.QUERIES_ROUTES),
@@ -56,7 +61,7 @@ export const routes: Routes = [
           .then(m => m.SETTINGS_ROUTES),
         canActivate: [adminGuard],
       },
-      { path: '', redirectTo: 'queries', pathMatch: 'full' },
+      { path: '', redirectTo: 'new', pathMatch: 'full' },
     ],
   },
   { path: '**', redirectTo: '' },

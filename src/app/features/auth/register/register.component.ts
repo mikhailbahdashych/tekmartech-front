@@ -79,7 +79,7 @@ export class RegisterComponent {
       finalize(() => this.isLoading.set(false)),
     ).subscribe({
       next: () => {
-        this.router.navigate(['/queries']);
+        this.router.navigate(['/new']);
       },
       error: (err) => {
         const apiError = err.error as ApiError['error'] | undefined;

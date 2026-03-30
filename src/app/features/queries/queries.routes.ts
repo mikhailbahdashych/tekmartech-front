@@ -3,8 +3,8 @@ import { Routes } from '@angular/router';
 export const QUERIES_ROUTES: Routes = [
   {
     path: '',
-    loadComponent: () => import('./pages/query-page/query-page.component')
-      .then(m => m.QueryPageComponent),
+    loadComponent: () => import('./pages/queries-placeholder/queries-placeholder.component')
+      .then(m => m.QueriesPlaceholderComponent),
   },
   {
     path: 'history',

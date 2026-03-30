@@ -4,15 +4,15 @@
        data-testid="sidebar-container">
 
   <!-- Brand -->
-  <div class="sidebar__brand">
+  <a routerLink="/new" class="sidebar__brand">
     @if (isExpanded()) {
       <span class="sidebar__brand-text" data-testid="sidebar-brand-text">Tekmar</span>
     }
-  </div>
+  </a>
 
   <!-- New Query button -->
   <div class="sidebar__action">
-    <a routerLink="/queries"
+    <a routerLink="/new"
        class="sidebar__new-query"
        data-testid="sidebar-new-query-button"
        [title]="isCollapsed() ? 'New Query' : ''">
