@@ -8,6 +8,7 @@ import { TkBadgeComponent, TkBadgeVariant } from '@shared/components/tk-badge/tk
 import { TkCardComponent } from '@shared/components/tk-card/tk-card.component';
 import { TkEmptyStateComponent } from '@shared/components/tk-empty-state/tk-empty-state.component';
 import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
+import { TkIntegrationIconComponent } from '@shared/components/tk-integration-icon/tk-integration-icon.component';
 import { RelativeTimePipe } from '@shared/pipes/relative-time.pipe';
 import { IntegrationService } from '@features/integrations/services/integration.service';
 import { IntegrationResponse, IntegrationStatus, HealthStatus } from '@features/integrations/models';
@@ -25,6 +26,7 @@ import { DisconnectDialogComponent, DisconnectDialogData } from '@features/integ
     TkCardComponent,
     TkEmptyStateComponent,
     TkIconComponent,
+    TkIntegrationIconComponent,
     RelativeTimePipe,
   ],
   templateUrl: './integration-list.component.html',

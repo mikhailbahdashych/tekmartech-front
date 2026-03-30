@@ -15,6 +15,7 @@
         @for (type of integrationTypes; track type) {
           <button class="type-card" (click)="selectType(type)" [attr.data-testid]="'integration-type-card-' + (type === 'google_workspace' ? 'google-workspace' : type)">
             <div class="type-card__content">
+              <tk-integration-icon [type]="type" size="xl" />
               <div class="type-card__info">
                 <span class="type-badge" [class]="'type-badge--' + type">
                   {{ typeConfig[type].label }}

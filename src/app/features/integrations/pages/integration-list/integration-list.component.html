@@ -36,11 +36,14 @@
         <tk-card padding="md" [attr.data-testid]="'integration-card-' + integration.id">
           <!-- Type badge + status -->
           <div class="card-top-row">
-            <span class="type-badge"
-                  [class]="'type-badge--' + integration.type"
-                  [attr.data-testid]="'integration-card-type-' + integration.id">
-              {{ typeConfig[integration.type].label }}
-            </span>
+            <div class="card-type">
+              <tk-integration-icon [type]="integration.type" size="lg" />
+              <span class="type-badge"
+                    [class]="'type-badge--' + integration.type"
+                    [attr.data-testid]="'integration-card-type-' + integration.id">
+                {{ typeConfig[integration.type].label }}
+              </span>
+            </div>
             <tk-badge
               [variant]="getStatusVariant(integration.status)"
               [label]="getStatusLabel(integration.status)"

@@ -24,13 +24,20 @@
 } @else {
   <!-- Active conversation layout -->
   <div class="query-page query-page--active">
-    <div class="query-page__thread-area" #threadArea>
+    <div class="query-page__thread-area" #threadArea (scroll)="onThreadScroll($event)">
       <app-query-thread
         [integrationMap]="integrationMap()"
         (approve)="onApprove()"
         (reject)="onReject()"
         (exportCsv)="onExportCsv()"
         (newQuery)="onNewQuery()" />
+
+      <!-- Scroll to bottom button -->
+      @if (showScrollButton()) {
+        <button class="query-page__scroll-btn" (click)="scrollToBottom()">
+          <tk-icon [name]="icons.ChevronDown" size="sm" [strokeWidth]="2" />
+        </button>
+      }
     </div>
 
     <div class="query-page__input-area">

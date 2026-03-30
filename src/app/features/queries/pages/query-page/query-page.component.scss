@@ -46,6 +46,32 @@
     flex: 1;
     overflow-y: auto;
     padding: var(--space-12) var(--space-8) var(--space-6);
+    position: relative;
+  }
+
+  .query-page__scroll-btn {
+    position: sticky;
+    bottom: var(--space-4);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border-primary);
+    box-shadow: var(--shadow-md);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    z-index: 5;
+
+    &:hover {
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+    }
   }
 
   .query-page__input-area {
