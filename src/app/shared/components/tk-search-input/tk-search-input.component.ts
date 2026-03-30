@@ -1,4 +1,4 @@
-import { Component, OnDestroy, input, output, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, input, output, signal } from '@angular/core';
 import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
 import { Search, X } from 'lucide-angular';
 
@@ -9,15 +9,21 @@ import { Search, X } from 'lucide-angular';
   templateUrl: './tk-search-input.component.html',
   styleUrl: './tk-search-input.component.scss',
 })
-export class TkSearchInputComponent implements OnDestroy {
+export class TkSearchInputComponent implements OnInit, OnDestroy {
   readonly placeholder = input('Search...');
   readonly debounceMs = input(300);
   readonly disabled = input(false);
   readonly testId = input('');
+  readonly initialValue = input('');
   readonly searchChange = output<string>();
 
   readonly icons = { Search, X };
   readonly value = signal('');
+
+  ngOnInit(): void {
+    const initial = this.initialValue();
+    if (initial) this.value.set(initial);
+  }
 
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
 

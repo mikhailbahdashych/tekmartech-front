@@ -1,5 +1,5 @@
 import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
 import { TkMultiSelectComponent, TkMultiSelectOption } from '@shared/components/tk-multi-select/tk-multi-select.component';
@@ -8,6 +8,7 @@ import { UserService } from '@features/users/services/user.service';
 import { ActivityLogResponse, ActivityAction } from '@features/activity-logs/models/activity-log.model';
 import { PaginationResponse } from '@features/queries/models';
 import { User } from '@core/models';
+import { parseEnumList, parseUUIDList, parseNumericOption, syncFiltersToUrl } from '@core/utils/query-params';
 
 interface ActionOption { value: ActivityAction; label: string }
 
@@ -52,6 +53,9 @@ export class ActivityLogListComponent implements OnInit {
   private logService = inject(ActivityLogService);
   private userService = inject(UserService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
+  private static readonly VALID_ACTIONS = ACTION_OPTIONS.map(o => o.value) as string[];
 
   readonly actionSelectOptions: TkMultiSelectOption[] = ACTION_OPTIONS.map(o => ({ value: o.value, label: o.label }));
   readonly userSelectOptions = computed<TkMultiSelectOption[]>(() =>
@@ -80,6 +84,7 @@ export class ActivityLogListComponent implements OnInit {
   readonly canNext = computed(() => this.hasMore());
 
   ngOnInit(): void {
+    this.restoreFiltersFromUrl();
     this.loadPage();
     this.userService.listUsers({ limit: 100 }).subscribe({
       next: (r) => this.users.set(r.users),
@@ -94,12 +99,14 @@ export class ActivityLogListComponent implements OnInit {
   onActionFilterChange(actions: string[]): void {
     this.selectedActions.set(actions);
     this.cursorStack.set([]);
+    this.syncUrl();
     this.loadPage();
   }
 
   onUserFilterChange(userIds: string[]): void {
     this.selectedUserIds.set(userIds);
     this.cursorStack.set([]);
+    this.syncUrl();
     this.loadPage();
   }
 
@@ -107,6 +114,7 @@ export class ActivityLogListComponent implements OnInit {
     this.pageSize.set(size);
     this.cursorStack.set([]);
     this.sizeDropdownOpen.set(false);
+    this.syncUrl();
     this.loadPage();
   }
 
@@ -169,6 +177,21 @@ export class ActivityLogListComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: () => { this.isLoading.set(false); },
+    });
+  }
+
+  private restoreFiltersFromUrl(): void {
+    const params = this.route.snapshot.queryParamMap;
+    this.selectedActions.set(parseEnumList(params.get('action'), ActivityLogListComponent.VALID_ACTIONS));
+    this.selectedUserIds.set(parseUUIDList(params.get('user')));
+    this.pageSize.set(parseNumericOption(params.get('limit'), this.pageSizeOptions, 25));
+  }
+
+  private syncUrl(): void {
+    syncFiltersToUrl(this.router, this.route, {
+      action: this.selectedActions().length > 0 ? this.selectedActions().join(',') : null,
+      user: this.selectedUserIds().length > 0 ? this.selectedUserIds().join(',') : null,
+      limit: this.pageSize() !== 25 ? this.pageSize() : null,
     });
   }
 }

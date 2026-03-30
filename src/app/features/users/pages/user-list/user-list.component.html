@@ -13,7 +13,7 @@
 
   <div class="filter-bar">
     <div class="filter-bar__search">
-      <tk-search-input placeholder="Search by name or email..." [testId]="'users'" (searchChange)="onSearchChange($event)" />
+      <tk-search-input placeholder="Search by name or email..." [testId]="'users'" [initialValue]="searchQuery()" (searchChange)="onSearchChange($event)" />
     </div>
     <div class="filter-bar__filter">
       <tk-multi-select label="Role" [options]="roleFilterOptions" [selectedValues]="selectedRoles()" allLabel="All roles" [testId]="'user-role'" (selectionChange)="onRoleFilterChange($event)" />

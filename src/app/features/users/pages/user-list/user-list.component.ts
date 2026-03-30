@@ -1,4 +1,5 @@
 import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { TkNotificationService } from '@shared/components/tk-notification/tk-notification.service';
@@ -19,6 +20,7 @@ import { AuthService } from '@core/services/auth.service';
 import { InviteDialogComponent } from '@features/users/components/invite-dialog/invite-dialog.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from '@features/users/components/confirm-dialog/confirm-dialog.component';
 import { PaginationResponse } from '@features/queries/models';
+import { parseEnumList, parseSearchString, syncFiltersToUrl } from '@core/utils/query-params';
 
 @Component({
   selector: 'user-list',
@@ -43,6 +45,11 @@ export class UserListComponent implements OnInit {
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
   private notify = inject(TkNotificationService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
+  private static readonly VALID_ROLES = ['admin', 'member'] as const;
+  private static readonly VALID_STATUSES = ['active', 'disabled'] as const;
 
   readonly icons = { Plus, MoreVertical, Users };
 
@@ -121,6 +128,7 @@ export class UserListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.restoreFiltersFromUrl();
     this.loadUsers();
     this.loadInvitations();
   }
@@ -147,18 +155,21 @@ export class UserListComponent implements OnInit {
   onSearchChange(search: string): void {
     this.searchQuery.set(search);
     this.usersPage.set(0);
+    this.syncUrl();
     this.loadUsers();
   }
 
   onRoleFilterChange(roles: string[]): void {
     this.selectedRoles.set(roles);
     this.usersPage.set(0);
+    this.syncUrl();
     this.loadUsers();
   }
 
   onStatusFilterChange(statuses: string[]): void {
     this.selectedStatuses.set(statuses);
     this.usersPage.set(0);
+    this.syncUrl();
     this.loadUsers();
   }
 
@@ -281,6 +292,21 @@ export class UserListComponent implements OnInit {
         this.isLoadingInvitations.set(false);
       },
       error: () => { this.isLoadingInvitations.set(false); },
+    });
+  }
+
+  private restoreFiltersFromUrl(): void {
+    const params = this.route.snapshot.queryParamMap;
+    this.searchQuery.set(parseSearchString(params.get('search')));
+    this.selectedRoles.set(parseEnumList(params.get('role'), UserListComponent.VALID_ROLES as unknown as string[]));
+    this.selectedStatuses.set(parseEnumList(params.get('status'), UserListComponent.VALID_STATUSES as unknown as string[]));
+  }
+
+  private syncUrl(): void {
+    syncFiltersToUrl(this.router, this.route, {
+      search: this.searchQuery() || null,
+      role: this.selectedRoles().length > 0 ? this.selectedRoles().join(',') : null,
+      status: this.selectedStatuses().length > 0 ? this.selectedStatuses().join(',') : null,
     });
   }
 }

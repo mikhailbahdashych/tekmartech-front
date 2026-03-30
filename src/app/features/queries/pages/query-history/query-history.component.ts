@@ -1,5 +1,5 @@
 import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TkBadgeComponent, TkBadgeVariant } from '@shared/components/tk-badge/tk-badge.component';
 import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
 import { TkMultiSelectComponent, TkMultiSelectOption } from '@shared/components/tk-multi-select/tk-multi-select.component';
@@ -13,6 +13,7 @@ import { QUERY_STATUS_OPTIONS } from '@features/queries/constants/query-status';
 import { IntegrationService } from '@features/integrations/services/integration.service';
 import { UserService } from '@features/users/services/user.service';
 import { User } from '@core/models';
+import { parseEnumList, parseUUIDList, parseNumericOption, parseSearchString, syncFiltersToUrl } from '@core/utils/query-params';
 
 const STATUS_VARIANT_MAP: Record<QueryStatus, TkBadgeVariant> = {
   interpreting: 'info', awaiting_approval: 'warning', approved: 'accent',
@@ -36,6 +37,9 @@ export class QueryHistoryComponent implements OnInit {
   private integrationService = inject(IntegrationService);
   private userService = inject(UserService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
+  private static readonly VALID_STATUSES = QUERY_STATUS_OPTIONS.map(o => o.value);
 
   readonly emptyIcons = { Search };
   readonly statusFilterOptions: TkMultiSelectOption[] = QUERY_STATUS_OPTIONS.map(o => ({ value: o.value, label: o.label }));
@@ -68,6 +72,7 @@ export class QueryHistoryComponent implements OnInit {
   readonly canNext = computed(() => this.hasMore());
 
   ngOnInit(): void {
+    this.restoreFiltersFromUrl();
     this.loadPage();
     this.loadIntegrationNames();
     this.loadUsers();
@@ -82,18 +87,21 @@ export class QueryHistoryComponent implements OnInit {
   onSearchChange(search: string): void {
     this.searchQuery.set(search);
     this.cursorStack.set([]);
+    this.syncUrl();
     this.loadPage();
   }
 
   onStatusFilterChange(statuses: string[]): void {
     this.selectedStatuses.set(statuses);
     this.cursorStack.set([]);
+    this.syncUrl();
     this.loadPage();
   }
 
   onUserFilterChange(userIds: string[]): void {
     this.selectedUsers.set(userIds);
     this.cursorStack.set([]);
+    this.syncUrl();
     this.loadPage();
   }
 
@@ -101,6 +109,7 @@ export class QueryHistoryComponent implements OnInit {
     this.pageSize.set(size);
     this.cursorStack.set([]);
     this.sizeDropdownOpen.set(false);
+    this.syncUrl();
     this.loadPage();
   }
 
@@ -171,6 +180,23 @@ export class QueryHistoryComponent implements OnInit {
   private loadUsers(): void {
     this.userService.listUsers({ limit: 100 }).subscribe({
       next: (response) => this.users.set(response.users),
+    });
+  }
+
+  private restoreFiltersFromUrl(): void {
+    const params = this.route.snapshot.queryParamMap;
+    this.searchQuery.set(parseSearchString(params.get('search')));
+    this.selectedStatuses.set(parseEnumList(params.get('status'), QueryHistoryComponent.VALID_STATUSES));
+    this.selectedUsers.set(parseUUIDList(params.get('user')));
+    this.pageSize.set(parseNumericOption(params.get('limit'), this.pageSizeOptions, 25));
+  }
+
+  private syncUrl(): void {
+    syncFiltersToUrl(this.router, this.route, {
+      search: this.searchQuery() || null,
+      status: this.selectedStatuses().length > 0 ? this.selectedStatuses().join(',') : null,
+      user: this.selectedUsers().length > 0 ? this.selectedUsers().join(',') : null,
+      limit: this.pageSize() !== 25 ? this.pageSize() : null,
     });
   }
 }

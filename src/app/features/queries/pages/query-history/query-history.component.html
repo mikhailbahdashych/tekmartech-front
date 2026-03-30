@@ -11,6 +11,7 @@
       <tk-search-input
         placeholder="Search queries..."
         [testId]="'queries'"
+        [initialValue]="searchQuery()"
         (searchChange)="onSearchChange($event)" />
     </div>
     <div class="filter-bar__filter">
