@@ -58,8 +58,8 @@
   font-weight: var(--font-semibold);
 
   &--aws {
-    color: #b45309;
-    background-color: #fffbeb;
+    color: var(--color-warning);
+    background-color: var(--color-warning-light);
   }
 
   &--github {
@@ -68,7 +68,7 @@
   }
 
   &--google_workspace {
-    color: #1d4ed8;
+    color: var(--color-info);
     background-color: var(--color-info-light);
   }
 }

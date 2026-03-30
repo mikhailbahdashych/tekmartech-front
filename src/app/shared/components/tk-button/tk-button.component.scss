@@ -39,8 +39,8 @@
 
   &--destructive {
     background: var(--color-error);
-    color: var(--color-text-inverse);
-    &:hover:not(:disabled) { background: #dc2626; }
+    color: #ffffff;
+    &:hover:not(:disabled) { opacity: 0.9; }
   }
 
   &--ghost {

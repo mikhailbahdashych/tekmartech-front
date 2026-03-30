@@ -6,9 +6,13 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { AuthService } from './core/services/auth.service';
+import { ThemeService } from './core/services/theme.service';
 
-function initializeApp(authService: AuthService): () => Promise<void> {
-  return () => authService.initializeAuth();
+function initializeApp(authService: AuthService, themeService: ThemeService): () => Promise<void> {
+  return () => {
+    themeService.initialize();
+    return authService.initializeAuth();
+  };
 }
 
 export const appConfig: ApplicationConfig = {
@@ -19,7 +23,7 @@ export const appConfig: ApplicationConfig = {
     {
       provide: APP_INITIALIZER,
       useFactory: initializeApp,
-      deps: [AuthService],
+      deps: [AuthService, ThemeService],
       multi: true,
     },
   ],

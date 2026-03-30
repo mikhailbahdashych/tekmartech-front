@@ -1,7 +1,8 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { LucideAngularModule, Terminal, Plug, Users, Clock, Settings, LogOut, Plus, History } from 'lucide-angular';
+import { LucideAngularModule, Terminal, Plug, Users, Clock, Settings, LogOut, Plus, History, Sun, Moon } from 'lucide-angular';
 import { AuthService } from '@core/services/auth.service';
+import { ThemeService } from '@core/services/theme.service';
 
 interface NavItem {
   label: string;
@@ -21,7 +22,8 @@ interface NavItem {
 export class SidebarComponent {
   readonly state = input<'expanded' | 'collapsed' | 'hidden'>('expanded');
 
-  readonly icons = { Terminal, Plug, Users, Clock, Settings, LogOut, Plus, History };
+  readonly icons = { Terminal, Plug, Users, Clock, Settings, LogOut, Plus, History, Sun, Moon };
+  readonly themeService = inject(ThemeService);
 
   readonly navItems: NavItem[] = [
     { label: 'Queries', route: '/new', icon: Terminal, adminOnly: false, testId: 'sidebar-nav-queries' },

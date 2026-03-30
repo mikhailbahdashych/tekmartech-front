@@ -8,7 +8,7 @@
 .icon {
   display: block;
 
-  &--github { color: #24292e; }
+  &--github { color: var(--color-text-primary); }
   &--aws { color: #FF9900; }
   // Google icon uses multi-color fills directly in SVG
 }

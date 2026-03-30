@@ -43,6 +43,18 @@
   <!-- Spacer -->
   <div class="sidebar__spacer"></div>
 
+  <!-- Theme toggle -->
+  <div class="sidebar__theme">
+    <button class="sidebar__theme-btn"
+            (click)="themeService.toggle()"
+            [title]="isCollapsed() ? (themeService.theme() === 'light' ? 'Dark mode' : 'Light mode') : ''">
+      <lucide-icon [img]="themeService.theme() === 'light' ? icons.Moon : icons.Sun" [size]="18" [strokeWidth]="1.5"></lucide-icon>
+      @if (isExpanded()) {
+        <span>{{ themeService.theme() === 'light' ? 'Dark mode' : 'Light mode' }}</span>
+      }
+    </button>
+  </div>
+
   <!-- User section -->
   @if (user(); as u) {
     <div class="sidebar__user">
