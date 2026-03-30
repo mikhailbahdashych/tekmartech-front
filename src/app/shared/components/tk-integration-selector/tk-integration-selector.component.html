@@ -1,0 +1,13 @@
+<div class="selector" data-testid="query-integration-selector">
+  @for (integration of integrations(); track integration.id) {
+    <button
+      class="selector__pill"
+      [class.selector__pill--selected]="isSelected(integration.id)"
+      [disabled]="disabled()"
+      [attr.data-testid]="'query-integration-pill-' + integration.id"
+      (click)="toggle(integration.id)">
+      <tk-integration-icon [type]="integration.type" size="sm" />
+      <span class="selector__name">{{ integration.displayName }}</span>
+    </button>
+  }
+</div>

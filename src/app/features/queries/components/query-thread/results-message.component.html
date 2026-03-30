@@ -1,0 +1,72 @@
+<div class="results" data-testid="query-results-container">
+  <!-- Partial warning -->
+  @if (executionStatus() === 'partial') {
+    <div class="results__warning" data-testid="query-results-partial-warning">
+      <tk-icon [name]="icons.AlertTriangle" size="sm" />
+      <span>Some steps failed during execution. Results may be incomplete.</span>
+    </div>
+  }
+
+  <!-- Summary -->
+  <div class="results__summary">
+    @if (resultSummary()) {
+      <p class="results__summary-text" data-testid="query-results-summary-text">{{ resultSummary() }}</p>
+    }
+    <div class="results__meta">
+      <span data-testid="query-results-total-records">{{ resultData().metadata.total_records }} records</span>
+      <span data-testid="query-results-duration">{{ formatDuration(resultData().metadata.execution_duration_ms) }}</span>
+      <span>{{ resultData().metadata.integrations_queried.length }} {{ resultData().metadata.integrations_queried.length === 1 ? 'integration' : 'integrations' }}</span>
+    </div>
+  </div>
+
+  <!-- Result tables -->
+  @if (resultData().tables.length > 0) {
+    <div class="results__tables">
+      @for (table of resultData().tables; track table.table_id; let i = $index) {
+        <div [attr.data-testid]="'query-results-table-' + i">
+          <tk-table [columns]="getTableColumns(table)" [rows]="table.rows" [emptyMessage]="'No records returned'" />
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Download CSV -->
+  <div class="results__actions" data-testid="query-results-action-row">
+    <tk-button variant="secondary" size="sm" (click)="exportCsv.emit()" data-testid="query-results-download-csv-button">
+      <tk-icon [name]="icons.Download" size="sm" />
+      Download CSV
+    </tk-button>
+  </div>
+</div>
+
+<!-- Transparency Log — separate collapsible card below results -->
+@if (transparencyLog(); as log) {
+  <div class="tlog">
+    <button class="tlog__header" (click)="toggleLog()" data-testid="query-results-transparency-log-toggle">
+      <tk-icon [name]="logExpanded() ? icons.ChevronDown : icons.ChevronRight" size="sm" />
+      <span class="tlog__title">Transparency Log</span>
+      <span class="tlog__header-meta">{{ log.total_tool_invocations }} invocations &middot; {{ formatDuration(log.total_duration_ms) }}</span>
+    </button>
+
+    @if (logExpanded()) {
+      <div data-testid="query-results-transparency-log-container">
+        <div class="tlog__summary">
+          <span>{{ log.total_external_api_calls }} API calls</span>
+          <tk-badge [variant]="statusVariant(log.execution_status)" [label]="log.execution_status" />
+        </div>
+
+        @for (entry of log.entries; track entry.entry_id; let i = $index) {
+          <div class="tlog__entry" [attr.data-testid]="'query-results-transparency-log-entry-' + i">
+            <span class="tlog__tool">{{ entry.tool_name }}</span>
+            <tk-badge [variant]="statusVariant(entry.status)" [label]="entry.status" size="sm" />
+            <span class="tlog__duration">{{ formatDuration(entry.duration_ms) }}</span>
+            <span class="tlog__calls">{{ entry.external_api_calls }} calls</span>
+            @if (entry.data_hash) {
+              <span class="tlog__hash">{{ entry.data_hash }}</span>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+}

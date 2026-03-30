@@ -1,80 +1,58 @@
-.query-page {
-  max-width: 896px;
-  margin-left: auto;
-  margin-right: auto;
+:host {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  height: 100%;
+  overflow: hidden;
+  margin: calc(-1 * var(--space-6)) calc(-1 * var(--space-8));
 }
 
-// Failed state card
-.failed-card {
-  ::ng-deep .tk-card {
-    background: var(--color-error-light);
-    border-color: #fecaca;
-  }
+// Welcome state: greeting + input centered on screen
+.query-page--welcome {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: var(--space-8);
+  padding-bottom: 15%;
 
-  &__header {
+  .query-page__welcome-center {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: var(--space-2);
-    margin-bottom: var(--space-2);
+    width: 100%;
+    max-width: 840px;
   }
 
-  &__icon {
-    color: var(--color-error);
-  }
-
-  &__title {
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
-    color: #991b1b;
-  }
-
-  &__message {
-    font-size: var(--text-sm);
-    color: #b91c1c;
-    margin: 0;
-  }
-
-  &__action {
-    display: inline-flex;
-    margin-top: var(--space-4);
-  }
-}
-
-// Rejected state card
-.rejected-card {
-  ::ng-deep .tk-card {
-    background: var(--color-bg-secondary);
-    border-color: var(--color-border-primary);
-  }
-
-  &__header {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    margin-bottom: var(--space-2);
-  }
-
-  &__icon {
-    color: var(--color-text-tertiary);
-  }
-
-  &__title {
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
+  .query-page__greeting {
+    font-size: 42px;
+    font-weight: var(--font-semibold);
     color: var(--color-text-primary);
+    margin-bottom: var(--space-6);
+    text-align: center;
   }
 
-  &__message {
-    font-size: var(--text-sm);
-    color: var(--color-text-secondary);
-    margin: 0;
+  .query-page__welcome-input {
+    width: 100%;
+  }
+}
+
+// Active conversation: thread scrolls, input at very bottom
+.query-page--active {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .query-page__thread-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-12) var(--space-8) var(--space-6);
   }
 
-  &__action {
-    display: inline-flex;
-    margin-top: var(--space-4);
+  .query-page__input-area {
+    flex-shrink: 0;
+    max-width: 840px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 0 var(--space-3);
   }
 }

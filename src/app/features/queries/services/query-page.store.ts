@@ -43,6 +43,7 @@ export class QueryPageStore {
   readonly phase = signal<QueryPhase>('idle');
   readonly queryId = signal<string | null>(null);
   readonly queryText = signal('');
+  readonly submittedIntegrationIds = signal<string[]>([]);
 
   // Interpretation phase
   readonly interpretationText = signal('');
@@ -88,6 +89,7 @@ export class QueryPageStore {
       next: (response) => {
         this.queryId.set(response.query.id);
         this.queryText.set(queryText);
+        this.submittedIntegrationIds.set(integrationIds ?? []);
         this.phase.set('interpreting');
         this.isInterpretationStreaming.set(true);
         this.isSubmitting.set(false);
@@ -164,6 +166,7 @@ export class QueryPageStore {
     this.phase.set('idle');
     this.queryId.set(null);
     this.queryText.set('');
+    this.submittedIntegrationIds.set([]);
     this.interpretationText.set('');
     this.isInterpretationStreaming.set(false);
     this.plan.set(null);
@@ -293,6 +296,7 @@ export class QueryPageStore {
 
   private populateFromDetail(query: QueryDetailResponse): void {
     this.queryText.set(query.query_text);
+    this.submittedIntegrationIds.set(query.integration_ids ?? []);
 
     if (query.query_plan) {
       this.plan.set(query.query_plan);

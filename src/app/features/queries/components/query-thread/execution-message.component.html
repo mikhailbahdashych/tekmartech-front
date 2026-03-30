@@ -1,0 +1,94 @@
+<div class="execution-message" data-testid="query-execution-container">
+  <!-- Header -->
+  <div class="execution-message__header">
+    <div class="execution-message__title">
+      @if (isComplete()) {
+        <tk-icon [name]="icons.CheckCircle2" size="sm" />
+        <span>Execution complete</span>
+      } @else {
+        <tk-spinner size="sm" />
+        <span>Executing...</span>
+      }
+    </div>
+    <span class="execution-message__progress" data-testid="query-execution-progress-text">
+      Step {{ completedCount() }} of {{ totalSteps() }}
+    </span>
+  </div>
+
+  <!-- Step list -->
+  @if (steps().length > 0) {
+    <div class="execution-message__steps">
+      @for (step of steps(); track step.stepId; let i = $index) {
+        <div class="execution-message__step"
+             [class.execution-message__step--running]="step.status === 'running'"
+             [class.execution-message__step--completed]="step.status === 'completed'"
+             [class.execution-message__step--failed]="step.status === 'failed'"
+             [attr.data-testid]="'query-execution-step-' + i">
+
+          <!-- Status icon -->
+          <div class="execution-message__step-icon"
+               [attr.data-testid]="'query-execution-step-status-' + i">
+            @switch (step.status) {
+              @case ('running') {
+                <tk-icon [name]="icons.Loader2" size="sm" />
+              }
+              @case ('completed') {
+                <tk-icon [name]="icons.CheckCircle2" size="sm" />
+              }
+              @case ('failed') {
+                <tk-icon [name]="icons.XCircle" size="sm" />
+              }
+            }
+          </div>
+
+          <!-- Integration icon -->
+          @if (getIntegrationType(step); as intType) {
+            <tk-integration-icon [type]="intType" size="sm" />
+          }
+
+          <!-- Step details -->
+          <div class="execution-message__step-content">
+            <div class="execution-message__step-top">
+              <span class="execution-message__step-tool"
+                    [attr.data-testid]="'query-execution-step-tool-name-' + i">
+                {{ step.toolDisplayName }}
+              </span>
+              <span class="execution-message__step-desc">{{ step.description }}</span>
+            </div>
+
+            @if (step.status === 'completed') {
+              <div class="execution-message__step-meta">
+                @if (step.durationMs != null) {
+                  <span class="execution-message__step-duration"
+                        [attr.data-testid]="'query-execution-step-duration-' + i">
+                    {{ formatDuration(step.durationMs) }}
+                  </span>
+                }
+                @if (step.summary) {
+                  <span class="execution-message__step-summary"
+                        [attr.data-testid]="'query-execution-step-summary-' + i">
+                    {{ step.summary }}
+                  </span>
+                }
+              </div>
+            }
+
+            @if (step.status === 'failed' && step.errorMessage) {
+              <div class="execution-message__step-error"
+                   [attr.data-testid]="'query-execution-step-error-' + i">
+                {{ step.errorMessage }}
+              </div>
+            }
+          </div>
+
+          <!-- Duration (right-aligned) -->
+          @if (step.status !== 'running' && step.durationMs != null) {
+            <span class="execution-message__step-time">
+              {{ formatDuration(step.durationMs) }}
+            </span>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

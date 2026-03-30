@@ -1,0 +1,33 @@
+<div class="chat-input" [class.chat-input--disabled]="disabled()" data-testid="query-input-textarea">
+  <!-- Textarea -->
+  <textarea
+    #textarea
+    class="chat-input__textarea"
+    [placeholder]="placeholder()"
+    [disabled]="disabled()"
+    [value]="value()"
+    (input)="onInput($event)"
+    (keydown)="onKeydown($event)"
+    rows="1"></textarea>
+
+  <!-- Bottom toolbar -->
+  <div class="chat-input__toolbar">
+    <!-- Plus button (left) -->
+    <button class="chat-input__plus-btn" (click)="plusClick.emit()" [disabled]="disabled()" title="Menu">
+      <tk-icon [name]="icons.Plus" size="sm" />
+    </button>
+
+    <!-- Spacer -->
+    <div class="chat-input__spacer"></div>
+
+    <!-- Submit button (right) — only visible when text is present -->
+    <button
+      class="chat-input__send-btn"
+      [class.chat-input__send-btn--active]="hasText()"
+      [disabled]="!hasText() || isSubmitting() || disabled()"
+      (click)="submit()"
+      data-testid="query-submit-button">
+      <tk-icon [name]="icons.ArrowUp" size="sm" [strokeWidth]="2.5" />
+    </button>
+  </div>
+</div>

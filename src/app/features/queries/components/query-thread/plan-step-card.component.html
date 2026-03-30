@@ -1,0 +1,24 @@
+<div class="plan-step-card"
+     [attr.data-testid]="'query-plan-step-' + index()">
+  <span class="plan-step-card__number">{{ index() + 1 }}</span>
+
+  <div class="plan-step-card__content">
+    <div class="plan-step-card__top">
+      @if (integrationType()) {
+        <tk-integration-icon [type]="integrationType()!" size="sm" />
+      }
+      <span class="plan-step-card__tool-name"
+            [attr.data-testid]="'query-plan-step-tool-name-' + index()">
+        {{ getDisplayName() }}
+      </span>
+      @if (integrationName()) {
+        <span class="plan-step-card__via">via {{ integrationName() }}</span>
+      }
+    </div>
+
+    <p class="plan-step-card__description"
+       [attr.data-testid]="'query-plan-step-description-' + index()">
+      {{ step().description }}
+    </p>
+  </div>
+</div>
