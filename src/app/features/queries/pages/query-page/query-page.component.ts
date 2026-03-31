@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, computed, effect, inject, signal } from '@angular/core';
 import { TkIntegrationSelectorComponent, SelectableIntegration } from '@shared/components/tk-integration-selector/tk-integration-selector.component';
+import { TkIntegrationIconComponent } from '@shared/components/tk-integration-icon/tk-integration-icon.component';
 import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
 import { QueryPageStore } from '@features/queries/services/query-page.store';
 import { ChatInputComponent } from '@features/queries/components/chat-input/chat-input.component';
@@ -7,13 +8,14 @@ import { QueryThreadComponent } from '@features/queries/components/query-thread/
 import { IntegrationService } from '@features/integrations/services/integration.service';
 import { IntegrationResponse } from '@features/integrations/models';
 import { AuthService } from '@core/services/auth.service';
-import { ChevronDown } from 'lucide-angular';
+import { ChevronDown, ChevronRight } from 'lucide-angular';
 
 @Component({
   selector: 'query-page',
   standalone: true,
   imports: [
     TkIntegrationSelectorComponent,
+    TkIntegrationIconComponent,
     TkIconComponent,
     ChatInputComponent,
     QueryThreadComponent,
@@ -27,7 +29,8 @@ export class QueryPageComponent implements OnInit {
   private integrationService = inject(IntegrationService);
   private authService = inject(AuthService);
 
-  readonly icons = { ChevronDown };
+  readonly icons = { ChevronDown, ChevronRight };
+  readonly integrationsPanelOpen = signal(false);
   readonly firstName = computed(() => {
     const name = this.authService.currentUser()?.display_name ?? '';
     return name.split(' ')[0] || 'there';

@@ -11,12 +11,35 @@
           placeholder="How can I help you today?"
           (submitQuery)="onSubmit($event)" />
 
-        @if (selectableIntegrations().length > 1) {
-          <tk-integration-selector
-            [integrations]="selectableIntegrations()"
-            [selectedIds]="selectedIntegrationIds()"
-            [disabled]="false"
-            (selectionChange)="selectedIntegrationIds.set($event)" />
+        @if (selectableIntegrations().length > 0) {
+          <div class="query-page__integrations-bar">
+            <button class="query-page__integrations-trigger"
+                    data-testid="query-integrations-bar"
+                    (click)="integrationsPanelOpen.set(!integrationsPanelOpen())">
+              <span class="query-page__integrations-label">Available integrations</span>
+              <div class="query-page__integrations-preview">
+                @for (integration of selectableIntegrations(); track integration.id) {
+                  <tk-integration-icon [type]="integration.type" size="sm" />
+                }
+                <tk-icon
+                  [name]="icons.ChevronRight"
+                  size="sm"
+                  [strokeWidth]="1.5"
+                  class="query-page__integrations-chevron"
+                  [class.query-page__integrations-chevron--open]="integrationsPanelOpen()" />
+              </div>
+            </button>
+
+            @if (integrationsPanelOpen()) {
+              <div class="query-page__integrations-panel">
+                <tk-integration-selector
+                  [integrations]="selectableIntegrations()"
+                  [selectedIds]="selectedIntegrationIds()"
+                  [disabled]="false"
+                  (selectionChange)="selectedIntegrationIds.set($event)" />
+              </div>
+            }
+          </div>
         }
       </div>
     </div>
