@@ -36,7 +36,7 @@ const STATUS_LABEL_MAP: Record<QueryStatus, string> = {
 };
 
 @Component({
-  selector: 'app-query-detail',
+  selector: 'query-detail',
   standalone: true,
   imports: [
     TkButtonComponent,

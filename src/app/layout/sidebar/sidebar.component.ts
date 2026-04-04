@@ -1,7 +1,8 @@
-import { Component, computed } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { LucideAngularModule, Terminal, Plug, Users, Clock, Settings, LogOut, Plus, History } from 'lucide-angular';
+import { LucideAngularModule, Terminal, Plug, Users, Clock, Settings, LogOut, Plus, History, Sun, Moon } from 'lucide-angular';
 import { AuthService } from '@core/services/auth.service';
+import { ThemeService } from '@core/services/theme.service';
 
 interface NavItem {
   label: string;
@@ -12,17 +13,20 @@ interface NavItem {
 }
 
 @Component({
-  selector: 'app-sidebar',
+  selector: 'sidebar',
   standalone: true,
   imports: [RouterLink, RouterLinkActive, LucideAngularModule],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
-  readonly icons = { Terminal, Plug, Users, Clock, Settings, LogOut, Plus, History };
+  readonly state = input<'expanded' | 'collapsed' | 'hidden'>('expanded');
+
+  readonly icons = { Terminal, Plug, Users, Clock, Settings, LogOut, Plus, History, Sun, Moon };
+  readonly themeService = inject(ThemeService);
 
   readonly navItems: NavItem[] = [
-    { label: 'Queries', route: '/queries', icon: Terminal, adminOnly: false, testId: 'sidebar-nav-queries' },
+    { label: 'Queries', route: '/new', icon: Terminal, adminOnly: false, testId: 'sidebar-nav-queries' },
     { label: 'History', route: '/queries/history', icon: History, adminOnly: false, testId: 'sidebar-nav-history' },
     { label: 'Integrations', route: '/integrations', icon: Plug, adminOnly: true, testId: 'sidebar-nav-integrations' },
     { label: 'Team', route: '/users', icon: Users, adminOnly: true, testId: 'sidebar-nav-team' },
@@ -46,6 +50,9 @@ export class SidebarComponent {
   readonly visibleNavItems = computed(() =>
     this.navItems.filter(item => !item.adminOnly || this.isAdmin())
   );
+
+  readonly isExpanded = computed(() => this.state() === 'expanded');
+  readonly isCollapsed = computed(() => this.state() === 'collapsed');
 
   constructor(public authService: AuthService) {}
 

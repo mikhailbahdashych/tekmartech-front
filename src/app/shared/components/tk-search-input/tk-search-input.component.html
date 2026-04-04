@@ -1,0 +1,16 @@
+<div class="tk-search" [class.tk-search--disabled]="disabled()">
+  <tk-icon [name]="icons.Search" size="sm" class="tk-search__icon" />
+  <input class="tk-search__input"
+         type="text"
+         [placeholder]="placeholder()"
+         [disabled]="disabled()"
+         [value]="value()"
+         [attr.data-testid]="testId() ? 'tk-search-input-' + testId() : null"
+         (input)="onInput($event)"
+         (keydown)="onKeydown($event)" />
+  @if (value()) {
+    <button type="button" class="tk-search__clear" (click)="clear()">
+      <tk-icon [name]="icons.X" size="sm" [strokeWidth]="2" />
+    </button>
+  }
+</div>

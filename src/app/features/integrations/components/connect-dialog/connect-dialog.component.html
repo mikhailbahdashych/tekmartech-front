@@ -16,9 +16,12 @@
           <button class="type-card" (click)="selectType(type)" [attr.data-testid]="'integration-type-card-' + (type === 'google_workspace' ? 'google-workspace' : type)">
             <div class="type-card__content">
               <div class="type-card__info">
-                <span class="type-badge" [class]="'type-badge--' + type">
-                  {{ typeConfig[type].label }}
-                </span>
+                <div class="type-card__header">
+                  <tk-integration-icon [type]="type" size="lg" />
+                  <span class="type-badge" [class]="'type-badge--' + type">
+                    {{ typeConfig[type].label }}
+                  </span>
+                </div>
                 <p class="type-card__description">{{ typeConfig[type].description }}</p>
                 <div class="type-card__tools">
                   {{ typeConfig[type].tools.length }} tools available

@@ -1,5 +1,16 @@
-<div class="app-layout">
-  <app-sidebar />
+<div class="app-layout" [class.app-layout--collapsed]="sidebarState() === 'collapsed'" [class.app-layout--hidden]="sidebarState() === 'hidden'">
+  <sidebar [state]="sidebarState()" />
+
+  <!-- Toggle button — always outside the sidebar -->
+  <button class="sidebar-toggle"
+          [class.sidebar-toggle--over-sidebar]="sidebarState() === 'expanded'"
+          [class.sidebar-toggle--over-main]="sidebarState() !== 'expanded'"
+          (click)="toggleSidebar()"
+          data-testid="sidebar-toggle-button"
+          title="Toggle sidebar">
+    <tk-icon [name]="icons.PanelLeft" size="sm" [strokeWidth]="1.5" />
+  </button>
+
   <main class="app-main">
     <router-outlet />
   </main>

@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { TkNotificationService } from '@shared/components/tk-notification/tk-notification.service';
 import { finalize } from 'rxjs';
 import { AuthService } from '@core/services/auth.service';
 import { TkInputComponent } from '@shared/components/tk-input/tk-input.component';
@@ -16,7 +16,7 @@ function passwordMatchValidator(group: AbstractControl): ValidationErrors | null
 }
 
 @Component({
-  selector: 'app-invitation-accept',
+  selector: 'invitation-accept',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -33,7 +33,7 @@ export class InvitationAcceptComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-  private snackBar = inject(MatSnackBar);
+  private notify = inject(TkNotificationService);
 
   readonly token = signal<string | null>(null);
   readonly email = signal<string | null>(null);
@@ -93,8 +93,8 @@ export class InvitationAcceptComponent implements OnInit {
     ).subscribe({
       next: () => {
         const orgName = this.authService.currentOrganization()?.name ?? 'the organization';
-        this.snackBar.open(`Welcome to ${orgName}!`, 'Dismiss', { duration: 4000 });
-        this.router.navigate(['/queries']);
+        this.notify.success(`Welcome to ${orgName}!`);
+        this.router.navigate(['/new']);
       },
       error: (err) => {
         const code = err.error?.error?.code ?? '';

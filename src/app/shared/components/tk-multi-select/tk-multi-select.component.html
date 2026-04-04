@@ -1,0 +1,50 @@
+<div class="tk-multi-select" [class.tk-multi-select--disabled]="disabled()" [class.tk-multi-select--open]="isOpen()">
+  @if (label()) {
+    <label class="tk-multi-select__label">{{ label() }}</label>
+  }
+
+  <button type="button"
+          class="tk-multi-select__trigger"
+          [class.tk-multi-select__trigger--placeholder]="noneSelected()"
+          [disabled]="disabled()"
+          [attr.data-testid]="testId() ? 'tk-multi-select-trigger-' + testId() : null"
+          (click)="toggle()"
+          (keydown)="onKeydown($event)">
+    <span class="tk-multi-select__value">{{ displayText() }}</span>
+    <tk-icon [name]="icons.ChevronDown" size="sm" class="tk-multi-select__chevron" />
+  </button>
+
+  @if (isOpen()) {
+    <div class="tk-multi-select__panel" [attr.data-testid]="testId() ? 'tk-multi-select-panel-' + testId() : null">
+      <!-- Select all -->
+      <button type="button" class="tk-multi-select__option tk-multi-select__option--all"
+              data-testid="tk-multi-select-select-all"
+              (click)="toggleAll()">
+        <span class="tk-multi-select__checkbox" [class.tk-multi-select__checkbox--checked]="allSelected()" [class.tk-multi-select__checkbox--partial]="!allSelected() && !noneSelected()">
+          @if (allSelected()) {
+            <tk-icon [name]="icons.Check" size="sm" [strokeWidth]="2.5" />
+          } @else if (!noneSelected()) {
+            <span class="tk-multi-select__checkbox-dash"></span>
+          }
+        </span>
+        <span class="tk-multi-select__option-label tk-multi-select__option-label--all">Select all</span>
+      </button>
+
+      <div class="tk-multi-select__divider"></div>
+
+      <!-- Options -->
+      @for (option of options(); track option.value) {
+        <button type="button" class="tk-multi-select__option"
+                [attr.data-testid]="'tk-multi-select-option-' + option.value"
+                (click)="toggleOption(option.value)">
+          <span class="tk-multi-select__checkbox" [class.tk-multi-select__checkbox--checked]="isSelected(option.value)">
+            @if (isSelected(option.value)) {
+              <tk-icon [name]="icons.Check" size="sm" [strokeWidth]="2.5" />
+            }
+          </span>
+          <span class="tk-multi-select__option-label">{{ option.label }}</span>
+        </button>
+      }
+    </div>
+  }
+</div>

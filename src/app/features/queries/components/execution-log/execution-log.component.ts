@@ -4,7 +4,7 @@ import { Loader2, CheckCircle2, XCircle } from 'lucide-angular';
 import { ExecutionStepState } from '@features/queries/services/query-page.store';
 
 @Component({
-  selector: 'app-execution-log',
+  selector: 'execution-log',
   standalone: true,
   imports: [TkIconComponent],
   templateUrl: './execution-log.component.html',

@@ -10,8 +10,9 @@ import { InvitationResponse, InvitationListResponse, UserListResponse } from '@f
 export class UserService {
   constructor(private api: ApiService) {}
 
-  listUsers(params?: { role?: string; status?: string; limit?: number; cursor?: string }): Observable<UserListResponse> {
+  listUsers(params?: { search?: string; role?: string; status?: string; limit?: number; cursor?: string }): Observable<UserListResponse> {
     let httpParams = new HttpParams();
+    if (params?.search) httpParams = httpParams.set('search', params.search);
     if (params?.role) httpParams = httpParams.set('role', params.role);
     if (params?.status) httpParams = httpParams.set('status', params.status);
     if (params?.limit) httpParams = httpParams.set('limit', params.limit.toString());

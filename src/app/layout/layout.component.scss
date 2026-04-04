@@ -1,2 +1,50 @@
-// Layout styles come from the global _layout.scss (.app-layout, .app-main).
-// Component-level overrides can be placed here if needed.
+$sidebar-expanded: 240px;
+$sidebar-collapsed: 60px;
+
+.sidebar-toggle {
+  position: fixed;
+  top: var(--space-3);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: left 200ms ease, background var(--transition-fast), color var(--transition-fast);
+
+  &--over-sidebar {
+    left: calc(#{$sidebar-expanded} - 40px - var(--space-3));
+    background: transparent;
+    color: var(--color-text-sidebar);
+    border: none;
+
+    &:hover {
+      background: var(--color-bg-sidebar-hover);
+      color: var(--color-text-sidebar-active);
+    }
+  }
+
+  &--over-main {
+    left: var(--space-3);
+    background: transparent;
+    border: none;
+    color: var(--color-text-secondary);
+
+    &:hover {
+      color: var(--color-text-primary);
+    }
+  }
+}
+
+// When collapsed, position centered in the sidebar strip, match sidebar icon style
+.app-layout--collapsed .sidebar-toggle--over-main {
+  left: calc((#{$sidebar-collapsed} - 40px) / 2);
+  color: var(--color-text-sidebar);
+
+  &:hover {
+    background: var(--color-bg-sidebar-hover);
+    color: var(--color-text-sidebar-active);
+  }
+}

@@ -12,7 +12,7 @@ export interface DisconnectDialogData {
 }
 
 @Component({
-  selector: 'app-disconnect-dialog',
+  selector: 'disconnect-dialog',
   standalone: true,
   imports: [MatDialogModule, TkButtonComponent, TkSpinnerComponent, TkIconComponent],
   templateUrl: './disconnect-dialog.component.html',

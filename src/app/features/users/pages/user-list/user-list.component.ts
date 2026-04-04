@@ -1,13 +1,17 @@
 import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Plus, MoreVertical } from 'lucide-angular';
+import { TkNotificationService } from '@shared/components/tk-notification/tk-notification.service';
+import { Plus, MoreVertical, Users } from 'lucide-angular';
+import { TkEmptyStateComponent } from '@shared/components/tk-empty-state/tk-empty-state.component';
 import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
 import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
 import { TkBadgeComponent, TkBadgeVariant } from '@shared/components/tk-badge/tk-badge.component';
 import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
 import { TkPaginationComponent } from '@shared/components/tk-pagination/tk-pagination.component';
+import { TkMultiSelectComponent, TkMultiSelectOption } from '@shared/components/tk-multi-select/tk-multi-select.component';
+import { TkSearchInputComponent } from '@shared/components/tk-search-input/tk-search-input.component';
 import { RelativeTimePipe } from '@shared/pipes/relative-time.pipe';
 import { UserService } from '@features/users/services/user.service';
 import { InvitationResponse, InvitationStatus } from '@features/users/models/user-management.model';
@@ -16,9 +20,10 @@ import { AuthService } from '@core/services/auth.service';
 import { InviteDialogComponent } from '@features/users/components/invite-dialog/invite-dialog.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from '@features/users/components/confirm-dialog/confirm-dialog.component';
 import { PaginationResponse } from '@features/queries/models';
+import { parseEnumList, parseSearchString, syncFiltersToUrl } from '@core/utils/query-params';
 
 @Component({
-  selector: 'app-user-list',
+  selector: 'user-list',
   standalone: true,
   imports: [
     MatMenuModule,
@@ -27,6 +32,9 @@ import { PaginationResponse } from '@features/queries/models';
     TkBadgeComponent,
     TkIconComponent,
     TkPaginationComponent,
+    TkMultiSelectComponent,
+    TkSearchInputComponent,
+    TkEmptyStateComponent,
     RelativeTimePipe,
   ],
   templateUrl: './user-list.component.html',
@@ -36,9 +44,28 @@ export class UserListComponent implements OnInit {
   private userService = inject(UserService);
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
+  private notify = inject(TkNotificationService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
-  readonly icons = { Plus, MoreVertical };
+  private static readonly VALID_ROLES = ['admin', 'member'] as const;
+  private static readonly VALID_STATUSES = ['active', 'disabled'] as const;
+
+  readonly icons = { Plus, MoreVertical, Users };
+
+  readonly searchQuery = signal('');
+  readonly selectedRoles = signal<string[]>([]);
+  readonly selectedStatuses = signal<string[]>([]);
+
+  readonly roleFilterOptions: TkMultiSelectOption[] = [
+    { value: 'admin', label: 'Admin' },
+    { value: 'member', label: 'Member' },
+  ];
+
+  readonly statusFilterOptions: TkMultiSelectOption[] = [
+    { value: 'active', label: 'Active' },
+    { value: 'disabled', label: 'Disabled' },
+  ];
 
   readonly users = signal<User[]>([]);
   readonly invitations = signal<InvitationResponse[]>([]);
@@ -101,6 +128,7 @@ export class UserListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.restoreFiltersFromUrl();
     this.loadUsers();
     this.loadInvitations();
   }
@@ -124,6 +152,27 @@ export class UserListComponent implements OnInit {
     if (this.invSizeDropdownOpen() && !target.closest('.inv-size-dropdown')) this.invSizeDropdownOpen.set(false);
   }
 
+  onSearchChange(search: string): void {
+    this.searchQuery.set(search);
+    this.usersPage.set(0);
+    this.syncUrl();
+    this.loadUsers();
+  }
+
+  onRoleFilterChange(roles: string[]): void {
+    this.selectedRoles.set(roles);
+    this.usersPage.set(0);
+    this.syncUrl();
+    this.loadUsers();
+  }
+
+  onStatusFilterChange(statuses: string[]): void {
+    this.selectedStatuses.set(statuses);
+    this.usersPage.set(0);
+    this.syncUrl();
+    this.loadUsers();
+  }
+
   loadMoreUsers(): void {
     const cursor = this.usersPagination()?.next_cursor;
     if (cursor) this.loadUsers(cursor);
@@ -139,7 +188,7 @@ export class UserListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((invitation: InvitationResponse | null) => {
       if (invitation) {
         this.invitations.update(list => [invitation, ...list]);
-        this.snackBar.open(`Invitation sent to ${invitation.email}`, 'Dismiss', { duration: 4000 });
+        this.notify.success(`Invitation sent to ${invitation.email}`);
       }
     });
   }
@@ -158,10 +207,10 @@ export class UserListComponent implements OnInit {
       this.userService.changeRole(user.id, newRole).subscribe({
         next: (response) => {
           this.users.update(list => list.map(u => u.id === user.id ? response.user : u));
-          this.snackBar.open(`${user.display_name} is now ${newRole}`, 'Dismiss', { duration: 4000 });
+          this.notify.success(`${user.display_name} is now ${newRole}`);
         },
         error: (err) => {
-          this.snackBar.open(err.error?.error?.message ?? 'Failed to change role', 'Dismiss', { duration: 6000 });
+          this.notify.error(err.error?.error?.message ?? 'Failed to change role');
         },
       });
     });
@@ -180,10 +229,10 @@ export class UserListComponent implements OnInit {
       this.userService.removeUser(user.id).subscribe({
         next: () => {
           this.users.update(list => list.filter(u => u.id !== user.id));
-          this.snackBar.open(`${user.display_name} has been removed`, 'Dismiss', { duration: 4000 });
+          this.notify.success(`${user.display_name} has been removed`);
         },
         error: (err) => {
-          this.snackBar.open(err.error?.error?.message ?? 'Failed to remove user', 'Dismiss', { duration: 6000 });
+          this.notify.error(err.error?.error?.message ?? 'Failed to remove user');
         },
       });
     });
@@ -201,10 +250,10 @@ export class UserListComponent implements OnInit {
       this.userService.revokeInvitation(invitation.id).subscribe({
         next: (response) => {
           this.invitations.update(list => list.map(i => i.id === invitation.id ? response.invitation : i));
-          this.snackBar.open('Invitation revoked', 'Dismiss', { duration: 4000 });
+          this.notify.success('Invitation revoked');
         },
         error: (err) => {
-          this.snackBar.open(err.error?.error?.message ?? 'Failed to revoke invitation', 'Dismiss', { duration: 6000 });
+          this.notify.error(err.error?.error?.message ?? 'Failed to revoke invitation');
         },
       });
     });
@@ -212,7 +261,11 @@ export class UserListComponent implements OnInit {
 
   private loadUsers(cursor?: string): void {
     this.isLoadingUsers.set(true);
-    this.userService.listUsers({ limit: 50, cursor }).subscribe({
+    const params: Record<string, string | number | undefined> = { limit: 50, cursor };
+    if (this.searchQuery()) params['search'] = this.searchQuery();
+    if (this.selectedRoles().length > 0) params['role'] = this.selectedRoles().join(',');
+    if (this.selectedStatuses().length > 0) params['status'] = this.selectedStatuses().join(',');
+    this.userService.listUsers(params as any).subscribe({
       next: (response) => {
         if (cursor) {
           this.users.update(existing => [...existing, ...response.users]);
@@ -239,6 +292,21 @@ export class UserListComponent implements OnInit {
         this.isLoadingInvitations.set(false);
       },
       error: () => { this.isLoadingInvitations.set(false); },
+    });
+  }
+
+  private restoreFiltersFromUrl(): void {
+    const params = this.route.snapshot.queryParamMap;
+    this.searchQuery.set(parseSearchString(params.get('search')));
+    this.selectedRoles.set(parseEnumList(params.get('role'), UserListComponent.VALID_ROLES as unknown as string[]));
+    this.selectedStatuses.set(parseEnumList(params.get('status'), UserListComponent.VALID_STATUSES as unknown as string[]));
+  }
+
+  private syncUrl(): void {
+    syncFiltersToUrl(this.router, this.route, {
+      search: this.searchQuery() || null,
+      role: this.selectedRoles().length > 0 ? this.selectedRoles().join(',') : null,
+      status: this.selectedStatuses().length > 0 ? this.selectedStatuses().join(',') : null,
     });
   }
 }

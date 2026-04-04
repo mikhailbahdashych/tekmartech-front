@@ -22,17 +22,17 @@
     background: none;
   }
 
-  // Variants
-  &--success { background: var(--color-success-light); color: #16a34a; }
+  // Variants — text colors use the semantic variables so they adapt to dark/light theme
+  &--success { background: var(--color-success-light); color: var(--color-success); }
   &--success .tk-badge__dot { background: var(--color-success); }
 
-  &--warning { background: var(--color-warning-light); color: #d97706; }
+  &--warning { background: var(--color-warning-light); color: var(--color-warning); }
   &--warning .tk-badge__dot { background: var(--color-warning); }
 
-  &--error { background: var(--color-error-light); color: #dc2626; }
+  &--error { background: var(--color-error-light); color: var(--color-error); }
   &--error .tk-badge__dot { background: var(--color-error); }
 
-  &--info { background: var(--color-info-light); color: #2563eb; }
+  &--info { background: var(--color-info-light); color: var(--color-info); }
   &--info .tk-badge__dot { background: var(--color-info); }
 
   &--neutral { background: var(--color-neutral-light); color: var(--color-text-secondary); }

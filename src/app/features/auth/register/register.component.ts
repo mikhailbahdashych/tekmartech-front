@@ -16,7 +16,7 @@ function passwordMatchValidator(group: AbstractControl): ValidationErrors | null
 }
 
 @Component({
-  selector: 'app-register',
+  selector: 'register',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -79,7 +79,7 @@ export class RegisterComponent {
       finalize(() => this.isLoading.set(false)),
     ).subscribe({
       next: () => {
-        this.router.navigate(['/queries']);
+        this.router.navigate(['/new']);
       },
       error: (err) => {
         const apiError = err.error as ApiError['error'] | undefined;

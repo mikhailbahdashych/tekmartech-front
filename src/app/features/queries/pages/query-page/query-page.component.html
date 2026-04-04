@@ -1,78 +1,73 @@
-<div class="query-page">
-  <!-- Query Input -->
-  <app-query-input
-    [isSubmitting]="store.isSubmitting()"
-    [disabled]="store.phase() !== 'idle'"
-    (submitQuery)="onSubmit($event)" />
+@if (store.phase() === 'idle' && !store.queryText()) {
+  <!-- Centered welcome state -->
+  <div class="query-page query-page--welcome">
+    <div class="query-page__welcome-center">
+      <h1 class="query-page__greeting">Hey there, {{ firstName() }}</h1>
 
-  <!-- Interpretation phase -->
-  @if (store.interpretationText()) {
-    <app-interpretation-display
-      [text]="store.interpretationText()"
-      [isStreaming]="store.isInterpretationStreaming()"
-      [errorMessage]="store.phase() === 'failed' && !store.plan() ? store.errorMessage() : null" />
-  }
+      <div class="query-page__welcome-input">
+        <chat-input
+          [isSubmitting]="store.isSubmitting()"
+          [disabled]="false"
+          placeholder="How can I help you today?"
+          (submitQuery)="onSubmit($event)" />
 
-  <!-- Plan approval phase -->
-  @if (store.phase() === 'awaiting_approval' && store.plan(); as plan) {
-    <app-plan-approval
-      [plan]="plan"
-      [planSummary]="store.planSummary()"
-      [estimatedDuration]="store.estimatedDuration()"
-      [isApproving]="store.isApproving()"
-      [isRejecting]="store.isRejecting()"
-      (approve)="onApprove()"
-      (reject)="onReject()" />
-  }
+        @if (selectableIntegrations().length > 0) {
+          <div class="query-page__integrations-bar">
+            <button class="query-page__integrations-trigger"
+                    data-testid="query-integrations-bar"
+                    (click)="integrationsPanelOpen.set(!integrationsPanelOpen())">
+              <span class="query-page__integrations-label">Available integrations</span>
+              <div class="query-page__integrations-preview">
+                @for (integration of selectableIntegrations(); track integration.id) {
+                  <tk-integration-icon [type]="integration.type" size="sm" />
+                }
+                <tk-icon
+                  [name]="icons.ChevronRight"
+                  size="sm"
+                  [strokeWidth]="1.5"
+                  class="query-page__integrations-chevron"
+                  [class.query-page__integrations-chevron--open]="integrationsPanelOpen()" />
+              </div>
+            </button>
 
-  <!-- Execution phase -->
-  @if ((store.phase() === 'executing' || store.phase() === 'completed' || store.phase() === 'failed') && store.executionSteps().length > 0) {
-    <app-execution-log
-      [steps]="store.executionSteps()"
-      [totalSteps]="store.totalSteps()" />
-  }
-
-  <!-- Results phase -->
-  @if (store.phase() === 'completed' && store.resultData(); as data) {
-    <app-results-display
-      [resultSummary]="store.resultSummary()"
-      [resultData]="data"
-      [executionStatus]="store.executionStatus()"
-      (exportCsv)="onExportCsv()" />
-  }
-
-  <!-- Transparency log -->
-  @if (store.phase() === 'completed' && store.transparencyLog(); as log) {
-    <app-transparency-log [log]="log" />
-  }
-
-  <!-- Failed state (execution-level failure) -->
-  @if (store.phase() === 'failed' && store.plan()) {
-    <tk-card class="failed-card">
-      <div class="failed-card__header">
-        <tk-icon [name]="icons.AlertCircle" size="md" [strokeWidth]="2" class="failed-card__icon" />
-        <span class="failed-card__title">Query Failed</span>
+            @if (integrationsPanelOpen()) {
+              <div class="query-page__integrations-panel">
+                <tk-integration-selector
+                  [integrations]="selectableIntegrations()"
+                  [selectedIds]="selectedIntegrationIds()"
+                  [disabled]="false"
+                  (selectionChange)="selectedIntegrationIds.set($event)" />
+              </div>
+            }
+          </div>
+        }
       </div>
-      <p class="failed-card__message" data-testid="query-failed-error-text">{{ store.errorMessage() }}</p>
-      <tk-button variant="secondary" (click)="onNewQuery()" data-testid="query-failed-new-query-button" class="failed-card__action">
-        <tk-icon [name]="icons.RotateCcw" size="sm" [strokeWidth]="2" />
-        New Query
-      </tk-button>
-    </tk-card>
-  }
+    </div>
+  </div>
+} @else {
+  <!-- Active conversation layout -->
+  <div class="query-page query-page--active">
+    <div class="query-page__thread-area" #threadArea (scroll)="onThreadScroll($event)">
+      <query-thread
+        [integrationMap]="integrationMap()"
+        (approve)="onApprove()"
+        (reject)="onReject()"
+        (exportCsv)="onExportCsv()"
+        (newQuery)="onNewQuery()" />
 
-  <!-- Rejected state -->
-  @if (store.phase() === 'rejected') {
-    <tk-card class="rejected-card">
-      <div class="rejected-card__header">
-        <tk-icon [name]="icons.Ban" size="md" [strokeWidth]="2" class="rejected-card__icon" />
-        <span class="rejected-card__title" data-testid="query-rejected-text">Query Rejected</span>
-      </div>
-      <p class="rejected-card__message">The query plan was rejected and will not be executed.</p>
-      <tk-button variant="secondary" (click)="onNewQuery()" class="rejected-card__action">
-        <tk-icon [name]="icons.RotateCcw" size="sm" [strokeWidth]="2" />
-        New Query
-      </tk-button>
-    </tk-card>
-  }
-</div>
+      <!-- Scroll to bottom button -->
+      @if (showScrollButton()) {
+        <button class="query-page__scroll-btn" (click)="scrollToBottom()">
+          <tk-icon [name]="icons.ChevronDown" size="sm" [strokeWidth]="2" />
+        </button>
+      }
+    </div>
+
+    <div class="query-page__input-area">
+      <chat-input
+        [isSubmitting]="store.isSubmitting()"
+        [disabled]="store.phase() !== 'idle'"
+        (submitQuery)="onSubmit($event)" />
+    </div>
+  </div>
+}

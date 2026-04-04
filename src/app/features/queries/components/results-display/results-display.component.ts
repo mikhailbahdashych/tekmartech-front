@@ -6,7 +6,7 @@ import { Download, AlertTriangle } from 'lucide-angular';
 import { ResultData, ResultTable } from '@features/queries/models';
 
 @Component({
-  selector: 'app-results-display',
+  selector: 'results-display',
   standalone: true,
   imports: [TkButtonComponent, TkIconComponent, TkTableComponent],
   templateUrl: './results-display.component.html',

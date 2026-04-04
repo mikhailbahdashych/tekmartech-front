@@ -1,0 +1,75 @@
+<div class="ai-response" data-testid="query-ai-response">
+  <!-- Header -->
+  <div class="ai-response__header">
+    <span class="ai-response__sender" data-testid="query-ai-response-label">
+      @if (isStreaming()) {
+        <tk-spinner size="sm" />
+        Analyzing your query...
+      } @else {
+        Tekmar AI
+      }
+    </span>
+  </div>
+
+  <!-- Interpretation text -->
+  @if (interpretationText()) {
+    <div class="ai-response__interpretation" data-testid="query-interpretation-container">
+      <div class="ai-response__markdown" data-testid="query-interpretation-text"
+           [innerHTML]="interpretationText() | markdown"></div>
+      @if (isStreaming()) {
+        <span class="ai-response__cursor" data-testid="query-interpretation-cursor"></span>
+      }
+    </div>
+  }
+
+  <!-- Error (interpretation failed) -->
+  @if (errorMessage() && !plan()) {
+    <div class="ai-response__error" data-testid="query-interpretation-error-text">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <!-- Plan section -->
+  @if (plan(); as queryPlan) {
+    <div class="ai-response__plan" data-testid="query-plan-container">
+      <div class="ai-response__divider"></div>
+
+      <div class="ai-response__plan-header">Execution Plan</div>
+
+      @if (planSummary(); as summary) {
+        <p class="ai-response__plan-summary" data-testid="query-plan-summary-text">{{ summary }}</p>
+      }
+
+      <div class="ai-response__plan-steps" data-testid="query-plan-steps-list">
+        @for (step of queryPlan.steps; track step.step_id; let i = $index) {
+          <plan-step-card
+            [step]="step"
+            [index]="i"
+            [integrationType]="getIntegration(step.integration_id)?.type ?? null"
+            [integrationName]="getIntegration(step.integration_id)?.display_name ?? null" />
+        }
+      </div>
+
+      <div class="ai-response__plan-meta">
+        <span>{{ queryPlan.steps.length }} {{ queryPlan.steps.length === 1 ? 'step' : 'steps' }}</span>
+        <span>~{{ queryPlan.estimated_tool_calls }} tool calls</span>
+        @if (estimatedDuration(); as dur) {
+          <span data-testid="query-plan-estimated-duration">~{{ dur }}s estimated</span>
+        }
+      </div>
+
+      @if (phase() === 'awaiting_approval') {
+        <div class="ai-response__plan-actions">
+          <tk-button variant="primary" [loading]="isApproving()" [disabled]="isApproving() || isRejecting()" (click)="approve.emit()" data-testid="query-plan-approve-button">
+            <tk-icon [name]="icons.Check" size="sm" />
+            Approve & Execute
+          </tk-button>
+          <tk-button variant="secondary" [loading]="isRejecting()" [disabled]="isApproving() || isRejecting()" (click)="reject.emit()" data-testid="query-plan-reject-button">
+            <tk-icon [name]="icons.X" size="sm" />
+            Reject
+          </tk-button>
+        </div>
+      }
+    </div>
+  }
+</div>

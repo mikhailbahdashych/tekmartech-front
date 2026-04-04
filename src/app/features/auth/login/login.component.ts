@@ -9,7 +9,7 @@ import { TkButtonComponent } from '@shared/components/tk-button/tk-button.compon
 import { TkCardComponent } from '@shared/components/tk-card/tk-card.component';
 
 @Component({
-  selector: 'app-login',
+  selector: 'login',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -59,7 +59,7 @@ export class LoginComponent {
       finalize(() => this.isLoading.set(false)),
     ).subscribe({
       next: () => {
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/queries';
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/new';
         this.router.navigateByUrl(returnUrl);
       },
       error: (err) => {

@@ -1,55 +1,113 @@
-import { Component, inject } from '@angular/core';
-import { RotateCcw, AlertCircle, Ban } from 'lucide-angular';
-import { TkButtonComponent } from '@shared/components/tk-button/tk-button.component';
+import { Component, OnInit, ViewChild, ElementRef, computed, effect, inject, signal } from '@angular/core';
+import { TkIntegrationSelectorComponent, SelectableIntegration } from '@shared/components/tk-integration-selector/tk-integration-selector.component';
+import { TkIntegrationIconComponent } from '@shared/components/tk-integration-icon/tk-integration-icon.component';
 import { TkIconComponent } from '@shared/components/tk-icon/tk-icon.component';
-import { TkCardComponent } from '@shared/components/tk-card/tk-card.component';
 import { QueryPageStore } from '@features/queries/services/query-page.store';
-import { QueryInputComponent } from '@features/queries/components/query-input/query-input.component';
-import { InterpretationDisplayComponent } from '@features/queries/components/interpretation-display/interpretation-display.component';
-import { PlanApprovalComponent } from '@features/queries/components/plan-approval/plan-approval.component';
-import { ExecutionLogComponent } from '@features/queries/components/execution-log/execution-log.component';
-import { ResultsDisplayComponent } from '@features/queries/components/results-display/results-display.component';
-import { TransparencyLogComponent } from '@features/queries/components/transparency-log/transparency-log.component';
+import { ChatInputComponent } from '@features/queries/components/chat-input/chat-input.component';
+import { QueryThreadComponent } from '@features/queries/components/query-thread/query-thread.component';
+import { IntegrationService } from '@features/integrations/services/integration.service';
+import { IntegrationResponse } from '@features/integrations/models';
+import { AuthService } from '@core/services/auth.service';
+import { ChevronDown, ChevronRight } from 'lucide-angular';
 
 @Component({
-  selector: 'app-query-page',
+  selector: 'query-page',
   standalone: true,
   imports: [
-    TkButtonComponent,
+    TkIntegrationSelectorComponent,
+    TkIntegrationIconComponent,
     TkIconComponent,
-    TkCardComponent,
-    QueryInputComponent,
-    InterpretationDisplayComponent,
-    PlanApprovalComponent,
-    ExecutionLogComponent,
-    ResultsDisplayComponent,
-    TransparencyLogComponent,
+    ChatInputComponent,
+    QueryThreadComponent,
   ],
   providers: [QueryPageStore],
   templateUrl: './query-page.component.html',
   styleUrl: './query-page.component.scss',
 })
-export class QueryPageComponent {
+export class QueryPageComponent implements OnInit {
   readonly store = inject(QueryPageStore);
-  readonly icons = { RotateCcw, AlertCircle, Ban };
+  private integrationService = inject(IntegrationService);
+  private authService = inject(AuthService);
+
+  readonly icons = { ChevronDown, ChevronRight };
+  readonly integrationsPanelOpen = signal(false);
+  readonly firstName = computed(() => {
+    const name = this.authService.currentUser()?.display_name ?? '';
+    return name.split(' ')[0] || 'there';
+  });
+  readonly integrations = signal<IntegrationResponse[]>([]);
+  readonly selectedIntegrationIds = signal<string[]>([]);
+  readonly showScrollButton = signal(false);
+
+  private userScrolledUp = false;
+
+  readonly integrationMap = computed(() => {
+    const map = new Map<string, IntegrationResponse>();
+    for (const i of this.integrations()) {
+      map.set(i.id, i);
+    }
+    return map;
+  });
+
+  readonly selectableIntegrations = computed<SelectableIntegration[]>(() =>
+    this.integrations().map(i => ({ id: i.id, type: i.type, displayName: i.display_name }))
+  );
+
+  @ViewChild('threadArea') private threadArea?: ElementRef<HTMLDivElement>;
+
+  constructor() {
+    effect(() => {
+      this.store.phase();
+      this.store.interpretationText();
+      this.store.executionSteps();
+
+      if (this.threadArea && !this.userScrolledUp) {
+        setTimeout(() => {
+          const el = this.threadArea!.nativeElement;
+          el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+        }, 50);
+      }
+    });
+  }
+
+  ngOnInit(): void {
+    this.integrationService.listIntegrations({ status: 'active', limit: 100 }).subscribe({
+      next: (response) => {
+        this.integrations.set(response.integrations);
+        this.selectedIntegrationIds.set(response.integrations.map(i => i.id));
+      },
+    });
+  }
+
+  onThreadScroll(event: Event): void {
+    const el = event.target as HTMLElement;
+    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
+    this.userScrolledUp = !atBottom;
+    this.showScrollButton.set(!atBottom && this.store.phase() !== 'idle');
+  }
+
+  scrollToBottom(): void {
+    if (this.threadArea) {
+      this.threadArea.nativeElement.scrollTo({ top: this.threadArea.nativeElement.scrollHeight, behavior: 'smooth' });
+      this.userScrolledUp = false;
+      this.showScrollButton.set(false);
+    }
+  }
 
   onSubmit(event: { queryText: string }): void {
-    this.store.submitQuery(event.queryText);
+    this.userScrolledUp = false;
+    this.showScrollButton.set(false);
+    this.store.submitQuery(event.queryText, this.selectedIntegrationIds());
   }
 
-  onApprove(): void {
-    this.store.approveQuery();
-  }
-
-  onReject(): void {
-    this.store.rejectQuery();
-  }
-
-  onExportCsv(): void {
-    this.store.exportCsv();
-  }
+  onApprove(): void { this.store.approveQuery(); }
+  onReject(): void { this.store.rejectQuery(); }
+  onExportCsv(): void { this.store.exportCsv(); }
 
   onNewQuery(): void {
     this.store.reset();
+    this.userScrolledUp = false;
+    this.showScrollButton.set(false);
+    this.selectedIntegrationIds.set(this.integrations().map(i => i.id));
   }
 }

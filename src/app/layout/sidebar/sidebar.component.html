@@ -1,16 +1,25 @@
-<aside class="sidebar" data-testid="sidebar-container">
+<aside class="sidebar"
+       [class.sidebar--collapsed]="isCollapsed()"
+       [class.sidebar--hidden]="state() === 'hidden'"
+       data-testid="sidebar-container">
+
   <!-- Brand -->
-  <div class="sidebar__brand">
-    <span class="sidebar__brand-text" data-testid="sidebar-brand-text">Tekmar</span>
-  </div>
+  <a routerLink="/new" class="sidebar__brand">
+    @if (isExpanded()) {
+      <span class="sidebar__brand-text" data-testid="sidebar-brand-text">Tekmar</span>
+    }
+  </a>
 
   <!-- New Query button -->
   <div class="sidebar__action">
-    <a routerLink="/queries"
+    <a routerLink="/new"
        class="sidebar__new-query"
-       data-testid="sidebar-new-query-button">
+       data-testid="sidebar-new-query-button"
+       [title]="isCollapsed() ? 'New Query' : ''">
       <lucide-icon [img]="icons.Plus" [size]="18" [strokeWidth]="2"></lucide-icon>
-      New Query
+      @if (isExpanded()) {
+        <span>New Query</span>
+      }
     </a>
   </div>
 
@@ -21,15 +30,31 @@
          routerLinkActive="active-link"
          [routerLinkActiveOptions]="{ exact: item.route === '/queries' }"
          class="sidebar__nav-link"
-         [attr.data-testid]="item.testId">
+         [attr.data-testid]="item.testId"
+         [title]="isCollapsed() ? item.label : ''">
         <lucide-icon [img]="item.icon" [size]="18" [strokeWidth]="1.5"></lucide-icon>
-        <span>{{ item.label }}</span>
+        @if (isExpanded()) {
+          <span>{{ item.label }}</span>
+        }
       </a>
     }
   </nav>
 
   <!-- Spacer -->
   <div class="sidebar__spacer"></div>
+
+  <!-- Theme toggle -->
+  <div class="sidebar__theme">
+    <button class="sidebar__theme-btn"
+            (click)="themeService.toggle()"
+            data-testid="sidebar-theme-toggle"
+            [title]="isCollapsed() ? (themeService.theme() === 'light' ? 'Dark mode' : 'Light mode') : ''">
+      <lucide-icon [img]="themeService.theme() === 'light' ? icons.Moon : icons.Sun" [size]="18" [strokeWidth]="1.5"></lucide-icon>
+      @if (isExpanded()) {
+        <span>{{ themeService.theme() === 'light' ? 'Dark mode' : 'Light mode' }}</span>
+      }
+    </button>
+  </div>
 
   <!-- User section -->
   @if (user(); as u) {
@@ -38,20 +63,22 @@
         <div class="sidebar__avatar">
           {{ userInitials() }}
         </div>
-        <div class="sidebar__user-info">
-          <div class="sidebar__user-name" data-testid="sidebar-user-name">{{ u.display_name }}</div>
-          <span class="sidebar__role"
-                data-testid="sidebar-user-role-badge"
-                [class.sidebar__role--admin]="u.role === 'admin'">
-            {{ u.role === 'admin' ? 'Admin' : 'Member' }}
-          </span>
-        </div>
-        <button (click)="onLogout()"
-                class="sidebar__logout"
-                title="Logout"
-                data-testid="sidebar-logout-button">
-          <lucide-icon [img]="icons.LogOut" [size]="18" [strokeWidth]="1.5"></lucide-icon>
-        </button>
+        @if (isExpanded()) {
+          <div class="sidebar__user-info">
+            <div class="sidebar__user-name" data-testid="sidebar-user-name">{{ u.display_name }}</div>
+            <span class="sidebar__role"
+                  data-testid="sidebar-user-role-badge"
+                  [class.sidebar__role--admin]="u.role === 'admin'">
+              {{ u.role === 'admin' ? 'Admin' : 'Member' }}
+            </span>
+          </div>
+          <button (click)="onLogout()"
+                  class="sidebar__logout"
+                  title="Logout"
+                  data-testid="sidebar-logout-button">
+            <lucide-icon [img]="icons.LogOut" [size]="18" [strokeWidth]="1.5"></lucide-icon>
+          </button>
+        }
       </div>
     </div>
   }

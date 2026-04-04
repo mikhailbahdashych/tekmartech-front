@@ -1,0 +1,43 @@
+.user-message {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  &__bubble {
+    max-width: 85%;
+    background: var(--color-accent);
+    color: var(--color-text-inverse);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  &__text {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+    word-wrap: break-word;
+  }
+
+  &__integrations {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+  }
+
+  &__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-full);
+    padding: 2px var(--space-2) 2px var(--space-1);
+  }
+
+  &__pill-name {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    line-height: 1;
+  }
+}

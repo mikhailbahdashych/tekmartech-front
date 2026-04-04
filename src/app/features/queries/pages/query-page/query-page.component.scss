@@ -1,80 +1,145 @@
-.query-page {
-  max-width: 896px;
-  margin-left: auto;
-  margin-right: auto;
+:host {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  height: 100%;
+  overflow: hidden;
+  margin: calc(-1 * var(--space-16)) calc(-1 * var(--space-8)) calc(-1 * var(--space-8));
 }
 
-// Failed state card
-.failed-card {
-  ::ng-deep .tk-card {
-    background: var(--color-error-light);
-    border-color: #fecaca;
-  }
+// Welcome state: greeting + input centered on screen
+.query-page--welcome {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: var(--space-8);
+  padding-bottom: 15%;
 
-  &__header {
+  .query-page__welcome-center {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: var(--space-2);
-    margin-bottom: var(--space-2);
+    width: 100%;
+    max-width: 840px;
   }
 
-  &__icon {
-    color: var(--color-error);
-  }
-
-  &__title {
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
-    color: #991b1b;
-  }
-
-  &__message {
-    font-size: var(--text-sm);
-    color: #b91c1c;
-    margin: 0;
-  }
-
-  &__action {
-    display: inline-flex;
-    margin-top: var(--space-4);
-  }
-}
-
-// Rejected state card
-.rejected-card {
-  ::ng-deep .tk-card {
-    background: var(--color-bg-secondary);
-    border-color: var(--color-border-primary);
-  }
-
-  &__header {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    margin-bottom: var(--space-2);
-  }
-
-  &__icon {
-    color: var(--color-text-tertiary);
-  }
-
-  &__title {
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
+  .query-page__greeting {
+    font-size: 42px;
+    font-weight: var(--font-semibold);
     color: var(--color-text-primary);
+    margin-bottom: var(--space-6);
+    text-align: center;
   }
 
-  &__message {
-    font-size: var(--text-sm);
+  .query-page__welcome-input {
+    width: 100%;
+  }
+
+  .query-page__integrations-bar {
+    margin: 0 var(--space-6);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    background: var(--color-bg-tertiary);
+    overflow: hidden;
+  }
+
+  .query-page__integrations-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 6px var(--space-4);
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    transition: background var(--transition-normal);
+
+    &:hover {
+      background: var(--color-bg-tertiary-hover);
+    }
+  }
+
+  .query-page__integrations-label {
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
     color: var(--color-text-secondary);
-    margin: 0;
   }
 
-  &__action {
-    display: inline-flex;
-    margin-top: var(--space-4);
+  .query-page__integrations-preview {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .query-page__integrations-chevron {
+    color: var(--color-text-tertiary);
+    transition: transform var(--transition-normal);
+
+    &--open {
+      transform: rotate(90deg);
+    }
+  }
+
+  .query-page__integrations-panel {
+    padding: var(--space-2) var(--space-4) var(--space-3);
+    animation: slideDown 150ms ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+// Active conversation: thread scrolls, input at very bottom
+.query-page--active {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .query-page__thread-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-12) var(--space-8) var(--space-6);
+    position: relative;
+  }
+
+  .query-page__scroll-btn {
+    position: sticky;
+    bottom: var(--space-4);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border-primary);
+    box-shadow: var(--shadow-md);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    z-index: 5;
+
+    &:hover {
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+    }
+  }
+
+  .query-page__input-area {
+    flex-shrink: 0;
+    max-width: 840px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
   }
 }

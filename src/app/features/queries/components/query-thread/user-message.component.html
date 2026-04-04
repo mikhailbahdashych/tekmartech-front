@@ -1,0 +1,16 @@
+<div class="user-message" data-testid="query-user-message">
+  <div class="user-message__bubble">
+    <p class="user-message__text" data-testid="query-user-message-text">{{ queryText() }}</p>
+  </div>
+
+  @if (integrations().length > 0) {
+    <div class="user-message__integrations">
+      @for (integration of integrations(); track integration.id) {
+        <span class="user-message__pill">
+          <tk-integration-icon [type]="integration.type" size="sm" />
+          <span class="user-message__pill-name">{{ integration.displayName }}</span>
+        </span>
+      }
+    </div>
+  }
+</div>

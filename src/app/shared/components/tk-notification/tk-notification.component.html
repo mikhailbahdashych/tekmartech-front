@@ -1,0 +1,23 @@
+<div class="tk-notifications" data-testid="notification-host">
+  @for (notification of notificationService.notifications(); track notification.id) {
+    <div class="tk-toast"
+         [class]="'tk-toast tk-toast--' + notification.variant"
+         [class.tk-toast--visible]="notification.visible"
+         [attr.data-testid]="'notification-toast-' + notification.id">
+      <div class="tk-toast__body">
+        <tk-icon [name]="getIcon(notification.variant)" size="sm" [strokeWidth]="2" class="tk-toast__icon" />
+        <span class="tk-toast__message" [attr.data-testid]="'notification-message-' + notification.id">{{ notification.message }}</span>
+        <button class="tk-toast__close" (click)="notificationService.dismiss(notification.id)" [attr.data-testid]="'notification-dismiss-' + notification.id">
+          <tk-icon [name]="icons.X" size="sm" [strokeWidth]="2" />
+        </button>
+      </div>
+      @if (notification.visible && notification.duration > 0) {
+        <div class="tk-toast__progress">
+          <div class="tk-toast__progress-bar"
+               [style.animation-duration.ms]="notification.duration">
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

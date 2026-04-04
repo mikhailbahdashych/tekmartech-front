@@ -5,7 +5,7 @@ import { Check, X } from 'lucide-angular';
 import { QueryPlan } from '@features/queries/models';
 
 @Component({
-  selector: 'app-plan-approval',
+  selector: 'plan-approval',
   standalone: true,
   imports: [TkButtonComponent, TkIconComponent],
   templateUrl: './plan-approval.component.html',

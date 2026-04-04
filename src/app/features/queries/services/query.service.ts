@@ -12,6 +12,7 @@ import {
 } from '@features/queries/models';
 
 interface QueryListParams {
+  search?: string;
   status?: string;
   initiated_by?: string;
   limit?: number;
@@ -34,6 +35,7 @@ export class QueryService {
 
   listQueries(params?: QueryListParams): Observable<QueryListResponse> {
     let httpParams = new HttpParams();
+    if (params?.search) httpParams = httpParams.set('search', params.search);
     if (params?.status) httpParams = httpParams.set('status', params.status);
     if (params?.initiated_by) httpParams = httpParams.set('initiated_by', params.initiated_by);
     if (params?.limit) httpParams = httpParams.set('limit', params.limit.toString());

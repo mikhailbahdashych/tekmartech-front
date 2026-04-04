@@ -1,0 +1,73 @@
+<div class="thread" data-testid="query-thread-container">
+  <!-- User message -->
+  @if (store.queryText()) {
+    <user-message
+      [queryText]="store.queryText()"
+      [integrations]="getSubmittedIntegrations()" />
+  }
+
+  <!-- AI response (interpretation + plan) -->
+  @if (store.phase() !== 'idle') {
+    <ai-response
+      [interpretationText]="store.interpretationText()"
+      [isStreaming]="store.isInterpretationStreaming()"
+      [plan]="store.plan()"
+      [planSummary]="store.planSummary()"
+      [estimatedDuration]="store.estimatedDuration()"
+      [phase]="store.phase()"
+      [isApproving]="store.isApproving()"
+      [isRejecting]="store.isRejecting()"
+      [integrationMap]="integrationMap()"
+      [errorMessage]="store.phase() === 'failed' && !store.plan() ? store.errorMessage() : null"
+      (approve)="approve.emit()"
+      (reject)="reject.emit()" />
+  }
+
+  <!-- Execution -->
+  @if ((store.phase() === 'executing' || store.phase() === 'completed' || store.phase() === 'failed') && store.executionSteps().length > 0) {
+    <execution-message
+      [steps]="store.executionSteps()"
+      [totalSteps]="store.totalSteps()"
+      [integrationMap]="integrationMap()" />
+  }
+
+  <!-- Results -->
+  @if (store.phase() === 'completed' && store.resultData(); as data) {
+    <results-message
+      [resultSummary]="store.resultSummary()"
+      [resultData]="data"
+      [executionStatus]="store.executionStatus()"
+      [transparencyLog]="store.transparencyLog()"
+      (exportCsv)="exportCsv.emit()" />
+  }
+
+  <!-- Failed state (after plan was generated) -->
+  @if (store.phase() === 'failed' && store.plan()) {
+    <div class="thread__status-card thread__status-card--error">
+      <div class="thread__status-header">
+        <tk-icon [name]="icons.AlertCircle" size="md" />
+        <span>Query Failed</span>
+      </div>
+      <p class="thread__status-message" data-testid="query-failed-error-text">{{ store.errorMessage() }}</p>
+      <tk-button variant="secondary" (click)="newQuery.emit()" data-testid="query-failed-new-query-button">
+        <tk-icon [name]="icons.RotateCcw" size="sm" />
+        New Query
+      </tk-button>
+    </div>
+  }
+
+  <!-- Rejected state -->
+  @if (store.phase() === 'rejected') {
+    <div class="thread__status-card thread__status-card--neutral">
+      <div class="thread__status-header">
+        <tk-icon [name]="icons.Ban" size="md" />
+        <span data-testid="query-rejected-text">Query Rejected</span>
+      </div>
+      <p class="thread__status-message">The query plan was rejected and will not be executed.</p>
+      <tk-button variant="secondary" (click)="newQuery.emit()">
+        <tk-icon [name]="icons.RotateCcw" size="sm" />
+        New Query
+      </tk-button>
+    </div>
+  }
+</div>

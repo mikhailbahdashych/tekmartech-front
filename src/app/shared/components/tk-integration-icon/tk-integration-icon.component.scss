@@ -1,0 +1,14 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon {
+  display: block;
+
+  &--github { color: var(--color-text-primary); }
+  &--aws { color: #FF9900; }
+  // Google icon uses multi-color fills directly in SVG
+}

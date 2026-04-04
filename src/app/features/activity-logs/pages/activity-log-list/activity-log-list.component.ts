@@ -1,14 +1,14 @@
 import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { TkSpinnerComponent } from '@shared/components/tk-spinner/tk-spinner.component';
-import { TkPaginationComponent } from '@shared/components/tk-pagination/tk-pagination.component';
-import { TkSelectComponent, TkSelectOption } from '@shared/components/tk-select/tk-select.component';
+import { TkMultiSelectComponent, TkMultiSelectOption } from '@shared/components/tk-multi-select/tk-multi-select.component';
 import { ActivityLogService } from '@features/activity-logs/services/activity-log.service';
 import { UserService } from '@features/users/services/user.service';
 import { ActivityLogResponse, ActivityAction } from '@features/activity-logs/models/activity-log.model';
 import { PaginationResponse } from '@features/queries/models';
 import { User } from '@core/models';
+import { parseEnumList, parseUUIDList, parseNumericOption, syncFiltersToUrl } from '@core/utils/query-params';
 
 interface ActionOption { value: ActivityAction; label: string }
 
@@ -43,14 +43,9 @@ const ACTION_LABELS: Record<ActivityAction, (meta: Record<string, unknown> | nul
 };
 
 @Component({
-  selector: 'app-activity-log-list',
+  selector: 'activity-log-list',
   standalone: true,
-  imports: [
-    DatePipe,
-    TkSpinnerComponent,
-    TkPaginationComponent,
-    TkSelectComponent,
-  ],
+  imports: [DatePipe, TkSpinnerComponent, TkMultiSelectComponent],
   templateUrl: './activity-log-list.component.html',
   styleUrl: './activity-log-list.component.scss',
 })
@@ -58,9 +53,12 @@ export class ActivityLogListComponent implements OnInit {
   private logService = inject(ActivityLogService);
   private userService = inject(UserService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
-  readonly actionSelectOptions: TkSelectOption[] = ACTION_OPTIONS.map(o => ({ value: o.value, label: o.label }));
-  readonly userSelectOptions = computed<TkSelectOption[]>(() =>
+  private static readonly VALID_ACTIONS = ACTION_OPTIONS.map(o => o.value) as string[];
+
+  readonly actionSelectOptions: TkMultiSelectOption[] = ACTION_OPTIONS.map(o => ({ value: o.value, label: o.label }));
+  readonly userSelectOptions = computed<TkMultiSelectOption[]>(() =>
     this.users().map(u => ({ value: u.id, label: u.display_name }))
   );
 
@@ -68,29 +66,26 @@ export class ActivityLogListComponent implements OnInit {
   readonly pagination = signal<PaginationResponse | null>(null);
   readonly users = signal<User[]>([]);
   readonly isLoading = signal(true);
-  readonly actionFilter = signal('');
-  readonly userFilter = signal('');
+  readonly selectedActions = signal<string[]>([]);
+  readonly selectedUserIds = signal<string[]>([]);
 
-  // Client-side display pagination
-  readonly displayPage = signal(0);
-  readonly displayPageSize = signal(25);
+  // Server-driven pagination
+  readonly pageSize = signal(25);
   readonly pageSizeOptions = [10, 25, 50, 100];
   readonly sizeDropdownOpen = signal(false);
+  readonly cursorStack = signal<string[]>([]);
 
-  readonly paginatedLogs = computed(() => {
-    const start = this.displayPage() * this.displayPageSize();
-    return this.logs().slice(start, start + this.displayPageSize());
-  });
-  readonly totalDisplayRows = computed(() => this.logs().length);
-  readonly totalDisplayPages = computed(() => Math.max(1, Math.ceil(this.totalDisplayRows() / this.displayPageSize())));
-  readonly showDisplayPagination = computed(() => this.totalDisplayRows() > this.displayPageSize());
-  readonly displayRangeStart = computed(() => this.totalDisplayRows() === 0 ? 0 : this.displayPage() * this.displayPageSize() + 1);
-  readonly displayRangeEnd = computed(() => Math.min((this.displayPage() + 1) * this.displayPageSize(), this.totalDisplayRows()));
-  readonly canDisplayPrev = computed(() => this.displayPage() > 0);
-  readonly canDisplayNext = computed(() => this.displayPage() < this.totalDisplayPages() - 1);
+  readonly totalCount = computed(() => this.pagination()?.total_count ?? 0);
+  readonly hasMore = computed(() => this.pagination()?.has_more ?? false);
+  readonly currentPage = computed(() => this.cursorStack().length);
+  readonly rangeStart = computed(() => this.logs().length === 0 ? 0 : this.currentPage() * this.pageSize() + 1);
+  readonly rangeEnd = computed(() => this.currentPage() * this.pageSize() + this.logs().length);
+  readonly canPrev = computed(() => this.cursorStack().length > 0);
+  readonly canNext = computed(() => this.hasMore());
 
   ngOnInit(): void {
-    this.loadLogs();
+    this.restoreFiltersFromUrl();
+    this.loadPage();
     this.userService.listUsers({ limit: 100 }).subscribe({
       next: (r) => this.users.set(r.users),
     });
@@ -101,28 +96,28 @@ export class ActivityLogListComponent implements OnInit {
     return formatter ? formatter(log.metadata) : log.action;
   }
 
-  onActionFilterChange(action: string): void {
-    this.actionFilter.set(action);
-    this.logs.set([]);
-    this.displayPage.set(0);
-    this.loadLogs();
+  onActionFilterChange(actions: string[]): void {
+    this.selectedActions.set(actions);
+    this.cursorStack.set([]);
+    this.syncUrl();
+    this.loadPage();
   }
 
-  onUserFilterChange(userId: string): void {
-    this.userFilter.set(userId);
-    this.logs.set([]);
-    this.displayPage.set(0);
-    this.loadLogs();
+  onUserFilterChange(userIds: string[]): void {
+    this.selectedUserIds.set(userIds);
+    this.cursorStack.set([]);
+    this.syncUrl();
+    this.loadPage();
   }
 
-  loadMore(): void {
-    const cursor = this.pagination()?.next_cursor;
-    if (cursor) this.loadLogs(cursor);
+  selectPageSize(size: number): void {
+    this.pageSize.set(size);
+    this.cursorStack.set([]);
+    this.sizeDropdownOpen.set(false);
+    this.syncUrl();
+    this.loadPage();
   }
 
-  displayPrevPage(): void { if (this.canDisplayPrev()) this.displayPage.update(p => p - 1); }
-  displayNextPage(): void { if (this.canDisplayNext()) this.displayPage.update(p => p + 1); }
-  selectDisplayPageSize(size: number): void { this.displayPageSize.set(size); this.displayPage.set(0); this.sizeDropdownOpen.set(false); }
   toggleSizeDropdown(): void { this.sizeDropdownOpen.update(v => !v); }
 
   @HostListener('document:click', ['$event'])
@@ -132,18 +127,28 @@ export class ActivityLogListComponent implements OnInit {
     }
   }
 
+  nextPage(): void {
+    const nextCursor = this.pagination()?.next_cursor;
+    if (!nextCursor) return;
+    this.cursorStack.update(stack => [...stack, nextCursor]);
+    this.loadPage(nextCursor);
+  }
+
+  prevPage(): void {
+    const stack = this.cursorStack();
+    if (stack.length === 0) return;
+    const newStack = stack.slice(0, -1);
+    this.cursorStack.set(newStack);
+    const cursor = newStack.length > 0 ? newStack[newStack.length - 1] : undefined;
+    this.loadPage(cursor);
+  }
+
   navigateToTarget(log: ActivityLogResponse): void {
     if (!log.target_type || !log.target_id) return;
     switch (log.target_type) {
-      case 'query':
-        this.router.navigate(['/queries', log.target_id]);
-        break;
-      case 'integration':
-        this.router.navigate(['/integrations']);
-        break;
-      case 'user':
-        this.router.navigate(['/users']);
-        break;
+      case 'query': this.router.navigate(['/queries', log.target_id]); break;
+      case 'integration': this.router.navigate(['/integrations']); break;
+      case 'user': this.router.navigate(['/users']); break;
     }
   }
 
@@ -158,24 +163,35 @@ export class ActivityLogListComponent implements OnInit {
     }
   }
 
-  private loadLogs(cursor?: string): void {
+  private loadPage(cursor?: string): void {
     this.isLoading.set(true);
-    const params: Record<string, string | number> = { limit: 50 };
-    if (this.actionFilter()) params['action'] = this.actionFilter();
-    if (this.userFilter()) params['user_id'] = this.userFilter();
+    const params: Record<string, string | number> = { limit: this.pageSize() };
+    if (this.selectedActions().length > 0) params['action'] = this.selectedActions().join(',');
+    if (this.selectedUserIds().length > 0) params['user_id'] = this.selectedUserIds().join(',');
     if (cursor) params['cursor'] = cursor;
 
     this.logService.listActivityLogs(params as any).subscribe({
       next: (response) => {
-        if (cursor) {
-          this.logs.update(existing => [...existing, ...response.activity_logs]);
-        } else {
-          this.logs.set(response.activity_logs);
-        }
+        this.logs.set(response.activity_logs);
         this.pagination.set(response.pagination);
         this.isLoading.set(false);
       },
       error: () => { this.isLoading.set(false); },
+    });
+  }
+
+  private restoreFiltersFromUrl(): void {
+    const params = this.route.snapshot.queryParamMap;
+    this.selectedActions.set(parseEnumList(params.get('action'), ActivityLogListComponent.VALID_ACTIONS));
+    this.selectedUserIds.set(parseUUIDList(params.get('user')));
+    this.pageSize.set(parseNumericOption(params.get('limit'), this.pageSizeOptions, 25));
+  }
+
+  private syncUrl(): void {
+    syncFiltersToUrl(this.router, this.route, {
+      action: this.selectedActions().length > 0 ? this.selectedActions().join(',') : null,
+      user: this.selectedUserIds().length > 0 ? this.selectedUserIds().join(',') : null,
+      limit: this.pageSize() !== 25 ? this.pageSize() : null,
     });
   }
 }
